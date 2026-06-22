@@ -1,0 +1,400 @@
+---
+title: "Transforming Variables"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Systematic Transformations](#sec-systematic-transformations)
+    a.  [Natural Log Transformations](#sec-natural-log-transformations)
+3.  [Changing Variable Types](#sec-changing-variable-types)
+    a.  [Transforming Continuous/Interval into Ordinal](#sec-continuous-interval-to-ordinal)
+    b.  [Collapsing Ordinal Variables into Fewer Categories](#sec-collapsing-ordinal-variables)
+    c.  [Transforming Continuous/Interval Variables into Dummy Variables](#sec-transforming-interval-to-dummy)
+    d.  [Using Logical Operators to Make a New Dummy Variable](#sec-logical-operators-dummy-variable)
+4.  [Sorting Cases Using `sortC()`](#sec-sorting-cases-using-sortc)
+5.  [Advanced Material](#sec-advanced-material)
+    a.  [Using `dplyr()` to Create Variables](#sec-dplyr-create-variables)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+If you do not already have these packages, paste them manually into the console and install them.
+
+```{r}
+# install.packages("dplyr")
+```
+
+-   [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html){target="_blank"} makes cleaning and manipulating dataframes more efficient.
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+library(dplyr)
+```
+
+### 2. Systematic Transformations {#sec-systematic-transformations}
+
+While transforming a variable may seem arbitrary or like a recipe for bias, the key to a transformation is to be systematic. In practice, that means transforming all observations according to the same rule/mathematical calculation.
+
+> **Note:** it's super important that we **always** **create a brand new variable** when we make any sort of transformation. We don't want to overwrite the original data, in case we still need it later, or in case we make a mistake with the transformation. In many cases, once the original data is lost, we can't get it back.
+
+Systematic transformations can take multiple forms, including:
+
+-   squares, cubes, etc.
+-   square roots, cube roots, etc.
+-   standardization (removing units)
+-   logarithms
+
+#### Natural Log Transformations {#sec-natural-log-transformations}
+
+We'll focus on natural logarithms, specifically, because they are the most common for the data we'll be working with.
+
+First, let's check whether the population variable is normal...
+
+```{r}
+histC(world$population)
+```
+
+...yikes, not even a little bit.
+
+One thing we can do to normalize right/positively skewed data is transform it by taking the natural logarithm of every value.
+
+We'll try creating a brand new, transformed variable called "ln.pop" using the `transformC` function from the `RCPA3` package:
+
+```{r}
+#| eval: false
+
+ln.pop <- transformC("ln", world$population)
+```
+
+```{r}
+#| echo: false
+
+ln.pop <- transformC("ln", world$population, confirm = FALSE)
+```
+
+Note that we have to type 'y' into the console to agree to creating a new variable. The `transformC()` function builds this in to avoid accidentally overwriting a variable.
+
+When we transform a variable, we always want to look at the distribution of the new variable, too. So, let's check the histogram:
+
+```{r}
+histC(ln.pop)
+```
+
+Much better!
+
+As an alternative to the whole `transformC()` function, we can use a shortcut from base R, too. The `log10()` function can either...
+
+1.  ...create the transformed variable for later use:
+
+```{r}
+ln.pop <- log10(world$population)
+```
+
+2.  ...or just show us the distribution quickly and temporarily:
+
+```{r}
+histC(log10(world$population))
+```
+
+### 3. Changing Variable Types {#sec-changing-variable-types}
+
+There are lots of reasons for transforming variables into different levels of measurement (i.e., variable types). For one thing, the new variable may better fit the concept we're trying to measure. But we might also change the variable type in order to fit the requirements of a particular test or make the variable easier to work with/interpret.
+
+#### Transforming Continuous/Interval into Ordinal {#sec-continuous-interval-to-ordinal}
+
+Let's start with a continuous/interval-level variable and run descriptives to see what we're working with.
+
+```{r}
+describeC(world$pop.urban)
+```
+
+The min, max, range, and other descriptive stats can give us a sense of how the variable is distributed. If we wanted to make this an ordinal variable based on that distribution, we can use some cutoff values to separate cases into groups, like low % urban population, high % urban population, etc. That's where the `transformC()` function really comes in handy:
+
+```{r}
+#| eval: false
+
+urbanpop.5cat <- transformC("cut", world$pop.urban, groups = 5)
+```
+
+```{r}
+#| echo: false
+
+urbanpop.5cat <- transformC("cut", world$pop.urban, groups = 5, confirm = F)
+```
+
+The "cut" type of transformation turns the new variable into approximately equal-sized groups. Because we specified "groups = 5", we should be getting quintiles, meaning each category represents 20% of the total cases.
+
+Let's take a look to confirm:
+
+```{r}
+freqC(urbanpop.5cat)
+```
+
+We have 5 equal-ish groups, but they look messy because each category is identified only by a range of values. Instead, let's add some value labels to the new variable.
+
+Because we have 5 ordinal categories, we need 5 category labels (i.e., "levels"). So, we'll tell R to take the levels of the new variable and redefine them on a scale from "Very small" to "Very large." Then we should check to see that the changes took effect the way we wanted them to.
+
+```{r}
+levels(urbanpop.5cat) <- c( "Very small", "Small", "Medium", "Large", "Very large")
+
+freqC(urbanpop.5cat)
+```
+
+Nice.
+
+#### Collapsing Ordinal Variables into Fewer Categories {#sec-collapsing-ordinal-variables}
+
+Let's check the attributes of our new variable to see that it's the right type and has the right number of categories. We can do this multiple ways, so you can take your pick:
+
+```{r}
+attributes(urbanpop.5cat)
+class(urbanpop.5cat)
+str(urbanpop.5cat)
+```
+
+Classes:
+
+-   "factor" means it's categorical.
+-   "ordered" means the factor is treated as ordinal.
+-   "levels" are the value labels.
+-   "label" is the overall variable label.
+
+We have 5 categories right now, but we can make 3 by re-labeling the values. We just have to make sure to retain the order of the categories when we do, so we don't assign these values to randomly. That's where the `ordered()` function comes in:
+
+```{r}
+urbanpop.3cat <- ordered( urbanpop.5cat, labels = c("Small", "Small", "Medium", "Large", "Large" ) )
+```
+
+We're making a new variable called "urbanpop.3cat" that takes the original values from "urbanpop.5cat" and collapses both "Very small" and "Small" into just one "Small" category. We can keep "Medium" as "Medium". But then we can also collapse "Large" and "Very large" into just one "Large" category.
+
+```{r}
+attributes(urbanpop.3cat) # check the attributes of our new variable
+freqC(urbanpop.3cat) # let's see the new distribution
+```
+
+#### Transforming Continuous/Interval into Dummy {#sec-transforming-continuous-into-dummy}
+
+We *could* use `transformC()` to transform an interval variable into an ordinal variable first and then make a dummy variable from the ordinal categories:
+
+But that sucks. So, here's a trick Pollock won't tell you about: `ifelse()`
+
+Let's say we want to create a dummy variable for being above average (1) or not above average (0).
+
+```{r}
+describeC(world$gdp.percap) # check the descriptive statistics first
+```
+
+Uh-oh. Skewness...
+
+```{r}
+histC(world$gdp.percap) # let's see how bad that skew is...
+```
+
+Given this skewness, should we use the mean or the median?
+
+```{r}
+world$rich.country <- ifelse(
+  world$gdp.percap > median(world$gdp.percap, na.rm = TRUE),
+  1, 
+  0
+  )
+```
+
+Here's what's going on in that code:
+
+-   Make a new variable called world\$rich.country, and:
+
+    -   IF the original world\$gdp.percap value is greater than the median gdp.percap value, THEN...
+    -   make the value of the new variable a 1, OTHERWISE...
+    -   make it a 0 for anything else.
+
+```{r}
+freqC(world$rich.country) #check the frequency to make sure there's no glaring errors
+```
+
+This works, but it we haven't specified what to do with missing values, so there could be mistakes! A more careful approach is to check for missing values first using a *nested* `ifelse()` function.
+
+```{r}
+world$rich.country <- ifelse(
+  is.na(world$gdp.percap), 
+  NA, 
+  ifelse(world$gdp.percap > median(world$gdp.percap, na.rm = TRUE),
+         1, 
+         0
+         )
+  )
+```
+
+The nested `ifelse()` functions can get confusing, so here's what's going on in that code:
+
+-   Make a new variable called world\$rich.country, and:
+
+    -   IF the original variable value is missing (NA), THEN...
+
+    -   make the value of the new variable NA, OTHERWISE...
+
+        -   IF the original variable value is greater than the median, THEN...
+
+        -   make the value of the new variable a 1, OTHERWISE...
+
+        -   make it a 0 for anything else.
+
+In other words, if GDP per capita is missing, keep it missing. Otherwise, assign a 1 if the value is above the median and a 0 if it is *anything else* besides missing or above the median.
+
+```{r}
+freqC(world$rich.country)
+```
+
+BUT... maybe we don't want to split it at the actual middle. Like, maybe the mean is more useful this time because what we would consider "rich" is a higher bar than simply being above the middle of the pack.
+
+So, let's do second nested `ifelse()` statement, this time just replacing the median with the mean:
+
+```{r}
+world$rich.country <- ifelse(
+  is.na(world$gdp.percap), 
+  NA, 
+  ifelse(world$gdp.percap > mean(world$gdp.percap, na.rm = TRUE),
+         1, 
+         0
+         )
+  )
+```
+
+Has it changed the frequency distribution?
+
+```{r}
+freqC(world$rich.country)
+```
+
+Yep, looks good!
+
+#### Using Logical Operators to Make a New Dummy Variable {#sec-logical-operators-dummy-variable}
+
+Sometimes we want to satisfy multiple conditions at once when making a new variable, though. Let's try creating a dummy variable that indicates countries that are both rich *AND* democratic.
+
+But first we should create a dichotomous indicator of democracy or not. Polity score measures regime types (i.e., democracy, anocracy, autocracy) on a scale from -10 to +10. In the codebook, they say that democracies are those countries with scores from +6 to +10.
+
+```{r}
+world$democracy <- ifelse(
+  is.na(world$polity.score), 
+  NA, 
+  ifelse(world$polity.score >= 6, 
+         1, 
+         0
+         ) 
+  )
+```
+
+Here's the breakdown: If the polity score is missing, keep it missing. Otherwise, assign a 1 if the score is greater than or equal to 6, and a 0 if it is anything else.
+
+```{r}
+freqC(world$democracy) # check the frequency distribution
+```
+
+Once we have all the variables we need, there are a couple of approaches to making the conditional variable:
+
+1.  **One approach is to create a new variable full of 0s and then change selected cases to 1s.**
+
+```{r}
+world$rich.dem <- rep(0, nrow(world))
+world$rich.dem[world$rich.country == 1 & world$democracy == 1] <- 1
+```
+
+> Make a new variable called rich.dem that just repeats 0 for as many rows as there are in the world dataset. Then, change some of those 0s to 1s for rows where both rich.country *AND* democracy equal 1.
+
+```{r}
+freqC(world$rich.dem) # check the frequency distribution
+```
+
+2.  **A more compact approach uses logical operators directly in one nested `ifelse()` function.**
+
+```{r}
+world$rich.dem <- ifelse(
+ is.na(world$rich.country) | is.na(world$democracy), 
+ NA,
+ ifelse(
+   world$rich.country == 1 & world$democracy == 1,
+   1,
+   0
+   )
+ )
+```
+
+> If the value for either rich.country *OR* democracy is missing, keep the new variable value missing. Otherwise if both rich.county *AND* democracy equal 1, assign the new variable value a 1, and a 0 if it is anything else.
+
+```{r}
+freqC(world$rich.dem)
+```
+
+### 4. Sorting Cases Using `sortC()` {#sec-sorting-cases-using-sortc}
+
+Now that we have our rich.dem variable, let's see a list of the countries that are rich democracies. There are lots of ways to do this, but one simple tool is `sortC()` from the `RCPA3` package.
+
+```{r}
+#| eval: false
+
+sortC(id = world$country, by = world$rich.dem)
+```
+
+```{r}
+#| echo: false
+
+sortC(id = world$country, by = world$rich.dem, confirm = F)
+```
+
+`sortC()` allows us to list the country name (`id =`) by rich democracy status (`by =`). It'll be alphabetical across each category of the by variable
+
+```{r}
+#| eval: false
+
+sortC(id = world$country, by = world$rich.dem, thenby = world$gdp.percap)
+```
+
+```{r}
+#| echo: false
+
+sortC(id = world$country, by = world$rich.dem, thenby = world$gdp.percap, confirm = F)
+```
+
+But we can also sort further using the actual gdp.percap variable (`thenby =`). This will give us all the rich democracies sorted by their gdp.percap values.
+
+### 5. Advanced Material: {#sec-advanced-material}
+
+#### Using `dplyr()`to Create Variables {#sec-dplyr-create-variables}
+
+The `dplyr` package's structure and subfunctions are make cleaning and manipulating data much more efficient, but it requires a bit more special, technical knowledge that we won't delve into during class.
+
+For one example, though, we can use its `mutate()` function to create our variables more efficiently:
+
+```{r}
+world <- world %>% 
+  mutate( rich.country = as.numeric(gdp.percap > mean(gdp.percap, na.rm = TRUE)),
+          democracy = as.numeric(polity.score >= 6),
+          rich.dem = as.numeric(rich.country == 1 & democracy == 1)
+          )
+```
+
+The `dplyr::mutate()` function is a create way to generate new variables based on other information in the dataset. Here's what the above code is doing:
+
+-   Using the world dataset, do the following and put it back into the world dataset:
+
+    -   Make a rich.country variable where gdp.percap values above the mean are 1 and all other nonmissing values are 0.
+    -   Make a democracy variable where polity.score values of 6 and above are 1 and all other nonmissing values are 0.
+    -   Make a rich.dem variable where both rich.country *AND* democracy are 1s.
+
+So, now we can take a look at the distribution of each variable to make sure they match up to the previous ones we made, like this one:
+
+```{r}
+freqC(world$rich.dem)
+```
+
+The `dplyr` package is a great tool to explore on your own, especially before or during a Political Science Capstone project!

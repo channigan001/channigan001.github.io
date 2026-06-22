@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Colin Hannigan">
+
+<title>Transforming Variables – R Walkthroughs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Walkthroughs</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./TransformingVariables.html" aria-current="page"> 
+<span class="menu-text">Transforming Variables</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./chi-square_measuresOfAssociation.html"> 
+<span class="menu-text">Chi-Square (and Measures of Association)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./ologit_mlogit.html"> 
+<span class="menu-text">Ordinal and Multinomial Logistic Regression (Ologit and Mlogit)</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
+  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
+  <li><a href="#sec-systematic-transformations" id="toc-sec-systematic-transformations" class="nav-link" data-scroll-target="#sec-systematic-transformations">2. Systematic Transformations</a></li>
+  <li><a href="#sec-changing-variable-types" id="toc-sec-changing-variable-types" class="nav-link" data-scroll-target="#sec-changing-variable-types">3. Changing Variable Types</a></li>
+  <li><a href="#sec-sorting-cases-using-sortc" id="toc-sec-sorting-cases-using-sortc" class="nav-link" data-scroll-target="#sec-sorting-cases-using-sortc">4. Sorting Cases Using <code>sortC()</code></a></li>
+  <li><a href="#sec-advanced-material" id="toc-sec-advanced-material" class="nav-link" data-scroll-target="#sec-advanced-material">5. Advanced Material:</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Transforming Variables</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin Hannigan </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="agenda" class="level3">
+<h3 class="anchored" data-anchor-id="agenda">Agenda:</h3>
+<ol type="1">
+<li><a href="#sec-packages-libraries">Install Packages and Libraries</a></li>
+<li><a href="#sec-systematic-transformations">Systematic Transformations</a>
+<ol type="a">
+<li><a href="#sec-natural-log-transformations">Natural Log Transformations</a></li>
+</ol></li>
+<li><a href="#sec-changing-variable-types">Changing Variable Types</a>
+<ol type="a">
+<li><a href="#sec-continuous-interval-to-ordinal">Transforming Continuous/Interval into Ordinal</a></li>
+<li><a href="#sec-collapsing-ordinal-variables">Collapsing Ordinal Variables into Fewer Categories</a></li>
+<li><a href="#sec-transforming-interval-to-dummy">Transforming Continuous/Interval Variables into Dummy Variables</a></li>
+<li><a href="#sec-logical-operators-dummy-variable">Using Logical Operators to Make a New Dummy Variable</a></li>
+</ol></li>
+<li><a href="#sec-sorting-cases-using-sortc">Sorting Cases Using <code>sortC()</code></a></li>
+<li><a href="#sec-advanced-material">Advanced Material</a>
+<ol type="a">
+<li><a href="#sec-dplyr-create-variables">Using <code>dplyr()</code> to Create Variables</a></li>
+</ol></li>
+</ol>
+</section>
+<section id="sec-packages-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="sec-packages-libraries">1. Install Packages and Libraries:</h3>
+<section id="new-packages-to-install" class="level4">
+<h4 class="anchored" data-anchor-id="new-packages-to-install">New packages to install:</h4>
+<p>If you do not already have these packages, paste them manually into the console and install them.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("dplyr")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/dplyr/index.html" target="_blank">dplyr</a> makes cleaning and manipulating dataframes more efficient.</li>
+</ul>
+</section>
+<section id="load-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="load-libraries">Load libraries!</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RCPA3)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="sec-systematic-transformations" class="level3">
+<h3 class="anchored" data-anchor-id="sec-systematic-transformations">2. Systematic Transformations</h3>
+<p>While transforming a variable may seem arbitrary or like a recipe for bias, the key to a transformation is to be systematic. In practice, that means transforming all observations according to the same rule/mathematical calculation.</p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> it’s super important that we <strong>always</strong> <strong>create a brand new variable</strong> when we make any sort of transformation. We don’t want to overwrite the original data, in case we still need it later, or in case we make a mistake with the transformation. In many cases, once the original data is lost, we can’t get it back.</p>
+</blockquote>
+<p>Systematic transformations can take multiple forms, including:</p>
+<ul>
+<li>squares, cubes, etc.</li>
+<li>square roots, cube roots, etc.</li>
+<li>standardization (removing units)</li>
+<li>logarithms</li>
+</ul>
+<section id="sec-natural-log-transformations" class="level4">
+<h4 class="anchored" data-anchor-id="sec-natural-log-transformations">Natural Log Transformations</h4>
+<p>We’ll focus on natural logarithms, specifically, because they are the most common for the data we’ll be working with.</p>
+<p>First, let’s check whether the population variable is normal…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histC</span>(world<span class="sc">$</span>population)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Histogram
+===========================================================================
+
+
+Table: Distribution of Binned Values of world$population (Size of national population)
+
+            Interval   Frequency   Percent   Cum. Percent
+--------------------  ----------  --------  -------------
+         [0 - 2e+08]         162     95.86          95.86
+     (2e+08 - 4e+08]           5      2.96          98.82
+     (4e+08 - 6e+08]           0      0.00          98.82
+     (6e+08 - 8e+08]           0      0.00          98.82
+     (8e+08 - 1e+09]           0      0.00          98.82
+   (1e+09 - 1.2e+09]           0      0.00          98.82
+ (1.2e+09 - 1.4e+09]           2      1.18         100.00
+               Total         169    100.00             NA</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>…yikes, not even a little bit.</p>
+<p>One thing we can do to normalize right/positively skewed data is transform it by taking the natural logarithm of every value.</p>
+<p>We’ll try creating a brand new, transformed variable called “ln.pop” using the <code>transformC</code> function from the <code>RCPA3</code> package:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>ln.pop <span class="ot">&lt;-</span> <span class="fu">transformC</span>(<span class="st">"ln"</span>, world<span class="sc">$</span>population)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Note that we have to type ‘y’ into the console to agree to creating a new variable. The <code>transformC()</code> function builds this in to avoid accidentally overwriting a variable.</p>
+<p>When we transform a variable, we always want to look at the distribution of the new variable, too. So, let’s check the histogram:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histC</span>(ln.pop)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Histogram
+===========================================================================
+
+
+Table: Distribution of Binned Values of ln.pop (Natural log of world$population)
+
+  Interval   Frequency   Percent   Cum. Percent
+----------  ----------  --------  -------------
+ [12 - 13]           3      1.78           1.78
+ (13 - 14]          12      7.10           8.88
+ (14 - 15]          22     13.02          21.90
+ (15 - 16]          36     21.30          43.20
+ (16 - 17]          41     24.26          67.46
+ (17 - 18]          33     19.53          86.99
+ (18 - 19]          15      8.88          95.87
+ (19 - 20]           5      2.96          98.83
+ (20 - 21]           0      0.00          98.83
+ (21 - 22]           2      1.18         100.01
+     Total         169    100.00             NA</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Much better!</p>
+<p>As an alternative to the whole <code>transformC()</code> function, we can use a shortcut from base R, too. The <code>log10()</code> function can either…</p>
+<ol type="1">
+<li>…create the transformed variable for later use:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ln.pop <span class="ot">&lt;-</span> <span class="fu">log10</span>(world<span class="sc">$</span>population)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="1">
+<li>…or just show us the distribution quickly and temporarily:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histC</span>(<span class="fu">log10</span>(world<span class="sc">$</span>population))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Histogram
+===========================================================================
+
+
+Table: Distribution of Binned Values of log10(world$population) (Size of national population)
+
+  Interval   Frequency   Percent   Cum. Percent
+----------  ----------  --------  -------------
+ [5.5 - 6]          14      8.28           8.28
+ (6 - 6.5]          22     13.02          21.30
+ (6.5 - 7]          42     24.85          46.15
+ (7 - 7.5]          46     27.22          73.37
+ (7.5 - 8]          29     17.16          90.53
+ (8 - 8.5]          13      7.69          98.22
+ (8.5 - 9]           1      0.59          98.81
+ (9 - 9.5]           2      1.18          99.99
+     Total         169    100.00             NA</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-changing-variable-types" class="level3">
+<h3 class="anchored" data-anchor-id="sec-changing-variable-types">3. Changing Variable Types</h3>
+<p>There are lots of reasons for transforming variables into different levels of measurement (i.e., variable types). For one thing, the new variable may better fit the concept we’re trying to measure. But we might also change the variable type in order to fit the requirements of a particular test or make the variable easier to work with/interpret.</p>
+<section id="sec-continuous-interval-to-ordinal" class="level4">
+<h4 class="anchored" data-anchor-id="sec-continuous-interval-to-ordinal">Transforming Continuous/Interval into Ordinal</h4>
+<p>Let’s start with a continuous/interval-level variable and run descriptives to see what we’re working with.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describeC</span>(world<span class="sc">$</span>pop.urban)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                          Descriptive Statistics
+===========================================================================
+
+
+Table: Descriptive Statistics for world$pop.urban
+
+                             world$pop.urban
+--------------------------  ----------------
+Observed values                          167
+Missing values                             2
+Unique values                            150
+Class                                numeric
+Mean                                  56.387
+Median                                  58.4
+Mode                              49.5, 51.9
+Variance                             505.114
+Standard deviation                    22.475
+Minimum                                   11
+Maximum                                  100
+Range                                     89
+First quartile (25%)                   38.15
+Third quartile (75%)                   73.55
+Interquartile range (IQR)               35.4
+Skewness                              -0.102
+Kurtosis                                2.07</code></pre>
+</div>
+</div>
+<p>The min, max, range, and other descriptive stats can give us a sense of how the variable is distributed. If we wanted to make this an ordinal variable based on that distribution, we can use some cutoff values to separate cases into groups, like low % urban population, high % urban population, etc. That’s where the <code>transformC()</code> function really comes in handy:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>urbanpop<span class="fl">.5</span>cat <span class="ot">&lt;-</span> <span class="fu">transformC</span>(<span class="st">"cut"</span>, world<span class="sc">$</span>pop.urban, <span class="at">groups =</span> <span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The “cut” type of transformation turns the new variable into approximately equal-sized groups. Because we specified “groups = 5”, we should be getting quintiles, meaning each category represents 20% of the total cases.</p>
+<p>Let’s take a look to confirm:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(urbanpop<span class="fl">.5</span>cat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of urbanpop.5cat (world$pop.urban cut into 5 equal-sized groups)
+
+                Frequency   Percent   Cum.Percent
+-------------  ----------  --------  ------------
+[11.0, 35.2)           34     20.36         20.36
+[35.2, 51.6)           33     19.76         40.12
+[51.6, 64.4)           34     20.36         60.48
+[64.4, 77.8)           33     19.76         80.24
+[77.8,100.0]           33     19.76        100.00
+Total                 167    100.00            NA</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>One or more text labels for bars is long. Consider using rowlabs argument to abbreviate.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We have 5 equal-ish groups, but they look messy because each category is identified only by a range of values. Instead, let’s add some value labels to the new variable.</p>
+<p>Because we have 5 ordinal categories, we need 5 category labels (i.e., “levels”). So, we’ll tell R to take the levels of the new variable and redefine them on a scale from “Very small” to “Very large.” Then we should check to see that the changes took effect the way we wanted them to.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(urbanpop<span class="fl">.5</span>cat) <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="st">"Very small"</span>, <span class="st">"Small"</span>, <span class="st">"Medium"</span>, <span class="st">"Large"</span>, <span class="st">"Very large"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(urbanpop<span class="fl">.5</span>cat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of urbanpop.5cat (world$pop.urban cut into 5 equal-sized groups)
+
+              Frequency   Percent   Cum.Percent
+-----------  ----------  --------  ------------
+Very small           34     20.36         20.36
+Small                33     19.76         40.12
+Medium               34     20.36         60.48
+Large                33     19.76         80.24
+Very large           33     19.76        100.00
+Total               167    100.00            NA</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Nice.</p>
+</section>
+<section id="sec-collapsing-ordinal-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-collapsing-ordinal-variables">Collapsing Ordinal Variables into Fewer Categories</h4>
+<p>Let’s check the attributes of our new variable to see that it’s the right type and has the right number of categories. We can do this multiple ways, so you can take your pick:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(urbanpop<span class="fl">.5</span>cat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$levels
+[1] "Very small" "Small"      "Medium"     "Large"      "Very large"
+
+$class
+[1] "labelled" "ordered"  "factor"  
+
+$label
+[1] "world$pop.urban cut into 5 equal-sized groups"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(urbanpop<span class="fl">.5</span>cat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "labelled" "ordered"  "factor"  </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(urbanpop<span class="fl">.5</span>cat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Ord.factor w/ 5 levels "Very small"&lt;"Small"&lt;..: 1 3 4 3 5 3 5 4 3 5 ...
+ - attr(*, "label")= chr "world$pop.urban cut into 5 equal-sized groups"</code></pre>
+</div>
+</div>
+<p>Classes:</p>
+<ul>
+<li>“factor” means it’s categorical.</li>
+<li>“ordered” means the factor is treated as ordinal.</li>
+<li>“levels” are the value labels.</li>
+<li>“label” is the overall variable label.</li>
+</ul>
+<p>We have 5 categories right now, but we can make 3 by re-labeling the values. We just have to make sure to retain the order of the categories when we do, so we don’t assign these values to randomly. That’s where the <code>ordered()</code> function comes in:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>urbanpop<span class="fl">.3</span>cat <span class="ot">&lt;-</span> <span class="fu">ordered</span>( urbanpop<span class="fl">.5</span>cat, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Small"</span>, <span class="st">"Small"</span>, <span class="st">"Medium"</span>, <span class="st">"Large"</span>, <span class="st">"Large"</span> ) )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We’re making a new variable called “urbanpop.3cat” that takes the original values from “urbanpop.5cat” and collapses both “Very small” and “Small” into just one “Small” category. We can keep “Medium” as “Medium”. But then we can also collapse “Large” and “Very large” into just one “Large” category.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(urbanpop<span class="fl">.3</span>cat) <span class="co"># check the attributes of our new variable</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$levels
+[1] "Small"  "Medium" "Large" 
+
+$class
+[1] "ordered" "factor" </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(urbanpop<span class="fl">.3</span>cat) <span class="co"># let's see the new distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of urbanpop.3cat
+
+          Frequency   Percent   Cum.Percent
+-------  ----------  --------  ------------
+Small            67     40.12         40.12
+Medium           34     20.36         60.48
+Large            66     39.52        100.00
+Total           167    100.00            NA</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-transforming-continuous-into-dummy" class="level4">
+<h4 class="anchored" data-anchor-id="sec-transforming-continuous-into-dummy">Transforming Continuous/Interval into Dummy</h4>
+<p>We <em>could</em> use <code>transformC()</code> to transform an interval variable into an ordinal variable first and then make a dummy variable from the ordinal categories:</p>
+<p>But that sucks. So, here’s a trick Pollock won’t tell you about: <code>ifelse()</code></p>
+<p>Let’s say we want to create a dummy variable for being above average (1) or not above average (0).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describeC</span>(world<span class="sc">$</span>gdp.percap) <span class="co"># check the descriptive statistics first</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                          Descriptive Statistics
+===========================================================================
+
+
+Table: Descriptive Statistics for world$gdp.percap
+
+                             world$gdp.percap
+--------------------------  -----------------
+Observed values                           169
+Missing values                              0
+Unique values                             167
+Class                                 integer
+Mean                                20217.101
+Median                                  12848
+Mode                              1600, 49854
+Variance                        439324782.591
+Standard deviation                  20960.076
+Minimum                                   752
+Maximum                                114482
+Range                                  113730
+First quartile (25%)                     4389
+Third quartile (75%)                    29799
+Interquartile range (IQR)               25410
+Skewness                                1.671
+Kurtosis                                6.142</code></pre>
+</div>
+</div>
+<p>Uh-oh. Skewness…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">histC</span>(world<span class="sc">$</span>gdp.percap) <span class="co"># let's see how bad that skew is...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Histogram
+===========================================================================
+
+
+Table: Distribution of Binned Values of world$gdp.percap (Gross domestic product per capita (in U.S. dollars))
+
+          Interval   Frequency   Percent   Cum. Percent
+------------------  ----------  --------  -------------
+       [0 - 10000]          70     41.42          41.42
+   (10000 - 20000]          42     24.85          66.27
+   (20000 - 30000]          16      9.47          75.74
+   (30000 - 40000]          10      5.92          81.66
+   (40000 - 50000]          16      9.47          91.13
+   (50000 - 60000]           7      4.14          95.27
+   (60000 - 70000]           4      2.37          97.64
+   (70000 - 80000]           0      0.00          97.64
+   (80000 - 90000]           1      0.59          98.23
+   (90000 - 1e+05]           2      1.18          99.41
+  (1e+05 - 110000]           0      0.00          99.41
+ (110000 - 120000]           1      0.59         100.00
+             Total         169    100.00             NA</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Given this skewness, should we use the mean or the median?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>rich.country <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  world<span class="sc">$</span>gdp.percap <span class="sc">&gt;</span> <span class="fu">median</span>(world<span class="sc">$</span>gdp.percap, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="dv">1</span>, </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="dv">0</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Here’s what’s going on in that code:</p>
+<ul>
+<li><p>Make a new variable called world$rich.country, and:</p>
+<ul>
+<li>IF the original world$gdp.percap value is greater than the median gdp.percap value, THEN…</li>
+<li>make the value of the new variable a 1, OTHERWISE…</li>
+<li>make it a 0 for anything else.</li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>rich.country) <span class="co">#check the frequency to make sure there's no glaring errors</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$rich.country
+
+         Frequency   Percent
+------  ----------  --------
+0               85     50.30
+1               84     49.70
+Total          169    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This works, but it we haven’t specified what to do with missing values, so there could be mistakes! A more careful approach is to check for missing values first using a <em>nested</em> <code>ifelse()</code> function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>rich.country <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">is.na</span>(world<span class="sc">$</span>gdp.percap), </span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="cn">NA</span>, </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ifelse</span>(world<span class="sc">$</span>gdp.percap <span class="sc">&gt;</span> <span class="fu">median</span>(world<span class="sc">$</span>gdp.percap, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span>, </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>         <span class="dv">0</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The nested <code>ifelse()</code> functions can get confusing, so here’s what’s going on in that code:</p>
+<ul>
+<li><p>Make a new variable called world$rich.country, and:</p>
+<ul>
+<li><p>IF the original variable value is missing (NA), THEN…</p></li>
+<li><p>make the value of the new variable NA, OTHERWISE…</p>
+<ul>
+<li><p>IF the original variable value is greater than the median, THEN…</p></li>
+<li><p>make the value of the new variable a 1, OTHERWISE…</p></li>
+<li><p>make it a 0 for anything else.</p></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>In other words, if GDP per capita is missing, keep it missing. Otherwise, assign a 1 if the value is above the median and a 0 if it is <em>anything else</em> besides missing or above the median.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>rich.country)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$rich.country
+
+         Frequency   Percent
+------  ----------  --------
+0               85     50.30
+1               84     49.70
+Total          169    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>BUT… maybe we don’t want to split it at the actual middle. Like, maybe the mean is more useful this time because what we would consider “rich” is a higher bar than simply being above the middle of the pack.</p>
+<p>So, let’s do second nested <code>ifelse()</code> statement, this time just replacing the median with the mean:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>rich.country <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">is.na</span>(world<span class="sc">$</span>gdp.percap), </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="cn">NA</span>, </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ifelse</span>(world<span class="sc">$</span>gdp.percap <span class="sc">&gt;</span> <span class="fu">mean</span>(world<span class="sc">$</span>gdp.percap, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span>, </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>         <span class="dv">0</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>         )</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Has it changed the frequency distribution?</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>rich.country)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$rich.country
+
+         Frequency   Percent
+------  ----------  --------
+0              112     66.27
+1               57     33.73
+Total          169    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Yep, looks good!</p>
+</section>
+<section id="sec-logical-operators-dummy-variable" class="level4">
+<h4 class="anchored" data-anchor-id="sec-logical-operators-dummy-variable">Using Logical Operators to Make a New Dummy Variable</h4>
+<p>Sometimes we want to satisfy multiple conditions at once when making a new variable, though. Let’s try creating a dummy variable that indicates countries that are both rich <em>AND</em> democratic.</p>
+<p>But first we should create a dichotomous indicator of democracy or not. Polity score measures regime types (i.e., democracy, anocracy, autocracy) on a scale from -10 to +10. In the codebook, they say that democracies are those countries with scores from +6 to +10.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>democracy <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">is.na</span>(world<span class="sc">$</span>polity.score), </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="cn">NA</span>, </span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ifelse</span>(world<span class="sc">$</span>polity.score <span class="sc">&gt;=</span> <span class="dv">6</span>, </span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>         <span class="dv">1</span>, </span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>         <span class="dv">0</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>         ) </span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Here’s the breakdown: If the polity score is missing, keep it missing. Otherwise, assign a 1 if the score is greater than or equal to 6, and a 0 if it is anything else.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>democracy) <span class="co"># check the frequency distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$democracy
+
+         Frequency   Percent
+------  ----------  --------
+0               67     41.10
+1               96     58.90
+Total          163    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Once we have all the variables we need, there are a couple of approaches to making the conditional variable:</p>
+<ol type="1">
+<li><strong>One approach is to create a new variable full of 0s and then change selected cases to 1s.</strong></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>rich.dem <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="fu">nrow</span>(world))</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>rich.dem[world<span class="sc">$</span>rich.country <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> world<span class="sc">$</span>democracy <span class="sc">==</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p>Make a new variable called rich.dem that just repeats 0 for as many rows as there are in the world dataset. Then, change some of those 0s to 1s for rows where both rich.country <em>AND</em> democracy equal 1.</p>
+</blockquote>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>rich.dem) <span class="co"># check the frequency distribution</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$rich.dem
+
+         Frequency   Percent
+------  ----------  --------
+0              125     73.96
+1               44     26.04
+Total          169    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="2" type="1">
+<li><strong>A more compact approach uses logical operators directly in one nested <code>ifelse()</code> function.</strong></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>world<span class="sc">$</span>rich.dem <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">is.na</span>(world<span class="sc">$</span>rich.country) <span class="sc">|</span> <span class="fu">is.na</span>(world<span class="sc">$</span>democracy), </span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a> <span class="cn">NA</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">ifelse</span>(</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>   world<span class="sc">$</span>rich.country <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> world<span class="sc">$</span>democracy <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>   <span class="dv">1</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>   <span class="dv">0</span></span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>   )</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a> )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<blockquote class="blockquote">
+<p>If the value for either rich.country <em>OR</em> democracy is missing, keep the new variable value missing. Otherwise if both rich.county <em>AND</em> democracy equal 1, assign the new variable value a 1, and a 0 if it is anything else.</p>
+</blockquote>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>rich.dem)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$rich.dem
+
+         Frequency   Percent
+------  ----------  --------
+0              119     73.01
+1               44     26.99
+Total          163    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-sorting-cases-using-sortc" class="level3">
+<h3 class="anchored" data-anchor-id="sec-sorting-cases-using-sortc">4. Sorting Cases Using <code>sortC()</code></h3>
+<p>Now that we have our rich.dem variable, let’s see a list of the countries that are rich democracies. There are lots of ways to do this, but one simple tool is <code>sortC()</code> from the <code>RCPA3</code> package.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sortC</span>(<span class="at">id =</span> world<span class="sc">$</span>country, <span class="at">by =</span> world<span class="sc">$</span>rich.dem)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Sorted Case-Level Information
+===========================================================================
+
+
+Table: world$country values sorted by descending values of world$rich.dem
+
+world.country                        world.rich.dem
+----------------------------------  ---------------
+Argentina                                         1
+Australia                                         1
+Austria                                           1
+Belgium                                           1
+Bulgaria                                          1
+Canada                                            1
+Chile                                             1
+Croatia                                           1
+Cyprus                                            1
+Czech Republic                                    1
+Denmark                                           1
+Estonia                                           1
+Finland                                           1
+France                                            1
+Germany                                           1
+Greece                                            1
+Hungary                                           1
+Ireland                                           1
+Israel                                            1
+Italy                                             1
+Japan                                             1
+Latvia                                            1
+Lithuania                                         1
+Malaysia                                          1
+Mauritius                                         1
+Montenegro                                        1
+Netherlands                                       1
+New Zealand                                       1
+Norway                                            1
+Panama                                            1
+Poland                                            1
+Portugal                                          1
+Romania                                           1
+Slovakia                                          1
+Slovenia                                          1
+South Korea                                       1
+Spain                                             1
+Sweden                                            1
+Switzerland                                       1
+Taiwan                                            1
+Trinidad and Tobago                               1
+United Kingdom                                    1
+United States                                     1
+Uruguay                                           1
+Afghanistan                                       0
+Albania                                           0
+Algeria                                           0
+Angola                                            0
+Armenia                                           0
+Azerbaijan                                        0
+Bahrain                                           0
+Bangladesh                                        0
+Belarus                                           0
+Benin                                             0
+Bhutan                                            0
+Bolivia                                           0
+Botswana                                          0
+Brazil                                            0
+Burkina Faso                                      0
+Burundi                                           0
+Cambodia                                          0
+Cameroon                                          0
+Cape Verde                                        0
+Central African Republic                          0
+Chad                                              0
+China                                             0
+Colombia                                          0
+Comoros                                           0
+Congo, Democratic Republic of the                 0
+Congo, Republic of the                            0
+Costa Rica                                        0
+Cuba                                              0
+Djibouti                                          0
+Dominican Republic                                0
+Ecuador                                           0
+Egypt                                             0
+El Salvador                                       0
+Equatorial Guinea                                 0
+Eritrea                                           0
+Eswatini                                          0
+Ethiopia                                          0
+Fiji                                              0
+Gabon                                             0
+Gambia                                            0
+Georgia                                           0
+Ghana                                             0
+Guatemala                                         0
+Guinea                                            0
+Guinea-Bissau                                     0
+Guyana                                            0
+Haiti                                             0
+Honduras                                          0
+India                                             0
+Indonesia                                         0
+Iran                                              0
+Iraq                                              0
+Ivory Coast                                       0
+Jamaica                                           0
+Jordan                                            0
+Kazakhstan                                        0
+Kenya                                             0
+Kuwait                                            0
+Kyrgyzstan                                        0
+Laos                                              0
+Lebanon                                           0
+Lesotho                                           0
+Liberia                                           0
+Libya                                             0
+Macedonia                                         0
+Madagascar                                        0
+Malawi                                            0
+Mali                                              0
+Mauritania                                        0
+Mexico                                            0
+Moldova                                           0
+Mongolia                                          0
+Morocco                                           0
+Mozambique                                        0
+Myanmar                                           0
+Namibia                                           0
+Nepal                                             0
+Nicaragua                                         0
+Niger                                             0
+Nigeria                                           0
+North Korea                                       0
+Oman                                              0
+Pakistan                                          0
+Papua New Guinea                                  0
+Paraguay                                          0
+Peru                                              0
+Philippines                                       0
+Qatar                                             0
+Russia                                            0
+Rwanda                                            0
+Saudi Arabia                                      0
+Senegal                                           0
+Serbia                                            0
+Sierra Leone                                      0
+Singapore                                         0
+Somalia                                           0
+South Africa                                      0
+South Sudan                                       0
+Sri Lanka                                         0
+Sudan                                             0
+Suriname                                          0
+Syria                                             0
+Tajikistan                                        0
+Tanzania                                          0
+Thailand                                          0
+Timor-Leste                                       0
+Togo                                              0
+Tunisia                                           0
+Turkey                                            0
+Turkmenistan                                      0
+Uganda                                            0
+Ukraine                                           0
+United Arab Emirates                              0
+Uzbekistan                                        0
+Venezuela                                         0
+Vietnam                                           0
+Yemen                                             0
+Zambia                                            0
+Zimbabwe                                          0</code></pre>
+</div>
+</div>
+<p><code>sortC()</code> allows us to list the country name (<code>id =</code>) by rich democracy status (<code>by =</code>). It’ll be alphabetical across each category of the by variable</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sortC</span>(<span class="at">id =</span> world<span class="sc">$</span>country, <span class="at">by =</span> world<span class="sc">$</span>rich.dem, <span class="at">thenby =</span> world<span class="sc">$</span>gdp.percap)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Sorted Case-Level Information
+===========================================================================
+
+
+Table: world$country values sorted by descending values of world$rich.dem and then by descending values of world$gdp.percap
+
+world.country                        world.rich.dem   world.gdp.percap
+----------------------------------  ---------------  -----------------
+Ireland                                           1              86781
+Switzerland                                       1              68628
+Norway                                            1              63633
+United States                                     1              62530
+Denmark                                           1              57804
+Netherlands                                       1              56935
+Austria                                           1              56188
+Germany                                           1              53919
+Sweden                                            1              53240
+Belgium                                           1              51934
+Australia                                         1              49854
+Canada                                            1              49031
+Finland                                           1              48668
+United Kingdom                                    1              46659
+France                                            1              46184
+New Zealand                                       1              42888
+South Korea                                       1              42765
+Italy                                             1              42492
+Japan                                             1              41429
+Spain                                             1              40903
+Czech Republic                                    1              40862
+Israel                                            1              40145
+Cyprus                                            1              39545
+Slovenia                                          1              39088
+Lithuania                                         1              37231
+Estonia                                           1              36927
+Portugal                                          1              34894
+Poland                                            1              33221
+Hungary                                           1              32945
+Slovakia                                          1              32730
+Panama                                            1              31459
+Latvia                                            1              30898
+Romania                                           1              29941
+Greece                                            1              29799
+Croatia                                           1              28602
+Malaysia                                          1              28364
+Trinidad and Tobago                               1              26176
+Taiwan                                            1              24502
+Chile                                             1              24226
+Bulgaria                                          1              23174
+Mauritius                                         1              22870
+Argentina                                         1              22064
+Uruguay                                           1              21561
+Montenegro                                        1              21470
+Singapore                                         0              97341
+Qatar                                             0              90044
+United Arab Emirates                              0              67119
+Kuwait                                            0              49854
+Saudi Arabia                                      0              46962
+Bahrain                                           0              45011
+Turkey                                            0              28424
+Oman                                              0              27299
+Russia                                            0              27044
+Kazakhstan                                        0              26351
+Mexico                                            0              19796
+Costa Rica                                        0              19642
+Belarus                                           0              19150
+Equatorial Guinea                                 0              18558
+Thailand                                          0              18460
+Dominican Republic                                0              18413
+Serbia                                            0              18233
+Botswana                                          0              17767
+Suriname                                          0              16525
+Macedonia                                         0              16479
+China                                             0              16117
+Libya                                             0              15174
+Georgia                                           0              14992
+Gabon                                             0              14950
+Turkmenistan                                      0              14845
+Colombia                                          0              14722
+Brazil                                            0              14652
+Lebanon                                           0              14552
+Azerbaijan                                        0              14404
+Albania                                           0              13965
+Fiji                                              0              13684
+Armenia                                           0              13654
+Guyana                                            0              13082
+Sri Lanka                                         0              13078
+Moldova                                           0              13050
+Peru                                              0              12848
+Ukraine                                           0              12810
+Paraguay                                          0              12685
+South Africa                                      0              12482
+Iran                                              0              12389
+Mongolia                                          0              12317
+Cuba                                              0              12300
+Bhutan                                            0              11832
+Indonesia                                         0              11812
+Egypt                                             0              11763
+Algeria                                           0              11511
+Ecuador                                           0              11375
+Iraq                                              0              10881
+Tunisia                                           0              10756
+Jordan                                            0              10071
+Jamaica                                           0               9762
+Namibia                                           0               9637
+Philippines                                       0               8908
+El Salvador                                       0               8776
+Bolivia                                           0               8724
+Guatemala                                         0               8637
+Eswatini                                          0               8622
+Vietnam                                           0               8041
+Laos                                              0               7826
+Venezuela                                         0               7704
+Morocco                                           0               7515
+Cape Verde                                        0               7172
+Uzbekistan                                        0               6999
+India                                             0               6700
+Angola                                            0               6670
+Honduras                                          0               5728
+Djibouti                                          0               5535
+Ghana                                             0               5413
+Nicaragua                                         0               5407
+Kyrgyzstan                                        0               5253
+Ivory Coast                                       0               5213
+Mauritania                                        0               5197
+Myanmar                                           0               5142
+Nigeria                                           0               5136
+Bangladesh                                        0               4754
+Pakistan                                          0               4690
+Cambodia                                          0               4389
+Papua New Guinea                                  0               4355
+Kenya                                             0               4330
+Sudan                                             0               3958
+Congo, Republic of the                            0               3673
+Cameroon                                          0               3642
+Timor-Leste                                       0               3553
+Zambia                                            0               3470
+Nepal                                             0               3417
+Senegal                                           0               3395
+Tajikistan                                        0               3380
+Benin                                             0               3287
+Comoros                                           0               3060
+Haiti                                             0               2905
+Syria                                             0               2900
+Zimbabwe                                          0               2836
+Lesotho                                           0               2704
+Tanzania                                          0               2660
+Guinea                                            0               2562
+Yemen                                             0               2500
+Mali                                              0               2322
+Rwanda                                            0               2227
+Gambia                                            0               2223
+Ethiopia                                          0               2221
+Uganda                                            0               2187
+Burkina Faso                                      0               2178
+Afghanistan                                       0               2065
+Guinea-Bissau                                     0               1989
+Sierra Leone                                      0               1718
+North Korea                                       0               1700
+Somalia                                           0               1690
+Madagascar                                        0               1647
+Eritrea                                           0               1600
+South Sudan                                       0               1600
+Togo                                              0               1597
+Chad                                              0               1580
+Liberia                                           0               1428
+Mozambique                                        0               1281
+Niger                                             0               1225
+Congo, Democratic Republic of the                 0               1098
+Malawi                                            0               1060
+Central African Republic                          0                945
+Burundi                                           0                752</code></pre>
+</div>
+</div>
+<p>But we can also sort further using the actual gdp.percap variable (<code>thenby =</code>). This will give us all the rich democracies sorted by their gdp.percap values.</p>
+</section>
+<section id="sec-advanced-material" class="level3">
+<h3 class="anchored" data-anchor-id="sec-advanced-material">5. Advanced Material:</h3>
+<section id="sec-dplyr-create-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-dplyr-create-variables">Using <code>dplyr()</code>to Create Variables</h4>
+<p>The <code>dplyr</code> package’s structure and subfunctions are make cleaning and manipulating data much more efficient, but it requires a bit more special, technical knowledge that we won’t delve into during class.</p>
+<p>For one example, though, we can use its <code>mutate()</code> function to create our variables more efficiently:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>world <span class="ot">&lt;-</span> world <span class="sc">%&gt;%</span> </span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>( <span class="at">rich.country =</span> <span class="fu">as.numeric</span>(gdp.percap <span class="sc">&gt;</span> <span class="fu">mean</span>(gdp.percap, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">democracy =</span> <span class="fu">as.numeric</span>(polity.score <span class="sc">&gt;=</span> <span class="dv">6</span>),</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">rich.dem =</span> <span class="fu">as.numeric</span>(rich.country <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> democracy <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>          )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The <code>dplyr::mutate()</code> function is a create way to generate new variables based on other information in the dataset. Here’s what the above code is doing:</p>
+<ul>
+<li><p>Using the world dataset, do the following and put it back into the world dataset:</p>
+<ul>
+<li>Make a rich.country variable where gdp.percap values above the mean are 1 and all other nonmissing values are 0.</li>
+<li>Make a democracy variable where polity.score values of 6 and above are 1 and all other nonmissing values are 0.</li>
+<li>Make a rich.dem variable where both rich.country <em>AND</em> democracy are 1s.</li>
+</ul></li>
+</ul>
+<p>So, now we can take a look at the distribution of each variable to make sure they match up to the previous ones we made, like this one:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">freqC</span>(world<span class="sc">$</span>rich.dem)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+   Describing Distribution of Values with Frequency Table and Bar Chart
+===========================================================================
+
+
+Table: Frequency Distribution of world$rich.dem
+
+         Frequency   Percent
+------  ----------  --------
+0              122     73.49
+1               44     26.51
+Total          166    100.00</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="TransformingVariables_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The <code>dplyr</code> package is a great tool to explore on your own, especially before or during a Political Science Capstone project!</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

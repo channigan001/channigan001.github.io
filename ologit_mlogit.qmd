@@ -1,0 +1,277 @@
+---
+title: "Ordinal and Multinomial Logistic Regression (Ologit and Mlogit)"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Ordinal Logistic Regression with `clm()`](#sec-2.-ordinal-logistic-regression-with-clm)
+3.  [Ordinal Logistic Regression with `polr()`](#sec-3.-ordinal-logistic-regression-with-polr)
+    a.  [Model Fit Statistics for Ologit](#sec-model-fit-statistics-for-ologit)
+4.  [Multinomial Logistic Regression with `multinom()`](#sec-4.-multinomial-logistic-regression-with-multinom)
+5.  [Advanced Material](#sec-5.-advanced-material)
+    a.  [Adding Coefficient p-values to a `polr()` Ologit](#sec-adding-coefficient-p-values-to-a-polr-ologit)
+    b.  [Adding Coefficient p-values to a `multinom()` Mlogit](#sec-adding-coefficient-p-values-to-a-multinom-mlogit)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+If you do not already have these packages, paste them manually into the console and install them.
+
+```{r}
+# install.packages("ordinal")
+# install.packages("MASS")
+# install.packages("nnet")
+```
+
+-   [ordinal](https://cran.r-project.org/web/packages/ordinal/index.html){target="_blank"} contains the `clm()` function to create cumulative link models, or ordinal logistic regression.
+-   [MASS](https://cran.r-project.org/web/packages/MASS/index.html){target="_blank"} provides a bunch of advanced statistical models and visualization tools, including the `polr()` function, which is for proportional odds logistic regression.
+-   [nnet](https://cran.r-project.org/web/packages/nnet/index.html){target="_blank"} is a really complex package with tools to help with non-linear analysis, like neural networks, but for us, it provides the `multinom()` function for multinominal logistic regression.
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+library(ordinal)
+library(MASS)
+library(nnet)
+```
+
+### 2. Ordinal Logistic Regression with `clm()` {#sec-2.-ordinal-logistic-regression-with-clm}
+
+**Ologit Requirements:**
+
+-   DV: Ordinal
+-   IV: Continuous/Interval (bivariate); any (multivariate)
+
+The `clm()` function comes from the "ordinal" package, and Ologit is just another way of saying ordinal/ordered logistic regression.
+
+> **TASK:** First, we'll try to predict whether and how much a respondent will favor allowing refugees based on their feelings toward Biden, gender, and age. We'll store the model object called "ologit1" for creativity... Then, we can summarize the model object to see the results.
+
+```{r}
+ologit1 <- clm(allow.refugees ~ ft.biden.pre + gender + age, data = nes)
+  
+summary(ologit1)
+```
+
+The **coefficients** table represents changes in the log-odds of being in a higher category of the DV, given increases in each IV.
+
+The **threshold** conditions represent the cut points between values of the ordinal DV. They're similar to the constant/intercept in a regular regression model. But instead of giving us a single predicted value of the outcome when all IVs are zero, the thresholds tell us where the model draws the lines *between* categories based on a respondent's predicted score.
+
+For example, the first threshold (`1. Favor a great deal|2. Favor a moderate amount: -21.246`) separates the "1. Favor a great deal" category from higher categories. If the model's predicted score for a respondent falls below -21.246, that respondent is more likely to be classified as favoring allowing refugees "a great deal". A predicted score slightly above -21.246 would shift the probability toward being in the "2. Favor a moderate amount" category or higher.
+
+More importantly, thresholds help us estimate predicted probabilities. After estimating the partial effect coefficients and the model thresholds, we can calculate the probability that a respondent falls into each possible response category.
+
+> **TASK:** So, let's try another model, this time to replicate an Ologit we've seen in the reading.[^1] First we have to import the data from the article:
+
+[^1]: Cuñado, Juncal, and Fernando Pérez De Gracia. 2012. “Does Education Affect Happiness? Evidence for Spain.” *Social Indicators Research* 108 (1): 185–96. <https://doi.org/10.1007/s11205-011-9874-x>.
+
+```{r}
+#| message: false
+
+load("Datasets/spain.RData")
+```
+
+```{r}
+#| warning: false
+#| message: false
+ologit_spain <- clm(spain$happy ~ spain$agea + I(spain$agea^2)  + spain$gndr + spain$health + spain$maritala + spain$chldhm + spain$education + spain$region)
+  
+summary(ologit_spain)
+```
+
+First, notice the little `I()` around the age squared variable. `I()` is a helper function that tells a model to treat the expression "as-is" inside the formula. So, instead of R thinking that the `^` sign is part of the formula syntax itself, `agea^2` is computed as a square transformation before it's included in the model.
+
+Compare the results to the results in Table 4 (Model 1) in the Cuñado and Pérez De Gracia (2012) article. See how some of the numbers don't line up perfectly across the the models, but they're pretty close?
+
+### 3. Ordinal Logistic Regression with `polr()` {#sec-3.-ordinal-logistic-regression-with-polr}
+
+Let's try that same Spain dataset model from the reading with a different Ologit function. The `polr()` function comes from the "MASS" package.
+
+We'll add all our covariates, of course, but we'll also specify the method (`method = "logistic"`) and an optimization control argument (`control = list(...)`). The method argument essentially just says, "do a logistic regression rather than a different method like probit, loglog, etc.)." Logistic is the default, anyway, but it's good practice to specify it explicitly.
+
+The optimization control argument is a bit more complicated, though. Sometimes `polr()` is lazy, so it kind of takes the shortest path of least resistance to fit the model. But that can lead to oversimplification and incorrect standard errors and test statistics (so, incorrect p-values). So, we're telling it to take the extra steps to be more precise by adding a much smaller relative tolerance (`reltol = 1e-12`) and only giving up after 500 iterations (`maxit = 500`).
+
+```{r}
+#| warning: false
+#| message: false
+
+ologit_spain <- polr(spain$happy ~ spain$agea + I(spain$agea^2) + spain$gndr + spain$health + spain$maritala + spain$chldhm + spain$education + spain$region, method = "logistic", control = list(reltol = 1e-12, maxit = 500))  
+  
+summary(ologit_spain)
+```
+
+Compare it to the results in Table 4 (Model 1) of the reading **AND** to the previous model.
+
+Think of `clm()` and `polr()` as two different brands of the same product (like Diet Coke vs. Diet Pepsi). They're both trying to estimate an ordinal logistic regression model, but they go about it a little differently (with different behavior in the background like using different optimization routines and making different rounding decisions throughout the process) and package the results differently. As a result, you may see small, negligible differences in the coefficients, even when using the same data and variables.
+
+As for the differences between our models and the Cuñado and Pérez De Gracia (2012) output, just remember that researchers make their own decisions when specifying a model that can lead to slightly different numbers. Maybe they used a different "brand" of Ologit test using different software (e.g., Stata, SPSS, etc.), for example. Or maybe they made different decisions about the base categories than we did (like which "region" they omitted as the reference category). These slight differences are perfectly normal, but if the models diverge too much from one another, it's a good idea to investigate the causes and try to make adjustments to ensure they're more aligned.
+
+But looking back to the `polr()` model, what information is missing? **p-values!**
+
+The `polr()` function is an older one than `clm()`, so it's not as forthcoming with partial effects. We can certainly get a little more advanced and calculate those p-values manually. But it's just as easy to rely on `clm()` instead, even if a model that you want to replicate from the existing literature uses `polr()`.
+
+Another problem is that we don't have model fit statistics, but we can calculate those just like we did for binary logistic regressions using `glm()`.
+
+#### Model Fit Statistics for Ologit {#sec-model-fit-statistics-for-ologit}
+
+The basic model statistics we want to look at are the model p-value, the pseudo R-squared, and the number of observations. The model object we made stores all the information we need for those, but first, we'll need to create a **null model**: "ologit_spain0" has the same DV but excludes all of the IVs that could help predict it. The null model acts as a baseline for comparison to our model.
+
+1.  Since we most recently used the `polr()` function to make the existing "ologit_spain" object, we'll use the same one again for the null model. But we could just switch them both to `clm()`, too.
+
+```{r}
+#| warning: false
+ologit_spain <- clm(spain$happy ~ spain$agea + I(spain$agea^2)  + spain$gndr + spain$health + spain$maritala + spain$chldhm + spain$education + spain$region, link = "logit")
+
+ologit_spain0 <- clm(spain$happy ~ 1, link = "logit")
+```
+
+2.  Next, we can just pull the number of observations (`nobs()`) from the original model and store it in a new object (spain_N).
+
+3.  Then, we can get the p-value of the model as whole, by comparing the log likelihood of our model to the log likelihood of the null model using a **likelihood ratio test** (which runs a different kind of `anova()` test to estimate a different kind of chi-squared test statistic).
+
+4.  Finally, we can also calculate the McFaddens' R-squared to see how much the full model improves the log-likelihood compare to the null model. We just have to find the ratio of the "logLik" parameters stored in each model (the original and the null).
+
+Creating and viewing the number of observations object (spain_N) is easy...
+
+```{r}
+#| error: true
+spain_N <- nobs(ologit_spain)
+spain_N
+
+spain_p <- anova(ologit_spain0, ologit_spain, test = "Chisq") 
+spain_p
+
+spain_R2<- as.numeric(1 - (logLik(ologit_spain) / logLik(ologit_spain0)))
+spain_R2
+```
+
+But sometimes we get an error when we try to do the likelihood ratio test (`spain_p`) because the two "models were not all fitted to the same dataset." This is actually just a missing values problem. When we fit the full dataset, some observations are excluded because they are missing in at least one of the IVs. Because it excludes all IVs, the null model doesn't have this same problem.
+
+So, here's a quick workaround to overcome that error:
+
+```{r}
+#| warning: false
+#| message: false
+
+spain_vars <- c("happy","agea","gndr","health","maritala","chldhm","education","region") #make a list of all the variable names we included
+
+spainSubset <- na.omit(spain[spain_vars]) #make a subset of the spain dataset using only those variables and omit NA (missing).
+
+ologit_spain0 <- clm(spainSubset$happy ~ 1, link = "logit") #rerun the null model on the subset data
+
+# Now, we can do the Likelihood Ratio test!
+spain_p <- anova(ologit_spain0, ologit_spain, test = "Chisq") 
+spain_p
+
+# And the McFadden's pseudo R-squared!
+spain_R2<- as.numeric(1 - (logLik(ologit_spain) / logLik(ologit_spain0)))
+spain_R2
+```
+
+We just type the names of each object to call them see those values in the console. The `spain_p` line will print the results of the ANOVA (likelihood ratio test) we ran, which includes `Pr(>Chi)`, which we can report as the model significance. Then, `spain_R2` will present a number for our McFadden's pseudo R-squared.
+
+Maybe you noticed that the pseudo R-squared value we calculated (0.06575358) is very different from the value in the journal article (0.218). The simple explanation is that the authors are using the Cox & Snell pseudo R-squared instead of McFadden's (the norm in the discipline), which is usually pretty inflated based on the background math...
+
+### 4. Multinomial Logistic Regression with `multinom()` {#sec-4.-multinomial-logistic-regression-with-multinom}
+
+Mlogit Requirements:
+
+-   DV: Nominal
+-   IV: Continuous/Interval (bivariate); any (multivariate)
+
+The `multinom()` function comes from the "nnet" package, and Mlogit is just another way of saying multinomial logistic regression.
+
+Here we'll try to predict who a respondent voted for in 2020 based on their feelings toward Biden, their gender, and their age. First, let's make sure the reference category is set to the "Other" category of vote choice:
+
+```{r}
+nes$presvote2020 <- relevel(nes$presvote2020, ref = "5. Other candidate {SPECIFY}")
+```
+
+Now we can run the model and store is as an object called "mlogit1" and view the model summary:
+
+```{r}
+mlogit1 <- multinom(presvote2020 ~ ft.biden.pre + gender + age, data = nes)
+
+summary(mlogit1)
+```
+
+See how weird the layout is? It's flipped from what we're used to seeing, with rows of IVs down the left side and the DV column at the top. That's because we have lots of categories in the DV!
+
+Also, what is missing in the `multinom()` model? **p-values!** And model fit statistics. Again. Ugh.
+
+At least for the partial effects, missing p-values won't be a problem later, when we get into making publication-ready tables. But the model fit stats are a bigger problem.
+
+**We'll do the same thing as before:**
+
+1.  Make a list of variables from the model.
+2.  Subset the data to exclude missing observations along those variables.
+3.  Run a null model on the subset data.
+4.  Run a likelihood ratio test to see the p-value.
+5.  Calculte the McFadden's pseudo R-squared.
+
+```{r}
+mlogit_vars <- c("presvote2020", "ft.biden.pre", "gender", "age")
+nesSubset <- na.omit(nes[mlogit_vars])
+mlogit0 <- multinom(presvote2020 ~ 1, data = nesSubset)
+
+mlogit_p <- anova(mlogit0, mlogit1, test = "Chisq") 
+mlogit_p
+
+mlogit_R2<- as.numeric(1 - (logLik(mlogit1) / logLik(mlogit0)))
+mlogit_R2
+```
+
+The output is a bit wonky, but we're looking for significance with that likelihood ratio test for our own model (`ft.biden.pre + gender + age`), so even though it goes onto subsequent lines, that 0 is our p-value (rounded from \< 2.22e-16), which means the model as a whole is significant. The 0.5838331 is our McFadden's pseudo R-squared value, which is, like, crazy high. Maybe that's because our N is huge, or maybe it's because our IVs are such strong predictors of vote choice.
+
+### 5. Advanced Material: {#sec-5.-advanced-material}
+
+#### Adding Coefficient p-values to a `polr()` Ologit {#sec-adding-coefficient-p-values-to-a-polr-ologit}
+
+1.  Start by re-running the `polr()` model.
+2.  Store the model summary as an object (`ologit_spain_sum`) and the coefficient tablle from it (`coefs`) separately.
+3.  Calculate and store the test statistic values (`test_stats`) by dividing the coefficients by their standard errors.
+4.  Next, calculate the two-sided p-values from the test statistics using the standard normal distribution.
+5.  Finally, bind the p-values to the coefficients as another column in the model summary object, then view it in the console.
+
+```{r}
+#| warning: false
+ologit_spain <- polr(spain$happy ~ spain$agea + I(spain$agea^2) + spain$gndr + spain$health + spain$maritala + spain$chldhm + spain$education + spain$region, method = "logistic", Hess = TRUE, control = list(reltol = 1e-12, maxit = 500))  
+
+ologit_spain_sum <- summary(ologit_spain)
+coefs <- ologit_spain_sum$coefficients
+
+test_stats <- coefs[, "Value"] / coefs[, "Std. Error"]
+p_values <- 2 * (1 - pnorm(abs(test_stats)))
+
+ologit_spain_sum$coefficients <- cbind(coefs, `p-value` = p_values)
+
+ologit_spain_sum
+
+```
+
+#### Adding Coefficient p-values to a `multinom()` Mlogit {#sec-adding-coefficient-p-values-to-a-multinom-mlogit}
+
+The logic is largely the same as it is for adding coefficients above, but we can do it more efficiently given the wonky layout of an Mlogit:
+
+1.  Start by re-running the `multinom()` model.
+2.  Calculate and store the test statistic values (`test_stats`) by dividing the coefficients by their standard errors.
+3.  Calculate the `p-values` from the test statistics using the standard normal distribution.
+4.  Finally, view the p-values in the console as a separate table, just like the coefficients table and the standard errors table from the model output.
+
+```{r}
+mlogit1 <- multinom(presvote2020 ~ ft.biden.pre + gender + age, data = nes)
+
+test_stats <- summary(mlogit1)$coefficients/summary(mlogit1)$standard.errors
+
+p_values <- 2 * (1 - pnorm(abs(test_stats)))
+
+summary(mlogit1)
+p_values
+```

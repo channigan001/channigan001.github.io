@@ -1,0 +1,13 @@
+---
+title: Home
+---
+
+# R Walkthroughs
+
+Welcome to the tutorial site.
+
+## Tutorials
+
+- [Transforming Variables](TransformingVariables.html)
+- [Chi-Square and Measures of Association](chi-square_measuresOfAssociation.html)
+- [Ordinal and Multinomial Logit](ologit_mlogit.html)

@@ -1,0 +1,126 @@
+---
+title: "Chi-Square (and Measures of Association)"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Remember: `crosstabC()` with the `chisq=T` Argument](#sec-remember-crosstabc-with-the-chisq-argument)
+3.  [Application: Making Dummies Using the `ifelse()` Function](#sec-application-making-dummies-using-the-ifelse-function)
+4.  [Adding Measures of Association Tests](#sec-adding-measures-of-association-tests)
+    a.  [Using the `oii` Package](#sec-using-the-oii-package)
+5.  [Advanced Material](#sec-advanced-material)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+If you do not already have these packages, paste them manually into the console and install them.
+
+```{r}
+# install.packages("oii")
+```
+
+-   [oii](https://cran.r-project.org/web/packages/oii/index.html){target="_blank"} provides additional tests for categorical data in crosstabs.
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+library(oii)
+```
+
+### 2. Remember: `crosstabC()` with the `chisq=T` Argument {#sec-remember-crosstabc-with-the-chisq-argument}
+
+```{r}
+crosstabC(dv=nes$biden.honest, iv=nes$religion.group, compact=T, plot.response = "all", chisq = T)
+```
+
+There is a significant relationship between R's religious group and the extent to which R believes that the trait "honest" describes President Biden.
+
+```{r}
+crosstabC(dv=nes$trump.honest, iv=nes$religion.group, compact=T, plot.response = "all", chisq = T)
+```
+
+There is also a significant relationship between R's religious group and the extent to which R believes that the trait "honest" describes President Trump.
+
+BUT the crosstab outputs and the bar charts are, like, a lot to process...
+
+What if we just wanted to look at one or two specific groups as dummy variables?
+
+### 3. Application: Making Dummies Using the `ifelse()` Function {#sec-application-making-dummies-using-the-ifelse-function}
+
+Let's make a variable called "evangelical" to be 1 if `nes$religion.group` is "2. Evangelical Protestant":
+
+```{r}
+evangelical<- ifelse(test = nes$religion.group=="2. Evangelical Protestant", "Evangelical", "Not Evangelical")
+```
+
+```{r}
+evangelical<- as.factor(evangelical) # convert evangelical to a factor to make sure R treats it right
+```
+
+Let's make another variable called "catholic" to be 1 if nes\$religion.group is "5. Roman Catholic"
+
+```{r}
+catholic<- ifelse(test = nes$religion.group=="5. Roman Catholic", "Catholic", "Not Catholic")
+```
+
+```{r}
+catholic<- as.factor(catholic) # quick conversion to a factor variable...
+```
+
+Now, we can run some crosstabs with chi-square! Let's skip the plots.
+
+```{r}
+crosstabC(dv=nes$biden.honest, iv=evangelical, compact=T, chisq = T, plot = F)
+```
+
+Do Evangelicals think Biden is honest? Evangelicals are less likely to think Biden is honest (and it's significant).
+
+```{r}
+crosstabC(dv=nes$trump.honest, iv=evangelical, compact=T, chisq = T, plot = F)
+```
+
+What about Trump? Evangelicals are more likely to think Trump is honest (and it's significant).
+
+```{r}
+crosstabC(dv=nes$biden.honest, iv=catholic, compact=T, chisq = T, plot = F)
+```
+
+Do Catholics have the same patterns? Not likely. The relationship between being Catholic or not and the extent to which the word "honest" describes Biden is not significant.
+
+```{r}
+crosstabC(dv=nes$trump.honest, iv=catholic, compact=T, chisq = T, plot = F)
+```
+
+But maybe Catholicism influences belief that Trump is honest? Nah. Still not a significant relationship.
+
+### 4. Adding Measures of Association Tests {#sec-adding-measures-of-association-tests}
+
+```{r}
+crosstabC(dv=nes$biden.honest, iv=evangelical, compact=T, chisq = T, plot = F, lambda = T, somers = T, cramers = T)
+```
+
+We can add measures of association for Somers' *d*, Cramer's *V*, and Lambda ($\lambda$) directly to our `crosstabC()` chi-square test.
+
+But we're missing some important measures (Gamma and Tau-b)!
+
+#### Using the `oii` Package {#sec-using-the-oii-package}
+
+```{r}
+association.measures(y=nes$biden.honest, x=evangelical)
+```
+
+Now we can test the other measures of association between the variables in our `crosstabC()` chi-square model.
+
+But we have to be careful to specify x (the IV) and y (the DV) because some measures are asymmetrical!
+
+Note: the `oii` measures of association don't include lambda. I'm okay with it because lambda is mid at best, anyway.
+
+### 5. Advanced Material: {#sec-advanced-material}
