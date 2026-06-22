@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Colin Hannigan">
+
+<title>Ordinal and Multinomial Logistic Regression (Ologit and Mlogit) – R Walkthroughs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Walkthroughs</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./TransformingVariables.html"> 
+<span class="menu-text">Transforming Variables</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./chi-square_measuresOfAssociation.html"> 
+<span class="menu-text">Chi-Square (and Measures of Association)</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./ologit_mlogit.html" aria-current="page"> 
+<span class="menu-text">Ordinal and Multinomial Logistic Regression (Ologit and Mlogit)</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
+  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
+  <li><a href="#sec-2.-ordinal-logistic-regression-with-clm" id="toc-sec-2.-ordinal-logistic-regression-with-clm" class="nav-link" data-scroll-target="#sec-2.-ordinal-logistic-regression-with-clm">2. Ordinal Logistic Regression with <code>clm()</code></a></li>
+  <li><a href="#sec-3.-ordinal-logistic-regression-with-polr" id="toc-sec-3.-ordinal-logistic-regression-with-polr" class="nav-link" data-scroll-target="#sec-3.-ordinal-logistic-regression-with-polr">3. Ordinal Logistic Regression with <code>polr()</code></a></li>
+  <li><a href="#sec-4.-multinomial-logistic-regression-with-multinom" id="toc-sec-4.-multinomial-logistic-regression-with-multinom" class="nav-link" data-scroll-target="#sec-4.-multinomial-logistic-regression-with-multinom">4. Multinomial Logistic Regression with <code>multinom()</code></a></li>
+  <li><a href="#sec-5.-advanced-material" id="toc-sec-5.-advanced-material" class="nav-link" data-scroll-target="#sec-5.-advanced-material">5. Advanced Material:</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Ordinal and Multinomial Logistic Regression (Ologit and Mlogit)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin Hannigan </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="agenda" class="level3">
+<h3 class="anchored" data-anchor-id="agenda">Agenda:</h3>
+<ol type="1">
+<li><a href="#sec-packages-libraries">Install Packages and Libraries</a></li>
+<li><a href="#sec-2.-ordinal-logistic-regression-with-clm">Ordinal Logistic Regression with <code>clm()</code></a></li>
+<li><a href="#sec-3.-ordinal-logistic-regression-with-polr">Ordinal Logistic Regression with <code>polr()</code></a>
+<ol type="a">
+<li><a href="#sec-model-fit-statistics-for-ologit">Model Fit Statistics for Ologit</a></li>
+</ol></li>
+<li><a href="#sec-4.-multinomial-logistic-regression-with-multinom">Multinomial Logistic Regression with <code>multinom()</code></a></li>
+<li><a href="#sec-5.-advanced-material">Advanced Material</a>
+<ol type="a">
+<li><a href="#sec-adding-coefficient-p-values-to-a-polr-ologit">Adding Coefficient p-values to a <code>polr()</code> Ologit</a></li>
+<li><a href="#sec-adding-coefficient-p-values-to-a-multinom-mlogit">Adding Coefficient p-values to a <code>multinom()</code> Mlogit</a></li>
+</ol></li>
+</ol>
+</section>
+<section id="sec-packages-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="sec-packages-libraries">1. Install Packages and Libraries:</h3>
+<section id="new-packages-to-install" class="level4">
+<h4 class="anchored" data-anchor-id="new-packages-to-install">New packages to install:</h4>
+<p>If you do not already have these packages, paste them manually into the console and install them.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("ordinal")</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("MASS")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("nnet")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/ordinal/index.html" target="_blank">ordinal</a> contains the <code>clm()</code> function to create cumulative link models, or ordinal logistic regression.</li>
+<li><a href="https://cran.r-project.org/web/packages/MASS/index.html" target="_blank">MASS</a> provides a bunch of advanced statistical models and visualization tools, including the <code>polr()</code> function, which is for proportional odds logistic regression.</li>
+<li><a href="https://cran.r-project.org/web/packages/nnet/index.html" target="_blank">nnet</a> is a really complex package with tools to help with non-linear analysis, like neural networks, but for us, it provides the <code>multinom()</code> function for multinominal logistic regression.</li>
+</ul>
+</section>
+<section id="load-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="load-libraries">Load libraries!</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RCPA3)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ordinal)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnet)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="sec-2.-ordinal-logistic-regression-with-clm" class="level3">
+<h3 class="anchored" data-anchor-id="sec-2.-ordinal-logistic-regression-with-clm">2. Ordinal Logistic Regression with <code>clm()</code></h3>
+<p><strong>Ologit Requirements:</strong></p>
+<ul>
+<li>DV: Ordinal</li>
+<li>IV: Continuous/Interval (bivariate); any (multivariate)</li>
+</ul>
+<p>The <code>clm()</code> function comes from the “ordinal” package, and Ologit is just another way of saying ordinal/ordered logistic regression.</p>
+<blockquote class="blockquote">
+<p><strong>TASK:</strong> First, we’ll try to predict whether and how much a respondent will favor allowing refugees based on their feelings toward Biden, gender, and age. We’ll store the model object called “ologit1” for creativity… Then, we can summarize the model object to see the results.</p>
+</blockquote>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ologit1 <span class="ot">&lt;-</span> <span class="fu">clm</span>(allow.refugees <span class="sc">~</span> ft.biden.pre <span class="sc">+</span> gender <span class="sc">+</span> age, <span class="at">data =</span> nes)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ologit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>formula: allow.refugees ~ ft.biden.pre + gender + age
+data:    nes
+
+ link  threshold nobs logLik    AIC      niter max.grad cond.H 
+ logit flexible  6918 -10527.19 21072.38 7(1)  2.55e-11 4.7e+05
+
+Coefficients:
+                 Estimate Std. Error z value Pr(&gt;|z|)    
+ft.biden.pre    -0.023493   0.000690 -34.047   &lt;2e-16 ***
+gender2. Female -0.074066   0.043930  -1.686   0.0918 .  
+age              0.014516   0.001288  11.269   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Threshold coefficients:
+                                                   Estimate Std. Error z value
+1. Favor a great deal|2. Favor a moderate amount   -1.74409    0.08209 -21.246
+2. Favor a moderate amount|3. Favor a little       -0.51641    0.07971  -6.479
+3. Favor a little|4. Neither favor nor oppose      -0.28262    0.07951  -3.554
+4. Neither favor nor oppose|5. Oppose a little      1.60990    0.08232  19.556
+5. Oppose a little|6. Oppose a moderate amount      1.80044    0.08328  21.620
+6. Oppose a moderate amount|7. Oppose a great deal  2.60221    0.09014  28.868
+(1362 observations deleted due to missingness)</code></pre>
+</div>
+</div>
+<p>The <strong>coefficients</strong> table represents changes in the log-odds of being in a higher category of the DV, given increases in each IV.</p>
+<p>The <strong>threshold</strong> conditions represent the cut points between values of the ordinal DV. They’re similar to the constant/intercept in a regular regression model. But instead of giving us a single predicted value of the outcome when all IVs are zero, the thresholds tell us where the model draws the lines <em>between</em> categories based on a respondent’s predicted score.</p>
+<p>For example, the first threshold (<code>1. Favor a great deal|2. Favor a moderate amount: -21.246</code>) separates the “1. Favor a great deal” category from higher categories. If the model’s predicted score for a respondent falls below -21.246, that respondent is more likely to be classified as favoring allowing refugees “a great deal”. A predicted score slightly above -21.246 would shift the probability toward being in the “2. Favor a moderate amount” category or higher.</p>
+<p>More importantly, thresholds help us estimate predicted probabilities. After estimating the partial effect coefficients and the model thresholds, we can calculate the probability that a respondent falls into each possible response category.</p>
+<blockquote class="blockquote">
+<p><strong>TASK:</strong> So, let’s try another model, this time to replicate an Ologit we’ve seen in the reading.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> First we have to import the data from the article:</p>
+</blockquote>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"Datasets/spain.RData"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ologit_spain <span class="ot">&lt;-</span> <span class="fu">clm</span>(spain<span class="sc">$</span>happy <span class="sc">~</span> spain<span class="sc">$</span>agea <span class="sc">+</span> <span class="fu">I</span>(spain<span class="sc">$</span>agea<span class="sc">^</span><span class="dv">2</span>)  <span class="sc">+</span> spain<span class="sc">$</span>gndr <span class="sc">+</span> spain<span class="sc">$</span>health <span class="sc">+</span> spain<span class="sc">$</span>maritala <span class="sc">+</span> spain<span class="sc">$</span>chldhm <span class="sc">+</span> spain<span class="sc">$</span>education <span class="sc">+</span> spain<span class="sc">$</span>region)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ologit_spain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>formula: 
+spain$happy ~ spain$agea + I(spain$agea^2) + spain$gndr + spain$health + spain$maritala + spain$chldhm + spain$education + spain$region
+
+ link  threshold nobs logLik   AIC     niter max.grad cond.H 
+ logit flexible  2545 -4296.59 8683.18 6(0)  6.86e-08 4.5e+10
+
+Coefficients:
+                                  Estimate Std. Error z value Pr(&gt;|z|)    
+spain$agea                      -0.0877121  0.0130533  -6.720 1.82e-11 ***
+I(spain$agea^2)                  0.0008439  0.0001271   6.642 3.10e-11 ***
+spain$gndrMale                  -0.0979226  0.0735454  -1.331  0.18304    
+spain$healthVery good            2.9666939  0.4527751   6.552 5.67e-11 ***
+spain$healthGood                 2.0595637  0.4451617   4.627 3.72e-06 ***
+spain$healthFair                 1.5923923  0.4435176   3.590  0.00033 ***
+spain$healthBad                  0.9648541  0.4476954   2.155  0.03115 *  
+spain$maritalaMarried            0.7240058  0.1280388   5.655 1.56e-08 ***
+spain$maritalaCivil Partnership  0.4019924  0.2262291   1.777  0.07558 .  
+spain$maritalaSeparated         -0.5673285  0.2947271  -1.925  0.05424 .  
+spain$maritalaDivorced          -0.5863794  0.2256025  -2.599  0.00934 ** 
+spain$maritalaWidowed           -0.2249857  0.1956038  -1.150  0.25006    
+spain$chldhmChildren             0.1532311  0.0930438   1.647  0.09958 .  
+spain$educationNo primary       -1.3203729  0.5044486  -2.617  0.00886 ** 
+spain$educationPrimary          -1.0209499  0.4939405  -2.067  0.03874 *  
+spain$educationLower sec        -0.7936314  0.4909976  -1.616  0.10602    
+spain$educationUpper sec        -0.8261682  0.4926357  -1.677  0.09354 .  
+spain$educationPost sec         -0.8224832  0.9187088  -0.895  0.37065    
+spain$educationFirst tertiary   -0.5708862  0.4939346  -1.156  0.24777    
+spain$region12                   0.0877162  0.2541323   0.345  0.72997    
+spain$region13                   0.0775529  0.3487584   0.222  0.82403    
+spain$region21                   0.2764907  0.1969120   1.404  0.16028    
+spain$region22                  -0.2487601  0.3369418  -0.738  0.46034    
+spain$region23                  -0.2328718  0.6077517  -0.383  0.70159    
+spain$region24                   0.1226589  0.2710153   0.453  0.65084    
+spain$region30                  -0.1931955  0.1355023  -1.426  0.15393    
+spain$region41                  -0.5666668  0.1830838  -3.095  0.00197 ** 
+spain$region42                   0.4037824  0.2155120   1.874  0.06099 .  
+spain$region43                  -0.2068503  0.2403104  -0.861  0.38937    
+spain$region51                   0.1272242  0.1133683   1.122  0.26177    
+spain$region52                   0.1897689  0.1570952   1.208  0.22705    
+spain$region53                  -0.0816185  0.2731437  -0.299  0.76508    
+spain$region61                   0.8232204  0.1282036   6.421 1.35e-10 ***
+spain$region62                  -0.0275318  0.2414969  -0.114  0.90923    
+spain$region64                   0.2359627  1.0040569   0.235  0.81420    
+spain$region70                  -0.3561706  0.2378198  -1.498  0.13422    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Threshold coefficients:
+     Estimate Std. Error z value
+0|2   -7.4931     0.9149  -8.190
+2|3   -5.5755     0.7455  -7.479
+3|4   -4.4437     0.7251  -6.128
+4|5   -3.8441     0.7213  -5.329
+5|6   -2.7117     0.7189  -3.772
+6|7   -1.9006     0.7183  -2.646
+7|8   -0.7520     0.7177  -1.048
+8|9    0.8443     0.7170   1.178
+9|10   1.9447     0.7175   2.711
+(31 observations deleted due to missingness)</code></pre>
+</div>
+</div>
+<p>First, notice the little <code>I()</code> around the age squared variable. <code>I()</code> is a helper function that tells a model to treat the expression “as-is” inside the formula. So, instead of R thinking that the <code>^</code> sign is part of the formula syntax itself, <code>agea^2</code> is computed as a square transformation before it’s included in the model.</p>
+<p>Compare the results to the results in Table 4 (Model 1) in the Cuñado and Pérez De Gracia (2012) article. See how some of the numbers don’t line up perfectly across the the models, but they’re pretty close?</p>
+</section>
+<section id="sec-3.-ordinal-logistic-regression-with-polr" class="level3">
+<h3 class="anchored" data-anchor-id="sec-3.-ordinal-logistic-regression-with-polr">3. Ordinal Logistic Regression with <code>polr()</code></h3>
+<p>Let’s try that same Spain dataset model from the reading with a different Ologit function. The <code>polr()</code> function comes from the “MASS” package.</p>
+<p>We’ll add all our covariates, of course, but we’ll also specify the method (<code>method = "logistic"</code>) and an optimization control argument (<code>control = list(...)</code>). The method argument essentially just says, “do a logistic regression rather than a different method like probit, loglog, etc.).” Logistic is the default, anyway, but it’s good practice to specify it explicitly.</p>
+<p>The optimization control argument is a bit more complicated, though. Sometimes <code>polr()</code> is lazy, so it kind of takes the shortest path of least resistance to fit the model. But that can lead to oversimplification and incorrect standard errors and test statistics (so, incorrect p-values). So, we’re telling it to take the extra steps to be more precise by adding a much smaller relative tolerance (<code>reltol = 1e-12</code>) and only giving up after 500 iterations (<code>maxit = 500</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ologit_spain <span class="ot">&lt;-</span> <span class="fu">polr</span>(spain<span class="sc">$</span>happy <span class="sc">~</span> spain<span class="sc">$</span>agea <span class="sc">+</span> <span class="fu">I</span>(spain<span class="sc">$</span>agea<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> spain<span class="sc">$</span>gndr <span class="sc">+</span> spain<span class="sc">$</span>health <span class="sc">+</span> spain<span class="sc">$</span>maritala <span class="sc">+</span> spain<span class="sc">$</span>chldhm <span class="sc">+</span> spain<span class="sc">$</span>education <span class="sc">+</span> spain<span class="sc">$</span>region, <span class="at">method =</span> <span class="st">"logistic"</span>, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">reltol =</span> <span class="fl">1e-12</span>, <span class="at">maxit =</span> <span class="dv">500</span>))  </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ologit_spain)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+polr(formula = spain$happy ~ spain$agea + I(spain$agea^2) + spain$gndr + 
+    spain$health + spain$maritala + spain$chldhm + spain$education + 
+    spain$region, control = list(reltol = 1e-12, maxit = 500), 
+    method = "logistic")
+
+Coefficients:
+                                     Value Std. Error   t value
+spain$agea                      -0.0877121        NaN       NaN
+I(spain$agea^2)                  0.0008439        NaN       NaN
+spain$gndrMale                  -0.0979225  0.0722568    -1.355
+spain$healthVery good            2.9666941  0.0560252    52.953
+spain$healthGood                 2.0595639  0.0513179    40.133
+spain$healthFair                 1.5923925  0.0670296    23.757
+spain$healthBad                  0.9648544  0.0246590    39.128
+spain$maritalaMarried            0.7240057  0.0726767     9.962
+spain$maritalaCivil Partnership  0.4019923  0.0067063    59.942
+spain$maritalaSeparated         -0.5673284  0.0057569   -98.547
+spain$maritalaDivorced          -0.5863795  0.0119639   -49.013
+spain$maritalaWidowed           -0.2249857  0.0361969    -6.216
+spain$chldhmChildren             0.1532312  0.0785324     1.951
+spain$educationNo primary       -1.3203744  0.0415493   -31.779
+spain$educationPrimary          -1.0209514  0.0734748   -13.895
+spain$educationLower sec        -0.7936330  0.0629923   -12.599
+spain$educationUpper sec        -0.8261697  0.0643797   -12.833
+spain$educationPost sec         -0.8224861  0.0004015 -2048.689
+spain$educationFirst tertiary   -0.5708877  0.0691664    -8.254
+spain$region12                   0.0877163  0.0038640    22.701
+spain$region13                   0.0775530  0.0023590    32.875
+spain$region21                   0.2764908  0.0061861    44.696
+spain$region22                  -0.2487596  0.0014268  -174.350
+spain$region23                  -0.2328719  0.0008414  -276.776
+spain$region24                   0.1226590  0.0036865    33.272
+spain$region30                  -0.1931954  0.0595020    -3.247
+spain$region41                  -0.5666668  0.0084690   -66.911
+spain$region42                   0.4037823  0.0038924   103.736
+spain$region43                  -0.2068503  0.0031795   -65.058
+spain$region51                   0.1272241  0.0795757     1.599
+spain$region52                   0.1897689  0.0118232    16.051
+spain$region53                  -0.0816184  0.0023659   -34.498
+spain$region61                   0.8232203  0.0780532    10.547
+spain$region62                  -0.0275317  0.0020095   -13.701
+spain$region64                   0.2359625  0.0003695   638.576
+spain$region70                  -0.3561707  0.0039709   -89.695
+
+Intercepts:
+     Value      Std. Error t value   
+0|2     -7.4931     0.0169  -443.9814
+2|3     -5.5755     0.0845   -66.0170
+3|4     -4.4437     0.1123   -39.5779
+4|5     -3.8441     0.1198   -32.1001
+5|6     -2.7117     0.0982   -27.6157
+6|7     -1.9006     0.0883   -21.5309
+7|8     -0.7520     0.0809    -9.2985
+8|9      0.8443     0.0827    10.2117
+9|10     1.9447     0.0919    21.1549
+
+Residual Deviance: 8593.179 
+AIC: 8683.179 
+(31 observations deleted due to missingness)</code></pre>
+</div>
+</div>
+<p>Compare it to the results in Table 4 (Model 1) of the reading <strong>AND</strong> to the previous model.</p>
+<p>Think of <code>clm()</code> and <code>polr()</code> as two different brands of the same product (like Diet Coke vs.&nbsp;Diet Pepsi). They’re both trying to estimate an ordinal logistic regression model, but they go about it a little differently (with different behavior in the background like using different optimization routines and making different rounding decisions throughout the process) and package the results differently. As a result, you may see small, negligible differences in the coefficients, even when using the same data and variables.</p>
+<p>As for the differences between our models and the Cuñado and Pérez De Gracia (2012) output, just remember that researchers make their own decisions when specifying a model that can lead to slightly different numbers. Maybe they used a different “brand” of Ologit test using different software (e.g., Stata, SPSS, etc.), for example. Or maybe they made different decisions about the base categories than we did (like which “region” they omitted as the reference category). These slight differences are perfectly normal, but if the models diverge too much from one another, it’s a good idea to investigate the causes and try to make adjustments to ensure they’re more aligned.</p>
+<p>But looking back to the <code>polr()</code> model, what information is missing? <strong>p-values!</strong></p>
+<p>The <code>polr()</code> function is an older one than <code>clm()</code>, so it’s not as forthcoming with partial effects. We can certainly get a little more advanced and calculate those p-values manually. But it’s just as easy to rely on <code>clm()</code> instead, even if a model that you want to replicate from the existing literature uses <code>polr()</code>.</p>
+<p>Another problem is that we don’t have model fit statistics, but we can calculate those just like we did for binary logistic regressions using <code>glm()</code>.</p>
+<section id="sec-model-fit-statistics-for-ologit" class="level4">
+<h4 class="anchored" data-anchor-id="sec-model-fit-statistics-for-ologit">Model Fit Statistics for Ologit</h4>
+<p>The basic model statistics we want to look at are the model p-value, the pseudo R-squared, and the number of observations. The model object we made stores all the information we need for those, but first, we’ll need to create a <strong>null model</strong>: “ologit_spain0” has the same DV but excludes all of the IVs that could help predict it. The null model acts as a baseline for comparison to our model.</p>
+<ol type="1">
+<li>Since we most recently used the <code>polr()</code> function to make the existing “ologit_spain” object, we’ll use the same one again for the null model. But we could just switch them both to <code>clm()</code>, too.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ologit_spain <span class="ot">&lt;-</span> <span class="fu">clm</span>(spain<span class="sc">$</span>happy <span class="sc">~</span> spain<span class="sc">$</span>agea <span class="sc">+</span> <span class="fu">I</span>(spain<span class="sc">$</span>agea<span class="sc">^</span><span class="dv">2</span>)  <span class="sc">+</span> spain<span class="sc">$</span>gndr <span class="sc">+</span> spain<span class="sc">$</span>health <span class="sc">+</span> spain<span class="sc">$</span>maritala <span class="sc">+</span> spain<span class="sc">$</span>chldhm <span class="sc">+</span> spain<span class="sc">$</span>education <span class="sc">+</span> spain<span class="sc">$</span>region, <span class="at">link =</span> <span class="st">"logit"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>ologit_spain0 <span class="ot">&lt;-</span> <span class="fu">clm</span>(spain<span class="sc">$</span>happy <span class="sc">~</span> <span class="dv">1</span>, <span class="at">link =</span> <span class="st">"logit"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="1">
+<li><p>Next, we can just pull the number of observations (<code>nobs()</code>) from the original model and store it in a new object (spain_N).</p></li>
+<li><p>Then, we can get the p-value of the model as whole, by comparing the log likelihood of our model to the log likelihood of the null model using a <strong>likelihood ratio test</strong> (which runs a different kind of <code>anova()</code> test to estimate a different kind of chi-squared test statistic).</p></li>
+<li><p>Finally, we can also calculate the McFaddens’ R-squared to see how much the full model improves the log-likelihood compare to the null model. We just have to find the ratio of the “logLik” parameters stored in each model (the original and the null).</p></li>
+</ol>
+<p>Creating and viewing the number of observations object (spain_N) is easy…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>spain_N <span class="ot">&lt;-</span> <span class="fu">nobs</span>(ologit_spain)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>spain_N</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2545</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>spain_p <span class="ot">&lt;-</span> <span class="fu">anova</span>(ologit_spain0, ologit_spain, <span class="at">test =</span> <span class="st">"Chisq"</span>) </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>'test' argument ignored in anova.clm</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in anova.clm(ologit_spain0, ologit_spain, test = "Chisq"): models were not all fitted to the same dataset</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>spain_p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: object 'spain_p' not found</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>spain_R2<span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span> <span class="sc">-</span> (<span class="fu">logLik</span>(ologit_spain) <span class="sc">/</span> <span class="fu">logLik</span>(ologit_spain0)))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>spain_R2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.07576777</code></pre>
+</div>
+</div>
+<p>But sometimes we get an error when we try to do the likelihood ratio test (<code>spain_p</code>) because the two “models were not all fitted to the same dataset.” This is actually just a missing values problem. When we fit the full dataset, some observations are excluded because they are missing in at least one of the IVs. Because it excludes all IVs, the null model doesn’t have this same problem.</p>
+<p>So, here’s a quick workaround to overcome that error:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>spain_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"happy"</span>,<span class="st">"agea"</span>,<span class="st">"gndr"</span>,<span class="st">"health"</span>,<span class="st">"maritala"</span>,<span class="st">"chldhm"</span>,<span class="st">"education"</span>,<span class="st">"region"</span>) <span class="co">#make a list of all the variable names we included</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>spainSubset <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(spain[spain_vars]) <span class="co">#make a subset of the spain dataset using only those variables and omit NA (missing).</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>ologit_spain0 <span class="ot">&lt;-</span> <span class="fu">clm</span>(spainSubset<span class="sc">$</span>happy <span class="sc">~</span> <span class="dv">1</span>, <span class="at">link =</span> <span class="st">"logit"</span>) <span class="co">#rerun the null model on the subset data</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now, we can do the Likelihood Ratio test!</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>spain_p <span class="ot">&lt;-</span> <span class="fu">anova</span>(ologit_spain0, ologit_spain, <span class="at">test =</span> <span class="st">"Chisq"</span>) </span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>spain_p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Likelihood ratio tests of cumulative link models:
+ 
+              formula:                                                                                                                               
+ologit_spain0 spainSubset$happy ~ 1                                                                                                                  
+ologit_spain  spain$happy ~ spain$agea + I(spain$agea^2) + spain$gndr + spain$health + spain$maritala + spain$chldhm + spain$education + spain$region
+              link: threshold:
+ologit_spain0 logit flexible  
+ologit_spain  logit flexible  
+
+              no.par    AIC  logLik LR.stat df Pr(&gt;Chisq)    
+ologit_spain0      9 9216.0 -4599.0                          
+ologit_spain      45 8683.2 -4296.6   604.8 36  &lt; 2.2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># And the McFadden's pseudo R-squared!</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>spain_R2<span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span> <span class="sc">-</span> (<span class="fu">logLik</span>(ologit_spain) <span class="sc">/</span> <span class="fu">logLik</span>(ologit_spain0)))</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>spain_R2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.06575358</code></pre>
+</div>
+</div>
+<p>We just type the names of each object to call them see those values in the console. The <code>spain_p</code> line will print the results of the ANOVA (likelihood ratio test) we ran, which includes <code>Pr(&gt;Chi)</code>, which we can report as the model significance. Then, <code>spain_R2</code> will present a number for our McFadden’s pseudo R-squared.</p>
+<p>Maybe you noticed that the pseudo R-squared value we calculated (0.06575358) is very different from the value in the journal article (0.218). The simple explanation is that the authors are using the Cox &amp; Snell pseudo R-squared instead of McFadden’s (the norm in the discipline), which is usually pretty inflated based on the background math…</p>
+</section>
+</section>
+<section id="sec-4.-multinomial-logistic-regression-with-multinom" class="level3">
+<h3 class="anchored" data-anchor-id="sec-4.-multinomial-logistic-regression-with-multinom">4. Multinomial Logistic Regression with <code>multinom()</code></h3>
+<p>Mlogit Requirements:</p>
+<ul>
+<li>DV: Nominal</li>
+<li>IV: Continuous/Interval (bivariate); any (multivariate)</li>
+</ul>
+<p>The <code>multinom()</code> function comes from the “nnet” package, and Mlogit is just another way of saying multinomial logistic regression.</p>
+<p>Here we’ll try to predict who a respondent voted for in 2020 based on their feelings toward Biden, their gender, and their age. First, let’s make sure the reference category is set to the “Other” category of vote choice:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>nes<span class="sc">$</span>presvote2020 <span class="ot">&lt;-</span> <span class="fu">relevel</span>(nes<span class="sc">$</span>presvote2020, <span class="at">ref =</span> <span class="st">"5. Other candidate {SPECIFY}"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Now we can run the model and store is as an object called “mlogit1” and view the model summary:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mlogit1 <span class="ot">&lt;-</span> <span class="fu">multinom</span>(presvote2020 <span class="sc">~</span> ft.biden.pre <span class="sc">+</span> gender <span class="sc">+</span> age, <span class="at">data =</span> nes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># weights:  25 (16 variable)
+initial  value 9502.121435 
+iter  10 value 2493.342306
+iter  20 value 2209.064259
+iter  30 value 1972.711060
+iter  40 value 1969.635205
+final  value 1969.633470 
+converged</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mlogit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+multinom(formula = presvote2020 ~ ft.biden.pre + gender + age, 
+    data = nes)
+
+Coefficients:
+                 (Intercept) ft.biden.pre gender2. Female         age
+1. Joe Biden      0.01601377   0.05957133    -0.090732987 0.014260540
+2. Donald Trump   2.50350720  -0.04617023    -0.009663638 0.056527320
+3. Jo Jorgensen   1.00008152  -0.01694041    -0.200818177 0.003381817
+4. Howie Hawkins -1.01809307  -0.01057115    -0.300374160 0.020103058
+
+Std. Errors:
+                 (Intercept) ft.biden.pre gender2. Female         age
+1. Joe Biden       0.4879205  0.005895095       0.2969714 0.009505877
+2. Donald Trump    0.4808930  0.005817357       0.2979701 0.009557719
+3. Jo Jorgensen    0.5970621  0.007304488       0.3737426 0.012013144
+4. Howie Hawkins   0.8111823  0.009631455       0.5029253 0.015497100
+
+Residual Deviance: 3939.267 
+AIC: 3971.267 </code></pre>
+</div>
+</div>
+<p>See how weird the layout is? It’s flipped from what we’re used to seeing, with rows of IVs down the left side and the DV column at the top. That’s because we have lots of categories in the DV!</p>
+<p>Also, what is missing in the <code>multinom()</code> model? <strong>p-values!</strong> And model fit statistics. Again. Ugh.</p>
+<p>At least for the partial effects, missing p-values won’t be a problem later, when we get into making publication-ready tables. But the model fit stats are a bigger problem.</p>
+<p><strong>We’ll do the same thing as before:</strong></p>
+<ol type="1">
+<li>Make a list of variables from the model.</li>
+<li>Subset the data to exclude missing observations along those variables.</li>
+<li>Run a null model on the subset data.</li>
+<li>Run a likelihood ratio test to see the p-value.</li>
+<li>Calculte the McFadden’s pseudo R-squared.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>mlogit_vars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"presvote2020"</span>, <span class="st">"ft.biden.pre"</span>, <span class="st">"gender"</span>, <span class="st">"age"</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>nesSubset <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(nes[mlogit_vars])</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>mlogit0 <span class="ot">&lt;-</span> <span class="fu">multinom</span>(presvote2020 <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> nesSubset)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># weights:  10 (4 variable)
+initial  value 9502.121435 
+iter  10 value 4733.296867
+final  value 4732.796956 
+converged</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>mlogit_p <span class="ot">&lt;-</span> <span class="fu">anova</span>(mlogit0, mlogit1, <span class="at">test =</span> <span class="st">"Chisq"</span>) </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>mlogit_p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Likelihood ratio tests of Multinomial Models
+
+Response: presvote2020
+                        Model Resid. df Resid. Dev   Test    Df LR stat.
+1                           1     23612   9465.594                      
+2 ft.biden.pre + gender + age     23600   3939.267 1 vs 2    12 5526.327
+  Pr(Chi)
+1        
+2       0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mlogit_R2<span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span> <span class="sc">-</span> (<span class="fu">logLik</span>(mlogit1) <span class="sc">/</span> <span class="fu">logLik</span>(mlogit0)))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>mlogit_R2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5838331</code></pre>
+</div>
+</div>
+<p>The output is a bit wonky, but we’re looking for significance with that likelihood ratio test for our own model (<code>ft.biden.pre + gender + age</code>), so even though it goes onto subsequent lines, that 0 is our p-value (rounded from &lt; 2.22e-16), which means the model as a whole is significant. The 0.5838331 is our McFadden’s pseudo R-squared value, which is, like, crazy high. Maybe that’s because our N is huge, or maybe it’s because our IVs are such strong predictors of vote choice.</p>
+</section>
+<section id="sec-5.-advanced-material" class="level3">
+<h3 class="anchored" data-anchor-id="sec-5.-advanced-material">5. Advanced Material:</h3>
+<section id="sec-adding-coefficient-p-values-to-a-polr-ologit" class="level4">
+<h4 class="anchored" data-anchor-id="sec-adding-coefficient-p-values-to-a-polr-ologit">Adding Coefficient p-values to a <code>polr()</code> Ologit</h4>
+<ol type="1">
+<li>Start by re-running the <code>polr()</code> model.</li>
+<li>Store the model summary as an object (<code>ologit_spain_sum</code>) and the coefficient tablle from it (<code>coefs</code>) separately.</li>
+<li>Calculate and store the test statistic values (<code>test_stats</code>) by dividing the coefficients by their standard errors.</li>
+<li>Next, calculate the two-sided p-values from the test statistics using the standard normal distribution.</li>
+<li>Finally, bind the p-values to the coefficients as another column in the model summary object, then view it in the console.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ologit_spain <span class="ot">&lt;-</span> <span class="fu">polr</span>(spain<span class="sc">$</span>happy <span class="sc">~</span> spain<span class="sc">$</span>agea <span class="sc">+</span> <span class="fu">I</span>(spain<span class="sc">$</span>agea<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> spain<span class="sc">$</span>gndr <span class="sc">+</span> spain<span class="sc">$</span>health <span class="sc">+</span> spain<span class="sc">$</span>maritala <span class="sc">+</span> spain<span class="sc">$</span>chldhm <span class="sc">+</span> spain<span class="sc">$</span>education <span class="sc">+</span> spain<span class="sc">$</span>region, <span class="at">method =</span> <span class="st">"logistic"</span>, <span class="at">Hess =</span> <span class="cn">TRUE</span>, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">reltol =</span> <span class="fl">1e-12</span>, <span class="at">maxit =</span> <span class="dv">500</span>))  </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>ologit_spain_sum <span class="ot">&lt;-</span> <span class="fu">summary</span>(ologit_spain)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>coefs <span class="ot">&lt;-</span> ologit_spain_sum<span class="sc">$</span>coefficients</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>test_stats <span class="ot">&lt;-</span> coefs[, <span class="st">"Value"</span>] <span class="sc">/</span> coefs[, <span class="st">"Std. Error"</span>]</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(test_stats)))</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>ologit_spain_sum<span class="sc">$</span>coefficients <span class="ot">&lt;-</span> <span class="fu">cbind</span>(coefs, <span class="st">`</span><span class="at">p-value</span><span class="st">`</span> <span class="ot">=</span> p_values)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>ologit_spain_sum</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+polr(formula = spain$happy ~ spain$agea + I(spain$agea^2) + spain$gndr + 
+    spain$health + spain$maritala + spain$chldhm + spain$education + 
+    spain$region, control = list(reltol = 1e-12, maxit = 500), 
+    Hess = TRUE, method = "logistic")
+
+Coefficients:
+                                     Value Std. Error   t value   p-value
+spain$agea                      -0.0877121        NaN       NaN       NaN
+I(spain$agea^2)                  0.0008439        NaN       NaN       NaN
+spain$gndrMale                  -0.0979225  0.0722568    -1.355 1.754e-01
+spain$healthVery good            2.9666941  0.0560252    52.953 0.000e+00
+spain$healthGood                 2.0595639  0.0513179    40.133 0.000e+00
+spain$healthFair                 1.5923925  0.0670296    23.757 0.000e+00
+spain$healthBad                  0.9648544  0.0246590    39.128 0.000e+00
+spain$maritalaMarried            0.7240057  0.0726767     9.962 0.000e+00
+spain$maritalaCivil Partnership  0.4019923  0.0067063    59.942 0.000e+00
+spain$maritalaSeparated         -0.5673284  0.0057569   -98.547 0.000e+00
+spain$maritalaDivorced          -0.5863795  0.0119639   -49.013 0.000e+00
+spain$maritalaWidowed           -0.2249857  0.0361969    -6.216 5.113e-10
+spain$chldhmChildren             0.1532312  0.0785324     1.951 5.104e-02
+spain$educationNo primary       -1.3203744  0.0415493   -31.779 0.000e+00
+spain$educationPrimary          -1.0209514  0.0734748   -13.895 0.000e+00
+spain$educationLower sec        -0.7936330  0.0629923   -12.599 0.000e+00
+spain$educationUpper sec        -0.8261697  0.0643797   -12.833 0.000e+00
+spain$educationPost sec         -0.8224861  0.0004015 -2048.690 0.000e+00
+spain$educationFirst tertiary   -0.5708877  0.0691664    -8.254 2.220e-16
+spain$region12                   0.0877163  0.0038640    22.701 0.000e+00
+spain$region13                   0.0775530  0.0023590    32.875 0.000e+00
+spain$region21                   0.2764908  0.0061861    44.696 0.000e+00
+spain$region22                  -0.2487596  0.0014268  -174.350 0.000e+00
+spain$region23                  -0.2328719  0.0008414  -276.776 0.000e+00
+spain$region24                   0.1226590  0.0036865    33.272 0.000e+00
+spain$region30                  -0.1931954  0.0595020    -3.247 1.167e-03
+spain$region41                  -0.5666668  0.0084690   -66.911 0.000e+00
+spain$region42                   0.4037823  0.0038924   103.736 0.000e+00
+spain$region43                  -0.2068503  0.0031795   -65.058 0.000e+00
+spain$region51                   0.1272241  0.0795757     1.599 1.099e-01
+spain$region52                   0.1897689  0.0118231    16.051 0.000e+00
+spain$region53                  -0.0816184  0.0023659   -34.498 0.000e+00
+spain$region61                   0.8232203  0.0780532    10.547 0.000e+00
+spain$region62                  -0.0275317  0.0020095   -13.701 0.000e+00
+spain$region64                   0.2359625  0.0003695   638.576 0.000e+00
+spain$region70                  -0.3561707  0.0039709   -89.695 0.000e+00
+
+Intercepts:
+     Value      Std. Error t value    p-value   
+0|2     -7.4931     0.0169  -443.9817     0.0000
+2|3     -5.5755     0.0845   -66.0170     0.0000
+3|4     -4.4437     0.1123   -39.5779     0.0000
+4|5     -3.8441     0.1198   -32.1001     0.0000
+5|6     -2.7117     0.0982   -27.6157     0.0000
+6|7     -1.9006     0.0883   -21.5309     0.0000
+7|8     -0.7520     0.0809    -9.2985     0.0000
+8|9      0.8443     0.0827    10.2117     0.0000
+9|10     1.9447     0.0919    21.1549     0.0000
+
+Residual Deviance: 8593.179 
+AIC: 8683.179 
+(31 observations deleted due to missingness)</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-adding-coefficient-p-values-to-a-multinom-mlogit" class="level4">
+<h4 class="anchored" data-anchor-id="sec-adding-coefficient-p-values-to-a-multinom-mlogit">Adding Coefficient p-values to a <code>multinom()</code> Mlogit</h4>
+<p>The logic is largely the same as it is for adding coefficients above, but we can do it more efficiently given the wonky layout of an Mlogit:</p>
+<ol type="1">
+<li>Start by re-running the <code>multinom()</code> model.</li>
+<li>Calculate and store the test statistic values (<code>test_stats</code>) by dividing the coefficients by their standard errors.</li>
+<li>Calculate the <code>p-values</code> from the test statistics using the standard normal distribution.</li>
+<li>Finally, view the p-values in the console as a separate table, just like the coefficients table and the standard errors table from the model output.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mlogit1 <span class="ot">&lt;-</span> <span class="fu">multinom</span>(presvote2020 <span class="sc">~</span> ft.biden.pre <span class="sc">+</span> gender <span class="sc">+</span> age, <span class="at">data =</span> nes)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># weights:  25 (16 variable)
+initial  value 9502.121435 
+iter  10 value 2493.342306
+iter  20 value 2209.064259
+iter  30 value 1972.711060
+iter  40 value 1969.635205
+final  value 1969.633470 
+converged</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>test_stats <span class="ot">&lt;-</span> <span class="fu">summary</span>(mlogit1)<span class="sc">$</span>coefficients<span class="sc">/</span><span class="fu">summary</span>(mlogit1)<span class="sc">$</span>standard.errors</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(test_stats)))</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mlogit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+multinom(formula = presvote2020 ~ ft.biden.pre + gender + age, 
+    data = nes)
+
+Coefficients:
+                 (Intercept) ft.biden.pre gender2. Female         age
+1. Joe Biden      0.01601377   0.05957133    -0.090732987 0.014260540
+2. Donald Trump   2.50350720  -0.04617023    -0.009663638 0.056527320
+3. Jo Jorgensen   1.00008152  -0.01694041    -0.200818177 0.003381817
+4. Howie Hawkins -1.01809307  -0.01057115    -0.300374160 0.020103058
+
+Std. Errors:
+                 (Intercept) ft.biden.pre gender2. Female         age
+1. Joe Biden       0.4879205  0.005895095       0.2969714 0.009505877
+2. Donald Trump    0.4808930  0.005817357       0.2979701 0.009557719
+3. Jo Jorgensen    0.5970621  0.007304488       0.3737426 0.012013144
+4. Howie Hawkins   0.8111823  0.009631455       0.5029253 0.015497100
+
+Residual Deviance: 3939.267 
+AIC: 3971.267 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>p_values</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                  (Intercept) ft.biden.pre gender2. Female          age
+1. Joe Biden     9.738178e-01 0.000000e+00       0.7599643 1.335674e-01
+2. Donald Trump  1.930021e-07 1.998401e-15       0.9741279 3.332689e-09
+3. Jo Jorgensen  9.393338e-02 2.038536e-02       0.5910488 7.783195e-01
+4. Howie Hawkins 2.094522e-01 2.723943e-01       0.5503378 1.945575e-01</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Cuñado, Juncal, and Fernando Pérez De Gracia. 2012. “Does Education Affect Happiness? Evidence for Spain.” <em>Social Indicators Research</em> 108 (1): 185–96. <a href="https://doi.org/10.1007/s11205-011-9874-x" class="uri">https://doi.org/10.1007/s11205-011-9874-x</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
