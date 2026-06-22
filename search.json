@@ -11,7 +11,14 @@
     "href": "index.html",
     "title": "Home",
     "section": "",
-    "text": "Some R Walkthroughs\nThis site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects."
+    "text": "This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects.\n\n\n\nTransforming Variables\nChi-Square and Measures of Association\nOrdinal and Multinomial Logit"
+  },
+  {
+    "objectID": "index.html#tutorials",
+    "href": "index.html#tutorials",
+    "title": "Home",
+    "section": "",
+    "text": "Transforming Variables\nChi-Square and Measures of Association\nOrdinal and Multinomial Logit"
   },
   {
     "objectID": "chi-square_measuresOfAssociation.html",
