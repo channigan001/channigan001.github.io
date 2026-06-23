@@ -1,0 +1,172 @@
+---
+title: "t-tests and ANOVAs"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Remember `compmeansC()`](#sec-2.-remember-compmeansc)
+3.  [Testing Differences in Proportions](#sec-3.-testing-differences-in-proportions)
+4.  [Testing Differences in Means](#sec-4.-testing-differences-in-means)
+    a.  [One-Sample t-test](#sec-one-sample-t-test)
+    b.  [Two-Sample t-test](#sec-two-sample-t-test)
+    c.  [Paired Samples t-test](#sec-paired-samples-t-test)
+5.  [Analysis of Variance Tests (ANOVAs)](#sec-5.-analysis-of-variance-tests-anovas)
+    a.  [Tukey Test: Post-Hoc tests with ANOVAs](#sec-tukey-test-post-hoc-tests-with-anovas)
+6.  [Advanced Material](#sec-6.-advanced-material)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+No new packages to install this time!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+```
+
+### 2. Remember `compmeansC()` {#sec-2.-remember-compmeansc}
+
+```{r}
+compmeansC(world$gdp.percap, world$vdem.4cat)
+```
+
+We can see the mean GDP per capita for each of the 4 regime type categories. But is the difference **significant**?? The `compmeansC()` function can't tell us the significance; it's more descriptive.
+
+### 3. Testing Differences in Proportions {#sec-3.-testing-differences-in-proportions}
+
+Instead, we can do a "one-sample test" of proportions to see if the proportion of cases for a given category is significantly different from our hypothesized proportion:
+
+```{r}
+testpropsC(world$vdem.4cat, .25, response = "1. Liberal democracy")
+```
+
+Is the proportion of Liberal Democracies significantly different from the actual proportion of Liberal Democracies in the world?
+
+### 4. Testing Differences in Means {#sec-4.-testing-differences-in-means}
+
+We use what's called a "t-test" to test when means are significantly different
+
+-   DV: Continuous/Interval
+-   IV: Dichotomous
+
+**There are 3 types of t-tests:**
+
+1.  One-sample t-test
+2.  Two-sample t-test
+3.  Paired-sample t-test
+
+#### One-Sample t-test {#sec-one-sample-t-test}
+
+One-sample t-test: Is the mean of Y significantly different from a specific value?
+
+```{r}
+testmeansC(states$vep20.turnout, 50)
+```
+
+Was mean voter turnout by state in 2020 significantly different from 50%?
+
+#### Two-Sample t-test {#sec-two-sample-t-test}
+
+Two-sample t-test: Is the mean of Y (when the IV=0) significantly different from the mean of Y (when the IV=1)?
+
+```{r}
+testmeansC(dv= states$vep20.turnout, iv=states$term.limits)
+```
+
+Was mean voter turnout in 2020 among states with term limits significantly different from turnout among states without term limits?
+
+#### Paired samples t-test {#sec-paired-samples-t-test}
+
+Paired-samples t-test: Is the mean of Y1 significantly different from the mean of a related variable, Y2? (E.g., Pre-test vs. Post-test). Even though we don't specify an X variable, the dichotomous IV is ***implicit*** here.
+
+Instead of each of the Y variables being unrelated columns, like this:
+
+| ID            | Y1  | Y2  |
+|---------------|-----|-----|
+| Observation 1 | 111 | 222 |
+| Observation 2 | 333 | 444 |
+| Observation 3 | 555 | 666 |
+
+Imagine the data is rearranged to look like this:
+
+| ID            | Value | Which Y? |
+|---------------|-------|----------|
+| Observation 1 | 111   | Y1       |
+| Observation 1 | 222   | Y2       |
+| Observation 2 | 333   | Y1       |
+| Observation 2 | 444   | Y2       |
+| Observation 3 | 555   | Y1       |
+| Observation 3 | 666   | Y2       |
+
+```{r}
+testmeansC(states$vep20.turnout, states$vep16.turnout, paired = T)
+```
+
+Was mean voter turnout in 2020 significantly different from mean voter turnout in 2016?
+
+```{r}
+#| message: false
+
+load("Datasets/testScoresData.RData")
+```
+
+```{r}
+testmeansC(testScores$score.pre, testScores$score.post, paired = T)
+```
+
+Was mean pre-test score significantly different from mean post-test score for that fake class data I showed you?
+
+But what if we have **multiple categories in the IV**??
+
+### 5. Analysis of Variance Tests (ANOVAs) {#sec-5.-analysis-of-variance-tests-anovas}
+
+T-tests require an explicit or implicit *dichotomous* IV. So, when we have multiple categories we need a different test:
+
+ANOVAs (Analysis of Variance):
+
+-   DV: Continuous/Interval
+-   IV: Nominal or Ordinal
+
+```{r}
+compmeansC(world$gdp.percap, world$vdem.4cat, anova = T)
+```
+
+We can add an ANOVA test option to the `compmeansC()` function but it's not great. The `anova = T` option tells us whether the relationship *as a whole* is significant, but we don't know what's driving that significance because it doesn't break things down by the individual categories of the IV.
+
+That's where `aov()` makes a difference...
+
+```{r}
+anova.model1 <- aov(world$gdp.percap~world$vdem.4cat)
+```
+
+The `aov()` function runs an ANOVA model, too. And, importantly, we can save this model as an object called `anova.model1` (or whatever) so we can call it again. Notice that we don't include a comma, though: the syntax is DV\~IV (with the tilde).
+
+Let's see the model:
+
+```{r}
+summary(anova.model1)
+```
+
+Getting a summary of the anova model object gives us the p-value of the model as a whole (just like `compmeansC()` with the `anova = T` option). But since we've stored it as an object, we have a additional opportunities...
+
+#### Tukey Test: Post-Hoc tests with ANOVAs {#sec-tukey-test-post-hoc-tests-with-anovas}
+
+Here's the cool part of creating a model object with `aov()`: we can run a "post-hoc test" (a test after the fact) on it to see how *each* of the IV categories relates to *each* of the DV categories.
+
+This is the Tukey HSD ("Honestly Significant Difference") test.
+
+```{r}
+TukeyHSD(anova.model1)
+```
+
+The `TukeyHSD()` test output is key to our model interpretation. It lists each category comparison within the IV (e.g., "2. Electoral democracy-1. Liberal democracy") and provides some stats: the difference in mean DV `world$gdp.percap` between them, the lower (`lwr`) and upper (`upr`) bounds of the confidence interval, and an adjusted p-value (`p adj`) for each individual comparison.
+
+### 6. Advanced Material {#sec-6.-advanced-material}

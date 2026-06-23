@@ -1,0 +1,270 @@
+---
+title: "Making Comparisons"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Base R `table()` Function](#sec-base-r-table-function)
+3.  [Crosstabs Using `crosstabC()` Function](#sec-crosstabs-using-crosstabc-function)
+4.  [Cleaning Up Messy Crosstabs](#sec-cleaning-up-messy-crosstabs)
+5.  [Adding Complexity to the Crosstabs](#sec-adding-complexity-to-the-crosstabs)
+6.  [Comparing Continuous/Interval DVs](#sec-comparing-continuousinterval-dvs)
+7.  [Boxplots with Interval/Continuous DVs Across Categorical IVs](#sec-boxplots-with-intervalcontinuous-dvs-across-categorical-ivs)
+8.  [Scatterplots with Interval/Continuous DVs and IVs](#sec-scatterplots-with-intervalcontinuous-dvs-and-ivs)
+9.  [Advanced Material](#sec-advanced-material)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### No new packages to install!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+```
+
+### 2. Base R `table()` Function {#sec-base-r-table-function}
+
+Base R is what R comes with a fresh install, meaning it has no extra packages. The `table()` function in base R creates a table from a variable or set of variables, so it can help us get a quick sense of the distribution of observations across categories.
+
+We can look at variables individually....
+
+```{r}
+table(states$abortlaws.3cat)
+table(states$religiosity3)
+```
+
+...or view at them together to see how the categories of one variable align with the categories on another one. In other words, we're looking at how many cases fit in each box of the table to understand how the two variables are related (if at all).
+
+```{r}
+table(states$abortlaws.3cat, states$religiosity3)
+```
+
+But what about our **column percentages**???
+
+### 3. Crosstabs Using `crosstabC()` Function {#sec-crosstabs-using-crosstabc-function}
+
+The `table()` function is pretty basic, so this is where `crosstabC()` comes in...
+
+We'll start with an initial crosstab between `states$abortlaws.3cat` as the DV outcome and `states$religiosity3` as the IV:
+
+```{r}
+crosstabC(states$abortlaws.3cat, states$religiosity3)
+```
+
+This minimal code works, but how does R know which one is the DV and which one is the IV? The default order of the arguments matters. The DV always comes first, then the IV. But sometimes it's better to be explicit instead of remembering the correct order of the arguments. So, let's do that, just in case we tweak the code later...
+
+```{r}
+crosstabC(dv = abortlaws.3cat, iv = religiosity3, data = states)
+```
+
+The function also defaults to visualizing the lowest category of the DV ("Few restrictions", in this case) but we can also tell it which category we want to see in the plot, too. Just have to add another optional argument: `plot.response =`.
+
+We can swap between any of the categories of the DV:
+
+```{r}
+crosstabC(dv = states$abortlaws.3cat, iv = states$religiosity3, plot.response = "Few restrictions")
+```
+
+```{r}
+crosstabC(dv = states$abortlaws.3cat, iv = states$religiosity3, plot.response = "Moderate restrictions")
+```
+
+```{r}
+crosstabC(dv = states$abortlaws.3cat, iv = states$religiosity3, plot.response = "Many restrictions")
+```
+
+If we want to, we can also switch up the chart type with another optional argument! For example, we could also switch from a bar chart to a line graph with the `plot =` option.
+
+```{r}
+crosstabC(dv = states$abortlaws.3cat, iv = states$religiosity3, plot.response = "Many restrictions", plot = "line")
+```
+
+The line graph doesn't make much sense with a categorical IV (because a line is continuous and these categories are discrete...), but now we know we've got the option if we're working with different variables later.
+
+### 4. Cleaning Up Messy Crosstabs {#sec-cleaning-up-messy-crosstabs}
+
+Is a respondent's education level related to their ideology?
+
+```{r}
+crosstabC(dv = nes$libcon3, iv = nes$educ.5cat) #is education level related to ideology?
+```
+
+Oof. Multiple long value labels are a nightmare; they make both the table and the chart difficult to read.
+
+But the function includes optional argument to change the labels! The `dvlabs = c()` is for categories of the DV and `ivlabs = c()` is for the categories of the IV.
+
+Because we're more interested in column percentages than the raw counts, too, we also include the `compact = T` argument to make the output clearer.
+
+Try the code below (it spans multiple lines just to help delineate each option):
+
+```{r}
+crosstabC(dv = nes$libcon3, iv = nes$educ.5cat, 
+          dvlabs = c("Lib", "Mod", "Con"), 
+          ivlabs = c("<HS", "HS", "SomeBA", "BA", ">BA"), 
+          plot = "bar", 
+          plot.response = "Lib", 
+          compact=T
+          )
+```
+
+### 5. Adding Complexity to the Crosstabs {#sec-adding-complexity-to-the-crosstabs}
+
+Instead of specifying only "Lib" as the response category of the DV that we want to show, we have the option to do all of the categories at once in a clustered bar chart: `plot.response = "all"`.
+
+```{r}
+crosstabC(dv = nes$libcon3, iv = nes$educ.5cat, 
+          dvlabs = c("Lib", "Mod", "Con"),
+          ivlabs = c("<HS", "HS", "SomeBA", "BA", ">BA"), 
+          plot = "bar", 
+          plot.response = "all", # all the DV categories
+          compact=T
+          )
+```
+
+By changing `plot.response` from a specific category (e.g., "Lib") to "all", we get the clustered bar chart! Plus, we can still adjust the chart type with the `plot =` option is we need a stacked line graph or a mosaic plot.
+
+```{r}
+crosstabC(dv = nes$libcon3, iv = nes$educ.5cat, 
+          dvlabs = c("Lib", "Mod", "Con"),
+          ivlabs = c("<HS", "HS", "SomeBA", "BA", ">BA"), 
+          plot = "line", # line graph or mosaic plot
+          plot.response = "all", 
+          compact=T
+          )
+```
+
+But mosaic plots and stacked bar charts are goofy in general, so don't bother.
+
+### 6. Comparing Continuous/Interval DVs {#sec-comparing-continuousinterval-dvs}
+
+Comparing the mean of a continuous/interval DV across different categories of a categorical IV is often useful. Here's one from the Pollock textbook:
+
+```{r}
+#| error: true
+compmeansC(dv=legalclimate, iv=judge.selection, data=states)
+```
+
+Oh. Well, we could use the `ivlabs = c()` option again in this function. But let's just try to compare the mean GDP per capita across different regime types. Polity score is a pretty common measure of the level of democracy in a country:
+
+```{r}
+#| error: true
+compmeansC(dv=world$gdp.percap, iv=world$polity.score, plot = "line")
+```
+
+WTF? Turns out `polity.score` is technically ordinal, but it's "too numeric" because it has a lot of categories (-10 to +10). Since the numbers don't have labels and it's just seen as an interval variable, R is confused about how to treat it discretely/categorically.
+
+Let's try a more clearly categorical measure of democracy like `vdem.4cat` instead:
+
+```{r}
+compmeansC(dv=world$gdp.percap, iv=world$vdem.4cat, plot = "line")
+```
+
+Success! Sort of...
+
+We still have a graph problem. Time to re-label!
+
+```{r}
+compmeansC(dv=world$gdp.percap, 
+           iv=world$vdem.4cat, 
+           plot = "line", 
+           ivlabs = c("LibDem", "Dem-ish", "Autoc-ish", "FullAutoc")
+           )
+```
+
+The labels are definitely easier to read, but the scientific notation on the y-axis is confusing. So, let's do a quick transformation of the DV (`world$gdp.percap`) to change the scale first, then use our new variable instead.
+
+```{r}
+gdppc.thou <- world$gdp.percap/1000 #GDP per capita in thousands of dollars
+
+compmeansC(dv=gdppc.thou, 
+           iv=world$vdem.4cat, 
+           plot = "line", 
+           ivlabs = c("LibDem", "Dem-ish", "Autoc-ish", "FullAutoc")
+           )
+```
+
+Slay. Or whatever.
+
+Now, let's add confidence intervals (`plot.ci = T`) to the code, so we can see if there is a ***significant*** difference between the means of `gdppc.thou` across regime types,
+
+```{r}
+compmeansC(dv=gdppc.thou, 
+           iv=world$vdem.4cat, 
+           plot = "line", 
+           plot.ci=T, 
+           ivlabs = c("LibDem", "Dem-ish", "Autoc-ish", "FullAutoc")
+           )
+```
+
+**Understanding Confidence Interval bars:**
+
+-   If the CI bars touch/overlap: Not significant.
+-   If they don't: Significant.
+
+In our case, there is a significant difference in the mean of `gdppc.thou` for "LibDem" countries relative to "Dem-ish" and "Autoc-ish" countries. But there's some overlap comparing the other regime types.
+
+### 7. Boxplots with Interval/Continuous DVs Across Categorical IVs {#sec-boxplots-with-intervalcontinuous-dvs-across-categorical-ivs}
+
+We already know that the mean is affected by skewness, so we should check the distribution of `gdppc.thou` to make sure that things aren't too wonky...
+
+We can do that with a **boxplot**:
+
+```{r}
+boxplotC(dv=gdppc.thou, 
+         iv=world$vdem.4cat, 
+         ivlabs = c("LibDem", "Dem-ish", "Autoc-ish", "FullAutoc")
+         )
+```
+
+Here's how to read a boxplot:
+
+-   **dots**: outliers
+-   **top line**: maximum, excluding outliers
+-   **bottom line**: minimum, excluding outliers
+-   **top of the box**: third quartile (75% of data under this line)
+-   **bold line**: median
+-   **bottom of the box**: first quartile (25% of data under this line)
+
+### 8. Scatterplots with Interval/Continuous DVs *and* IVs {#sec-scatterplots-with-intervalcontinuous-dvs-and-ivs}
+
+When we have continuous/interval variables in both the IV and the DV, we can do a quick scatterplot.
+
+But the `plot()` function expects the IV (`x =`) first by default, which throws me off because I'm used to the DV coming first in the code! So, that's another reason to get in the habit of specifying which is which in the code itself.
+
+```{r}
+plot(y=world$gdp.percap, x=world$pop.urban)
+```
+
+Yikes, this is a messy scatterplot.
+
+Maybe a transformation would lessen the skew?
+
+```{r}
+histC(world$gdp.percap) #check the histogram. Big-ass positive skew!
+histC(world$pop.urban) # check the histogram. Normal enough
+```
+
+Transforming the skewed `gdp.percap` variable using its natural log reduces the skew and clarifies the pattern in the scatterplot.
+
+```{r}
+plot(y=log10(world$gdp.percap), x=world$pop.urban)
+```
+
+Now, let's make the chart clear to the consumers of our visualization by adding titles (`main =`) and axis labels (`xlab =` and `ylab =`)...
+
+```{r}
+plot(y=log10(world$gdp.percap), x=world$pop.urban, 
+     main = "Scatterplot of Urban Pop and Wealth", 
+     xlab = "%Urban Population", 
+     ylab = "Per Capita GDP (natural log)"
+     )
+```
+
+### 9. Advanced Material {#sec-advanced-material}

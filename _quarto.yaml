@@ -8,10 +8,6 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - TransformingVariables.qmd
-      - chi-square_measuresOfAssociation.qmd
-      - ologit_mlogit.qmd
-
 format:
   html:
     toc: true
