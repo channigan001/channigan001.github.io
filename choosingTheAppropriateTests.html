@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>POLS 222 R Walkthroughs</title>
+<title>Choosing the Appropriate Tests</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -93,7 +93,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -174,7 +174,7 @@ ul.task-list li input[type="checkbox"] {
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./choosingTheAppropriateTests.html"> 
+    <a class="nav-link active" href="./choosingTheAppropriateTests.html" aria-current="page"> 
 <span class="menu-text">Choosing the Appropriate Tests</span></a>
   </li>  
 </ul>
@@ -194,7 +194,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">POLS 222 R Walkthroughs</h1>
+<h1 class="title">Choosing the Appropriate Tests</h1>
 </div>
 
 
@@ -211,25 +211,75 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects.</p>
-<section id="tutorials" class="level2">
-<h2 class="anchored" data-anchor-id="tutorials">Tutorials</h2>
-<ul>
-<li><a href="transformingVariables.html">Transforming Variables</a></li>
-<li><a href="makingComparisons.html">Making Comparisons</a></li>
-<li><a href="t-tests_ANOVAs.html">t-tests and ANOVAs</a></li>
-<li><a href="chi-square_measuresOfAssociation.html">Chi-Square and Measures of Association</a></li>
-<li><a href="subsettingVariableTypes.html">Subsetting Data: Variable Types</a></li>
-<li><a href="correlation.html">Correlations</a></li>
-<li><a href="linearRegression1.html">OLS: Linear Regressions</a></li>
-<li><a href="logit_logisticRegression.html">Logit: Logistic Regressions</a></li>
-<li><a href="multivariateRegression.html">Multivariate Regressions</a></li>
-<li><a href="ologit_mlogit.html">Ordinal and Multinomial Logit</a></li>
-<li><a href="prettyData.html">Publication-Ready Tables</a></li>
-</ul>
+<table class="table table-bordered text-center caption-top">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<td colspan="2" style="border: none"></td>
+<th colspan="4" data-quarto-table-cell-role="th">Independent Variable</th>
+</tr>
+<tr class="even">
+<td colspan="2" style="border: none"></td>
+<th data-quarto-table-cell-role="th">Dichotomous</th>
+<th data-quarto-table-cell-role="th">Nominal</th>
+<th data-quarto-table-cell-role="th">Ordinal</th>
+<th data-quarto-table-cell-role="th">Continuous</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th rowspan="4" data-quarto-table-cell-role="th" style="vertical-align: middle">Dependent Variable</th>
+<th data-quarto-table-cell-role="th">Dichotomous</th>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a>]<br>
+[<a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a>]</td>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>
+[<a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a>]</td>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">d</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a>]<br>
+[<a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a>]</td>
+<td><a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Nominal</th>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>
+[<a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a>]</td>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">V</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a><br>
+[<a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a>]</td>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>
+[<a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a>]</td>
+<td><a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a></td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Ordinal</th>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">d</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a>]<br>
+[<a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a>]</td>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>
+[<a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a>]</td>
+<td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">d</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a><br>
+[<a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a>]</td>
+<td><a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Continuous</th>
+<td><a href="t-tests_ANOVAs.html#sec-4.-testing-differences-in-means">t-test</a><br>
+[<a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a>]</td>
+<td><a href="t-tests_ANOVAs.html#sec-5.-analysis-of-variance-tests-anovas">ANOVA</a>, <a href="t-tests_ANOVAs.html#sec-tukey-test-post-hoc-tests-with-anovas">Tukey</a><br>
+[<a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a>]</td>
+<td><a href="t-tests_ANOVAs.html#sec-5.-analysis-of-variance-tests-anovas">ANOVA</a>, <a href="t-tests_ANOVAs.html#sec-tukey-test-post-hoc-tests-with-anovas">Tukey</a><br>
+[<a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a>]</td>
+<td><a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a><br>
+[<a href="correlation.html#sec-pearson-correlations">Corr</a>]</td>
+</tr>
+</tbody>
+</table>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

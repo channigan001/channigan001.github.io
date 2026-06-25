@@ -1,0 +1,73 @@
+/* Navbar */
+.navbar {
+    background-color: #7bafd4;
+}
+
+.navbar-brand,
+.nav-link,
+.navbar-nav .nav-link {
+    color: white !important;
+}
+
+.navbar-nav .dropdown-menu {
+    background-color: white;
+}
+
+/* Headers */
+h1, h2, h3 {
+    color: #004987;
+}
+h4 {
+    color: #BE0F34;
+}
+
+/* Hyperlinks */
+a {
+  color: #004987; 
+}
+
+
+/* Tables */
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse !important;
+}
+
+th {
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #adb5bd !important;
+}
+
+td {
+    vertical-align: middle;
+    border: 1px solid #adb5bd !important;
+}
+
+/* Vertical text for Dependent Variable */
+.vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Homepage cards (if you add them later) */
+.card {
+    border-radius: 10px;
+}
+
+/* Slightly wider content area */
+.quarto-container {
+    max-width: 1200px;
+}
+
+/* Indent code blocks */
+pre.sourceCode,
+pre,
+div.sourceCode {
+  margin-left: 2em;
+}
