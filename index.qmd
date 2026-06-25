@@ -2,7 +2,7 @@
 title: POLS 222 R Walkthroughs
 ---
 
-This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects. 
+This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional R utilities that go beyond the POLS 222 coursework, which may be helpful for students completing their capstone projects. 
 
 ## Tutorials
 

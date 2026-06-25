@@ -75,7 +75,7 @@ More importantly, thresholds help us estimate predicted probabilities. After est
 ```{r}
 #| message: false
 
-load("Datasets/spain.RData")
+load("datasets/spain.RData")
 ```
 
 ```{r}

@@ -50,7 +50,7 @@ testpropsC(world$vdem.4cat, .25, response = "1. Liberal democracy")
 
 Is the proportion of Liberal Democracies significantly different from the actual proportion of Liberal Democracies in the world?
 
-### 4. Testing Differences in Means {#sec-4.-testing-differences-in-means}
+### [4. Testing Differences in Means](slides\ttestsAnova.pdf#page=7) {#sec-4.-testing-differences-in-means}
 
 We use what's called a "t-test" to test when means are significantly different
 
@@ -115,7 +115,7 @@ Was mean voter turnout in 2020 significantly different from mean voter turnout i
 ```{r}
 #| message: false
 
-load("Datasets/testScoresData.RData")
+load("datasets/testScoresData.RData")
 ```
 
 ```{r}

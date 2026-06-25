@@ -179,7 +179,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./prettyData.html">
- <span class="dropdown-text">Publication Quality Data</span></a>
+ <span class="dropdown-text">Publication-Ready Tables</span></a>
   </li>  
     </ul>
   </li>
@@ -1054,7 +1054,7 @@ Table: Distribution of Binned Values of world$pop.urban (Percentage of the popul
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

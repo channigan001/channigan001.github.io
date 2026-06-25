@@ -179,7 +179,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="./prettyData.html">
- <span class="dropdown-text">Publication Quality Data</span></a>
+ <span class="dropdown-text">Publication-Ready Tables</span></a>
   </li>  
     </ul>
   </li>
@@ -364,7 +364,7 @@ Table: 95% Confidence Interval of Difference of Proportions
 <p>Is the proportion of Liberal Democracies significantly different from the actual proportion of Liberal Democracies in the world?</p>
 </section>
 <section id="sec-4.-testing-differences-in-means" class="level3">
-<h3 class="anchored" data-anchor-id="sec-4.-testing-differences-in-means">4. Testing Differences in Means</h3>
+<h3 class="anchored" data-anchor-id="sec-4.-testing-differences-in-means"><a href="slides\ttestsAnova.pdf#page=7">4. Testing Differences in Means</a></h3>
 <p>We use what’s called a “t-test” to test when means are significantly different</p>
 <ul>
 <li>DV: Continuous/Interval</li>
@@ -592,7 +592,7 @@ Table: 95% Confidence Interval of Difference of Means
 </div>
 <p>Was mean voter turnout in 2020 significantly different from mean voter turnout in 2016?</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"Datasets/testScoresData.RData"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"datasets/testScoresData.RData"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testmeansC</span>(testScores<span class="sc">$</span>score.pre, testScores<span class="sc">$</span>score.post, <span class="at">paired =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
