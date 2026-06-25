@@ -1,0 +1,271 @@
+---
+title: "Making Publication-Ready Tables"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [The `printC` Option](#sec-the-printc-option)
+3.  [Publication-Ready Tables](#sec-publication-ready-tables)
+    a.  [T-Tests](#sec-t-tests)
+    b.  [ANOVAs](#sec-anovas)
+    c.  [Chi-square](#sec-chi-square-crosstabs)
+    d.  [Linear Regression (OLS)](#sec-ols-linear-regressions)
+    e.  [Logistic Regression (Logit)](#sec-logistic-regressions-logit)
+4.  [Advanced Material](#sec-advanced-material)
+    a.  [Output `stargazer()` to .html file instead of text](#sec-output-stargazer-html)
+    b.  [Correct SEs and p-values for Odds Ratios in `stargazer()`](#sec-correct-ses-and-p-values-for-odds-ratios-in-stargazer)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+If you do not already have these packages, paste them manually into the console and install them.
+
+```{r}
+#install.packages("stargazer")
+#install.packages("oii")
+```
+
+-   [stargazer](https://cran.r-project.org/web/packages/stargazer/index.html){target="_blank"} allows us to produce clean, formatted regression tables.
+
+-   [oii](https://cran.r-project.org/web/packages/oii/index.html){target="_blank"} provides additional measures of association for analyzing chi-square tests.
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+library(stargazer)
+library(oii)
+```
+
+### 2. The **`printC`** Option {#sec-the-printc-option}
+
+In `RCPA3`, `printC()` is its own standalone function that allows us to save information and output it in a html file, which means it's formatted like a webpage. But many of the `RCPA3` functions we already use also have a `printC` optional argument that we can use to ensure we have all the necessary components of the test.
+
+You'll notice that, whenever you use `printC`, you'll get a message in the output that looks something like this: "...appended to Table.Output.Jun0326.html in C:/Users/CHANNIGAN001/Path/To/File." The file name includes the **current date**, and the file will be updated (i.e., appended) to include the output from each `printC` statement you use in the same day. The message also includes the **location of the file** on your computer, so you can find it, open it in a browser and see the formatted text/visualizations.
+
+### 3. Publication-Ready Tables for Each Test {#sec-publication-ready-tables}
+
+#### T-tests {#sec-t-tests}
+
+For a t-test, we can just add the `printC = T` optional argument at the end of the `testmeansC()` function:
+
+```{r}
+testmeansC(states$vep20.turnout, states$vep16.turnout, paired = T, printC = T)
+```
+
+#### ANOVAs {#sec-anovas}
+
+We could use the same `printC = T` argument do something similar for an ANOVA if we take the `compmeansC()` route with the `anova = T` option to produce it. But because we need to do the additional Tukey HSD test to get all the necessary information for interpretation, we'll use `printC()` as a standalone function instead.
+
+1.  First, we'll run the ANOVA using the `aov()` function and store the model as an object called `anova.model1`:
+
+```{r}
+anova.model1 <- aov(world$gdp.percap~world$vdem.4cat)
+```
+
+2.  Next, we can use `printC()` to send the summary output of the model to the output document:
+
+```{r}
+printC(summary(anova.model1))
+```
+
+3.  Then, we do the same thing with the Tukey HSD test output for the model:
+
+```{r}
+printC(TukeyHSD(anova.model1))
+```
+
+#### Chi-square Crosstabs {#sec-chi-square-crosstabs}
+
+The `printC` option is also helpful for crosstabs and chi-square tests:
+
+1.  First, we run the model and store the output as an object (`chitest1`). Because we're focused on getting the formatted output, we'll be sure to include all the optional arguments in addition to the `printC = T` argument at the end:
+
+```{r}
+chitest1<-crosstabC(dv=nes$gun.buying, iv=nes$libcon3, dvlabs = c("Harder", "Easier", "About the same"), compact=T, chisq = T, plot = F, printC = T)
+```
+
+2.  Then, we can use the standalone `printC()` function to append the output of the `association.measures()` function on our stored model object to the file, too:
+
+```{r}
+printC(association.measures(chitest1))
+```
+
+#### OLS Linear Regressions {#sec-ols-linear-regressions}
+
+For regression output, we can still use the `printC = T` argument as part of the `regC()` function, but it is always preferable to use `stargazer()` instead because it is more aligned with the formatting in the discipline and customizable.
+
+But this is where things get a little tricky.
+
+We could start by running the test using `regC()`, including the `printC = T` argument, and storing the model object as something like `ols1`. In the console, we'll see that the model was appended to the output file as intended.
+
+```{r}
+ols1 <- regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban, printC = T)
+```
+
+But when we try using stargazer to print the model object to the console as text...
+
+```{r}
+stargazer(ols1, type = "text")
+```
+
+...**it doesn't work**!
+
+That's because `regC()` is a special function that is unique to the `RCPA3` package.
+
+So, we'll create a new model object (`ols2`), copying the model equation into a new `lm()` function instead:
+
+```{r}
+ols2 <- lm(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban)
+```
+
+As always, we can print the basic model summary to the console to have a look.
+
+```{r}
+summary(ols2)
+```
+
+But we can also level up by using the `stargazer()` function to format the information in a table that we can copy/paste into a Word document.
+
+> **Note:** In Word, R output is best formatted using Lucida Console font (10pt size). If you don't have that font option, though, you could try the Courier New font.
+
+```{r}
+#| warning: false
+stargazer(ols2, type = "text")
+```
+
+Next, let's make a new model (`ols3`) that makes a slight adjustment to our original model. Like we've discussed before, we can compare related models to account for additional control variables, check for robustness across different measures of the same concept, include transformations, etc.
+
+In this case, we'll remove the `states$obesity.percent` independent variable from the model to see if the results change:
+
+```{r}
+ols3 <- lm(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$gini.2016 + states$prcapinc + states$urban)
+```
+
+Using `stargazer()`, we don't have to look at two separate outputs to compare models; we can look at them side-by-side in the same output by just include both (or all) of them in the function:
+
+```{r}
+stargazer(ols2, ols3, type = "text")
+```
+
+We can also, customize the stargazer output using `stargazer`'s optional arguments. To find these, you can either look at the documentation (linked at the top of this document) or take the easy route and look at the help information in the RStudio environment:
+
+```{r}
+?stargazer
+```
+
+For example, we might want to include the `df = F` argument to remove the degrees of freedom and save some horizontal spacing between columns:
+
+```{r}
+stargazer(ols2, ols3, type = "text", df = F)
+```
+
+#### Try some of these other options:
+
+-   changing significance levels using `star.cutoffs = c()`
+
+```{r}
+
+```
+
+-   clarifying IV labels using `covariate.labels = C()`
+
+```{r}
+
+```
+
+-   making a DV label using `dep.var.labels`
+
+```{r}
+
+```
+
+#### Logistic Regressions (Logit) {#sec-logistic-regressions-logit}
+
+The same logit applies to logistic regression output: `printC()` is possible, but `stargazer()` is preferable:
+
+Just like before, we could start by running the test using `logregC()`, including the `printC = T` argument, and storing the model object as something like `logit1`. Even without the model object, the `printC = T` optional argument will append the tables to the output file.
+
+```{r}
+logit1 <- logregC(formula = world$vdem.2cat ~ world$gdp.percap.5cat + world$frac.eth + world$pop.urban, fit.stats=T, printC = T)
+```
+
+Print the basic model summary to the console to have a look...
+
+```{r}
+summary(logit1)
+```
+
+...but once again, stargazer won't work with an object created using the `logregC()` function:
+
+```{r}
+stargazer(logit1, type = "text")
+```
+
+So, we'll recreate the same model using the base R `glm()` function. This time we'll assign it to an object called `logit2`. Remember: we always have to specify the `family = "binomial"` optional argument to skip over the default linear model.
+
+```{r}
+logit2 <- glm(formula = world$vdem.2cat ~ world$gdp.percap.5cat + world$frac.eth + world$pop.urban, family = "binomial")
+```
+
+View the basic model summary in the console if you want...
+
+```{r}
+summary(logit2)
+```
+
+...then put it into a `stargazer()` function. The function below is basic, but you can add any useful modifications, just like we did above with the OLS linear regression models.
+
+```{r}
+stargazer(logit2, type = "text")
+```
+
+Notice that stargazer reports the raw log-odds rather than the odds ratios. While we might be tempted to try `apply.coef = exp` to exponentiate the coefficients and present odds ratios, that's a dangerous change because it also biases the standard errors, test statistics, and p-values.
+
+So, to report odds ratios and classification tables, it's reasonable to pull those from the `printC = T` output of the `logregC()` version of the model(s), including the `fit.stats = T`, `orci = T`, and `pre = T` options. Then just screenshot and copy/paste those tables separately.
+
+### 4. Advanced Material: {#sec-advanced-material}
+
+#### Output `stargazer()` to .html file instead of text {#sec-output-stargazer-html}
+
+Formatting the `stargazer()` table as an html document makes it look even better, but it can be sort of complicated. The key here is to change the `type =` from `"text"` to `"html"` and provide a memorable file name in the `out =` argument for where the output is saved.
+
+```{r}
+#| warning: false
+stargazer(logit2, type = "html", out = "logit2ResultsTable.html")
+```
+
+You'll see the html code printed to the console, too, but you can find the html file that you produced and open it in a browser, then select all and copy/paste it into your Word document. Remember: you can always add in other optional arguments, just like before, to maximize the look/clarity of your table.
+
+#### Correct SEs and p-values for Odds Ratios in `stargazer()` {#sec-correct-ses-and-p-values-for-odds-ratios-in-stargazer}
+
+1.  First, we need to calculate the odds ratios and store them in a separate object:
+
+```{r}
+OddsRatios <- exp(coef(logit2))
+```
+
+2.  Then, we correct the standard errors and store those in a separate object, too.
+
+    Because odds ratios are transformed versions of the original coefficients (log-odds), the standard errors change, too. So, we go back to the original model (specifically, something called a variance-covariance matrix, which is a table of the uncertainty of the estimates) to recalculate the standard errors in light of the odds ratio transformations. To do this we multiply the odds ratios my the square root of the diagonal (the Maximum Likelihood Estimates) from the variance-covariance matrix of the original model:
+
+```{r}
+SE_Odds <- OddsRatios * sqrt(diag(vcov(logit2)))
+```
+
+3.  Then, we can pass arguments to stargazer to use our new `OddsRatios` object in place of the coefficients, and our new `SE_Odds` object in place of the original standard errors. Then we turn off the automatic t-statistics and p-values that `stargazer()` defaults to because the original ones were wrong. Basically: "just use my inputs rather than ignoring them in favor of the original model."
+
+```{r}
+stargazer(logit2, type = "text",
+          coef = list(OddsRatios), 
+          se = list(SE_Odds), 
+          t.auto = FALSE, 
+          p.auto = FALSE)
+```

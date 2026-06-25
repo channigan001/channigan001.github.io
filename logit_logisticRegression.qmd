@@ -1,0 +1,262 @@
+---
+title: "Logistic Regression (Logit)"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Logistic Regression with `logregC()`](#sec-logistic-regression-with-logregc)
+    a.  [Getting Model Statistics](#sec-getting-model-statistics)
+    b.  [Classification Tables](#sec-classification-tables)
+3.  [Dealing with Ordinal IVs in Logit Models](#sec-dealing-with-ordinal-ivs-in-logit-models)
+4.  [Interpreting Partial Effects in Logit](#sec-interpreting-partial-effects-in-logit)
+    a.  [Odds Ratios](#sec-odds-ratios)
+5.  [Logistic Regression with `glm()`](#sec-logistic-regression-with-glm)
+6.  [Readying `glm()` for Interpretation](#sec-readying-glm-for-interpretation)
+7.  [Advanced Material](#sec-advanced-material)
+    a.  [Manually Calculating Model Stats for `glm()` Models](#sec-manually-calculating-model-stats-for-glm-models)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+No new packages to install this time!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+```
+
+### 2. Logistic Regression with `logregC()` {#sec-logistic-regression-with-logregc}
+
+Requirements:
+
+-   DV: Dichotomous
+-   IV: Continuous/Interval (bivariate); any (multivariate)
+
+Just like `regC()` for OLS linear regression, `RCPA3` gives us `logregC()` for logistic regression:
+
+```{r}
+logregC(formula = world$vdem.2cat ~ world$gdp.percap.5cat + world$frac.eth + world$pop.urban)
+```
+
+See how we get p-values for the partial effects (the coefficients/estimates for each individual IV), but not for the model as a whole?
+
+#### Getting Model Statistics {#sec-getting-model-statistics}
+
+To get model statistics, we have to add an optional argument: `fit.stats = T` gives us the model test statistic, which is a special (but different) kind of Chi-square test that runs in the background, and the p-value.
+
+```{r}
+logregC(formula = world$vdem.2cat ~ world$gdp.percap.5cat + world$frac.eth + world$pop.urban, fit.stats=T)
+```
+
+There are also some other stats that aim to evaluate the "goodness of fit" of the logit model: McFadden's R2, Cox & Snell Index, and Nagelkerke Index are all "Pseudo" R-Squared measures.
+
+Choosing the appropriate Pseudo R-Square measure can be confusing because there are several, but the norm among most social scientists is to rely on **McFadden's R2**.
+
+What makes it a "*Pseudo*" R-Squared is that it attempts to replicate a regular R-Squared (from OLS linear regression) but in a non-linear model. In other words, all of them are kind of imperfect approximations. Even though McFadden's R2 gives us a better general sense of the explanatory power of our model compared to a model without any IVs, it's not a direct analog to a percentage of the variation in the DV explained by the model.
+
+#### Classification Tables {#sec-classification-tables}
+
+That's where a classification table (or a "confusion matrix") comes in. We can also include the `pre = T` argument in the `logregC()` function to get that table and a measure of the Proportional Reduction in Error (PRE), just like we learned about with some of the Chi-square measures of association.
+
+```{r}
+logregC(formula = world$vdem.2cat ~ world$gdp.percap.5cat + world$frac.eth + world$pop.urban, fit.stats=T, pre = T)
+```
+
+See how there are 44 cases in the upper left box, representing observations that are both *observed* 0's (Autocracy) AND *predicted* 0's? In the middle box, there 62 cases of *observed* 1's (Democracy) that are also *predicted* 1's. These are the cases that our model predicted correctly.
+
+If we add up those two numbers on the diagonal (44 + 62) and divide by the total number of cases (150, from the bottom right box), we get a proportion of correct predictions of the DV.
+
+```{r}
+(44+62)/150
+```
+
+When we do some mental math to convert to a percentage, we're explaining like 70.66667% of the variation in the DV with our model. Could be better, but not bad!
+
+### 3. Dealing with Ordinal IVs in Logit Models {#sec-dealing-with-ordinal-ivs-in-logit-models}
+
+Notice how the `gdp.percap.5cat` variable is repeated and has weird suffixes? R is trying to fit the ordered factor variable to different polynomial functions to see which one makes the most sense.
+
+-   **.L =** Linear model (treats the effect of the IV as usual, like slope \* X...)
+-   **.Q =** Quadratic model (models the IV as slope \* X\^2)
+-   **.C =** Cubic model (models the IV as slope \* X\^3)
+-   **\^4 =** Quartic model (models the IV as slope \* x\^4)
+-   ...and so on for as many categories as there are in the variable, minus 1...
+
+This happens because categorical variables (even ordinal ones) don't necessarily have a linear or consistent effect on the DV at different levels. R tries to find the best "shape" of the IV-DV relationship
+
+In our case, because `world$gdp.percap.5cat.L` is the only significant one of the 4 options, it's likely that the effect of GDP per capita on the probability of being a democracy is fairly linear and consistent.
+
+But there's a less math-y way to understand the relationship: When we treat it like it's unordered (i.e., a nominal variable), R just converts it to a set of dummies, which we can interpret as usual.
+
+We can do that using the `factor()` function with the `unordered = T` option directly in the model...
+
+```{r}
+logregC(formula = world$vdem.2cat ~ factor(world$gdp.percap.5cat, ordered = F) + world$frac.eth + world$pop.urban, fit.stats=T, pre = T)
+```
+
+...or we can create a new variable to include in the model instead, which can lead to a cleaner model to interpret:
+
+```{r}
+gdppc.5cat.nom_ <- factor(world$gdp.percap.5cat, ordered = F)
+
+logregC(formula = world$vdem.2cat ~ gdppc.5cat.nom_ + world$frac.eth + world$pop.urban, fit.stats=T, pre = T)
+```
+
+But remember that we'll have to consider the excluded base category, too! We can always change that using the `relevel()` function, too.
+
+### 4. Interpreting Partial Effects in Logit {#sec-interpreting-partial-effects-in-logit}
+
+Because logistic regression is not a linear model, we can't use the same simple vocabulary to interpret the coefficients as we can with linear regression. In fact, apart from direction, the logit coefficients are **not directly interpretable**!
+
+#### Odds Ratios {#sec-odds-ratios}
+
+We can get a little closer to direct interpretation by focusing on the odds ratios instead of the log odds that are produced by default.
+
+To do this, we just add the `orci = T` option to the `logregC()` function:
+
+```{r}
+logregC(formula = world$vdem.2cat ~ gdppc.5cat.nom_ + world$frac.eth + world$pop.urban, fit.stats=T, pre = T, orci = T)
+```
+
+When we interpret odds ratios, anything above 1 is an *increase* in the odds of being in the higher category (Democracy) and anything below 1 is a *decrease* in the odds of being in the higher category (Democracy). Then we interpret the the
+
+For example, in our model:
+
+-   If pop.urban were significant, a one-unit increase in a country's urban population rate would decrease the odds of a country being a democracy by a factor of 0.997 (a 0.3% decrease in odds).
+-   When a state has a GDP per capita of `$45k or more`, its odds of being a democracy significantly increase by a factor of 9.212 (a 821.2% increase in odds).
+
+### 5. Logistic Regression with `glm()`{#sec-logistic-regression-with-glm}
+
+Because `logregC()` is specific to `RCPA3`, it's sometimes helpful to have a base R function to perform a logistic regression. That's where `glm()` comes in. But there are a few common pitfalls to sort through...
+
+Let's start with a basic `glm()` model:
+
+```{r}
+#| error: true
+
+glm(states$deathpen.status ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers)
+```
+
+**Error Number 1: DV Problems?**
+
+See how we get an error message? `NA/NaN/Inf in 'y'` is telling us about missing and infinite (i.e., impossible to compute) values in the DV. In other words, there's a problem with our DV and how it's measured.
+
+So, let's check the the DV.
+
+```{r}
+attributes(states$deathpen.status)
+```
+
+It's a factor and there are only two categories, so it's dichotomous, which is what we need. But maybe the model is better equipped to deal with numbers instead of categories?
+
+We could try converting the dichotomous factor to numeric: either 1 or 2.
+
+```{r}
+#| error: true
+
+states$deathpen.status_num <- as.numeric(states$deathpen.status)
+
+glm(deathpen.status_num ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers)
+```
+
+**Error Number 2: Variable Specification Problems?**
+
+Not found?? We definitely created the variable, so this error is confusing. But notice that it doesn't show up in our Environment, either. Carefully re-reading the code, it's clear that we added it to the states dataset, but we didn't specify that dataset in our `glm()` function.
+
+Let's specify the states dataset and try again.
+
+```{r}
+glm(states$deathpen.status_num ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers)
+```
+
+It runs this time! But even without throwing an error, **the model is still incorrect**...
+
+**Error Number 3: Logical Problems.**
+
+The default `glm()` method assumes a "Gaussian" distribution, which tries to fit a linear model, assuming normality. In other words, the default is OLS. But we have a dichotomous DV, so a *linear* model doesn't make sense.
+
+Instead, we have to tell `glm()` what type of link/distribution to use when running our model. So, we can go back to the same dichotomous factor DV, but we specify that we want a `binomial` link (i.e., the model has *two* outcomes).
+
+```{r}
+glm(states$deathpen.status ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers, family = binomial)
+```
+
+Adding the `family = binomial` argument is exactly what we were missing.
+
+### 6. Readying `glm()` for Interpretation {#sec-readying-glm-for-interpretation}
+
+We'll store the working `glm()` model in an object (`logit1`) so we can view the model summary and reference than object later.
+
+```{r}
+logit1 <- glm(states$deathpen.status ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers, family = binomial)
+
+summary(logit1)
+```
+
+While this model will come in handy a little bit later when we present the model results, we don't have model fit statistics, which presents a hurdle with a more involved solution.
+
+But for now, one option is to run both a `glm()` to store and report the model and run a `logregC()` to estimate the model stats and report those separately.
+
+### 7. Advanced Material
+
+#### Manually Calculating Model Stats for `glm()` Models {#sec-manually-calculating-model-stats-for-glm-models}
+
+We'll start by running our fully specified model (`logit1` just like before), but then we'll run another model: the *null model* (`logit0` in this case), which is the same DV but without any of the IVs to help predict it. The null model acts as a baseline for comparison to our model.
+
+```{r}
+logit1 <- glm(states$deathpen.status ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers, family = binomial)
+
+logit0 <- glm(states$deathpen.status ~ 1, family = binomial)
+```
+
+Then, to get the p-value of the model as whole, we have to compare the log likelihood of our model to the log likelihood of the null model using a **likelihood ratio test**:
+
+```{r}
+pvalue <- anova(logit0, logit1, test = "Chisq")
+```
+
+Wait. ANOVA? Chi-square? Again??
+
+Yep.
+
+Earlier on, when we looked at bivariate tests, ANOVA helped us compare means and Chi-square helped us analyze crosstabs with categorical variables. With logistic regression, we're asking different questions:
+
+-   Does a model *with* IVs fit the data significantly better than a model *without* IVs?
+
+So, R is just using the `anova()` function to compare the log likelihoods of both those models to produce a likelihood ratio test statistic, then using a Chi-square test to determine whether the improvement in model fit is large enough to be significant.
+
+Next, we can calculate McFadden's pseudo R-squared to see how much the full model improves the log-likelihood compare to the null model. So, we specify the `logLik()` parameters stored in each model:
+
+```{r}
+pseudoR2 <- as.numeric(1 - (logLik(logit1) / logLik(logit0)))
+```
+
+Similarly, we can extract the coefficient parameters from the stored model, so we can exponentiate them into Odds Ratios:
+
+```{r}
+oddsRatios <- exp(coef(logit1))
+```
+
+Finally, we just call each of the objects to print them to the console and see those values. The `pvalue` line will print the results of the ANOVA we ran above, which includes "Pr(\>Chi)" that we can report. Then, `pseudoR2` will report a number for our McFadden's pseudo R-squared, and the `oddsRatios` will produce a table of each of the IVs and their Odds Ratios which we can report after comparing to the original table and seeing whether the partial effects there are significant.
+
+```{r}
+pvalue
+
+pseudoR2
+
+oddsRatios
+```
+
+Now, we can run a `logregC()` and see that the values we just calculated are the same (or close enough, given rounding decisions)!
+
+```{r}
+logregC(states$deathpen.status ~ states$south + states$attend.pct + states$public.conservative + states$gun.dealers, fit.stats = T, pre=T, orci = T)
+```

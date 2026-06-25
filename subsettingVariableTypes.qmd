@@ -1,0 +1,145 @@
+---
+title: "Subsetting and Variable Types"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Identify Variables by Type Using Subsetting](#sec-identify-variables-by-type-using-subsetting)
+    a.  [List **CONTINUOUS/INTERVAL** variables (numeric)](#sec-get-only-continuousinterval-variables)
+    b.  [List **DICHOTOMOUS** variables (factor with only 2 levels)](#sec-get-only-dichotomous-variables)
+    c.  [List **ORDINAL** variables (ordered factor)](#sec-get-only-ordinal-variables)
+    d.  [List **NOMINAL** variables (non-ordered factor with 3+ levels)](#sec-get-only-nominal-variables)
+3.  [Advanced Material](#sec-advanced-material)
+    a.  [A Single, Complex Subsetting Function](#sec-single-complex-function-for-subsetting)
+    b.  [Using `dplyr()` to List Variables by Type](#sec-using-dplyr-to-list-variables-by-type)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+No new packages to install this time!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+library(dplyr)
+```
+
+### 2. Identify Variables by Type Using Subsetting {#sec-identify-variables-by-type-using-subsetting}
+
+Many of the techniques, tools, and tests we use in R require variables of a particular level of measurement (i.e., variable type). For example, a bivariate t-test requires a continuous dependent variable. So, before the analysis, it can be useful to identify all variables of a given type in our dataset.
+
+Subsetting variables by type also provides a quick glance at the overall structure of the dataset and provides helpful practice using logical operators, indexing, `sapply()`, and `names()` to identify and extract variables that meet certain conditions.
+
+#### Get only **CONTINUOUS/INTERVAL** variables (numeric) {#sec-get-only-continuousinterval-variables}
+
+To start, let's identify all the continuous/interval variables in the `nes` dataset. To do this, we'll rely on `is.numeric()` as a quick logical function that returns `TRUE` if the object is of numeric or integer class (i.e., R recoginizes it as a number) and `FALSE` if not. 
+
+Because we want to check the class of all the variables, we'll use the `sapply()` function, which is designed to provide a *simplified* result (usually a vector) after *applying* a function or operation over a whole list. 
+
+  1. Using `sapply()`, create a subset that contains only numeric variables in `nes`,
+  2. Create a new dataframe that includes only the columns we identified,
+  3. Optionally, view the subset of variables as a whole dataframe,
+  4. View only the relevant variable names directly in the console.
+
+```{r}
+  numeric_cols <- sapply(nes, is.numeric)
+  numeric_variables <- nes[, numeric_cols]
+  # View(numeric_variables) #show the subset of the full data
+  names(numeric_variables) #just print the list of variables names to console
+```
+
+#### Get only **DICHOTOMOUS** variables (factor with only 2 levels) {#sec-get-only-dichotomous-variables}
+
+To identify the dichotomous variables, the process involves the same steps but include a slightly more complex set of conditions. We don't have a built-in option for identifying dichotomous variables like we do for numeric ones; R stores variables according to class, not according to how many levels they have.
+
+So, we have to check for two conditions this time: one to return `TRUE` if the variable's class if factor (`is.factor()`) *AND* another to return `TRUE` if the number of categories is exactly equal to two (`nlevels()==2`). But `sapply()` needs a little help evaluating both conditions for every variable, we have to provide a custom function using `function(x)` that says, for each variable (`x`) in the dataset, return `TRUE` only if *both* conditions are met. 
+
+```{r}
+  dichotomous_cols <- sapply(nes, function(x) is.factor(x) && nlevels(x) == 2) 
+  dichotomous_variables <- nes[, dichotomous_cols]
+  # View(dichotomous_variables)
+  names(dichotomous_variables)
+```
+
+#### Get only **ORDINAL** variables (ordered factor) {#sec-get-only-ordinal-variables}
+
+Ordinal variables have two classes: they're factor variables that are also ordered. But even though R has built-in functions for those classes, there are still two of them, so we still need to include a custom `function(x)` to ensure that it only returns `TRUE` if a given variable (`x`) is *both* a factor *AND* ordered. Ordered is a subclass of factor, so anything that is ordered is usually a factor, too, but we'll be cautious and ensure both are true, in case there were any issues with importing the data or the classes were overwritten at one point.
+
+```{r}
+  ordinal_cols <- sapply(nes, function(x) is.factor(x) && is.ordered(x))
+  ordinal_variables <- nes[, ordinal_cols]
+  # View(ordinal_variables)
+  names(ordinal_variables)
+```
+
+#### Get only **NOMINAL** variables (non-ordered factor with 3+ levels) {#sec-get-only-nominal-variables}
+
+To find nominal variables, we have to test for three conditions using our custom `function(x)`. It's sort of like a process of elimination, though; we have to ensure that a given variable (`x`) is a factor, but that it's also *NOT* ordered *AND* it contains more than 2 categories/levels. 
+
+```{r}
+  nominal_cols <- sapply(nes, function(x) is.factor(x) && !is.ordered(x) && nlevels(x) > 2)
+  nominal_variables <- nes[, nominal_cols]
+  # View(nominal_variables)
+  names(nominal_variables)
+```
+
+### 3. Advanced Material {#sec-advanced-material}
+
+#### Skip all the intervening steps with a single, complex function {#sec-single-complex-function-for-subsetting}
+
+Instead of treating each piece as a separate step, we could just skip directly to viewing the names of the relevant variables in the console using nested functions in a single expression. Basically, we're telling R to list the `names()` of the `nes` dataset when it's subsetted to only the results of the `sapply()` function checking for the conditions we specify across all the columns of the dataset. 
+
+```{r}
+  names(nes)[sapply(nes, is.numeric)] # CONTINUOUS/INTERVAL
+  names(nes)[sapply(nes, function(x) is.factor(x) && nlevels(x) == 2)] # DICHOTOMOUS
+  names(nes)[sapply(nes, function(x) is.factor(x) && is.ordered(x))] # ORDINAL
+  names(nes)[sapply(nes, function(x) is.factor(x) && !is.ordered(x) && nlevels(x) > 2)] # NOMINAL
+```
+
+#### Using `dplyr()` to List Variables by Type {#sec-using-dplyr-to-list-variables-by-type}
+
+Instead of using indexing, we could also rely on the `select()` and `where()` functions from the `dplyr` package to do the same thing. The `dplyr` approach provides a couple of clear advantages: it's much more efficient than indexing and it's a more common approach among researchers in the discipline. But the major disadvantage for us is that it involves a whole new syntax and set of functions that we don't explicitly learn about in POLS 222.
+
+So, as a starting point for those who are interested in exploring the `dplyr` package on their own, here's what the code would look like for listing the variables by type:
+
+```{r}
+# Continuous/Interval
+nes %>%
+  select(where(is.numeric)) %>%
+  names()
+```
+
+```{r}
+# Dichotomous
+nes %>%
+  select(where(~ is.factor(.) && 
+                 nlevels(.) == 2)) %>%
+  names()
+```
+
+```{r}
+# Ordinal
+nes %>%
+  select(where(~ is.factor(.) && 
+                 is.ordered(.))) %>%
+  names()
+```
+
+```{r}
+# Nominal
+nes %>%
+  select(where(~ is.factor(.) &&
+                 !is.ordered(.) &&
+                 nlevels(.) > 2)) %>%
+  names()
+```
+
+**Note:** because `select()` can be a function in other packages outside of `dplyr` (e.g., in `MASS`), you may sometimes get an "Error in select(...." message that prevents the function from running. In that case, the simplest solution is to replace `select` within `dplyr::select` to tell R that you're using `select()` from the `dplyr` package specifically.

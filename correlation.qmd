@@ -1,0 +1,107 @@
+---
+title: "Correlation Analysis"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Pearson Correlations](#sec-pearson-correlations)
+3.  [Adding p-values to Correlation Output](#sec-adding-p-values-to-correlation-output)
+4.  [Adding Scatterplots to Correlation Output](#sec-adding-scatterplots-to-correlation-output)
+5.  [Correlations Among Categorical Variables](#sec-correlations-among-categorical-variables)
+6.  [Multivariate Correlations](#sec-multivariate-correlations)
+7.  [Advanced Material](#sec-advanced-material)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+No new packages to install this time!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+```
+
+### 2. Pearson Correlations {#sec-pearson-correlations}
+
+We'll use the `correlateC()` function from the `RCPA3` package to test how strongly continuous/interval variables are associated with one another. The `correlateC()` function requires us to pass a list of variables using the `c()` subfunction. For example, if we wanted to test the correlation between a respondents' feelings toward unions and their feelings toward Congress, it would look like this:
+
+```{r}
+correlateC(c(nes$ft.unions, nes$ft.congress))
+```
+
+The function produces a correlation of 0.26. How strong is that, based on our rules of the road for evaluating correlation coefficients?
+
+### 3. Adding p-values to Correlation Output {#sec-adding-p-values-to-correlation-output}
+
+Because a Pearson's *r* correlation is technically a hypothesis test, we could also generate evaluate whether the association is statistically significant by simply including the `stats = T` optional argument in the code.
+
+But here's a big **disclaimer**: social scientists rarely do that. We're generally interested in correlations as a sort of descriptive statistic, or a measure of strength in a relationship, not a standalone hypothesis test. Correlation is a helpful starting point or backup test, but it's pretty weak on its own as a test of significance.
+
+```{r}
+correlateC(c(nes$ft.unions,nes$ft.congress), stats = T)
+```
+
+### 4. Adding Scatterplots to Correlation Output {#sec-adding-scatterplots-to-correlation-output}
+
+However, it definitely helps us understand the distribution of our data and how *strongly* variables are associated. We can also produce a scatterplot of the data to visualize the clusters/patterns in the data. All we need is the `plot = T` optional argument:
+
+```{r}
+correlateC(c(nes$ft.unions,nes$ft.congress), plot = T)
+```
+
+It's important to note that, in large datasets with strong correlations, we're likely to have overlapping points in the scatterplot that we can't see clearly (like this one). But the `correlateC()` function accounts for that by "jittering" the points, shifting observations a tiny amount to make sure that we can see everything, despite any overlap. The `jitter` option is set to `TRUE` by default. But we can also turn it off if we have to...
+
+```{r}
+correlateC(c(nes$ft.unions,nes$ft.congress), plot = T, jitter=F)
+```
+
+### 5. Correlations Among Categorical Variables {#sec-correlations-among-categorical-variables}
+
+The `correlateC` function is best suited for continuous/interval IVs *and* DVs. In fact, Pearson's *r* correlation assumes numeric variables explicitly. 
+
+Let's try to include a categorical variable (i.e., a factor variable in R), like `nes$partyid3`, for example:
+
+```{r}
+#| error: true
+correlateC(c(nes$ft.unions, nes$partyid3), plot = T)
+```
+
+Right away, we get an error when we try to correlate factor variable with a continuous variable. That's because of the way R doesn't know to line up categories (i.e., factor variables) against numbers (i.e., numeric variables) in this function and because it would violate the numeric assumption behind Pearson's *r* correlation.
+
+**With great caution, though, we can sometimes use a workaround...**
+
+If we create a copy of our categorical variable that treats it `as.numeric()` instead of as a factor, we can make the correlation run!
+
+```{r}
+partyid3_num <- as.numeric(nes$partyid3)
+correlateC(c(nes$ft.unions, partyid3_num), plot = T)
+```
+
+But this can be problematic for a couple of reasons. For one thing, while we get a clear, interpretable coefficient, the scatterplot isn't as helpful or intuitive. But more importantly, we're making a massive (and sometimes incorrect!) assumption that the numbers assigned to our categories have any meaning apart from simple differentiation. While it makes sense for a dichotomous variable (which can only take on values of 1 or 0), and it could be assumed that *some* ordinal variables will behave linearly, nominal variables are a crapshoot because the numeric values could be in any order.
+
+So, when we use this method to force a correlation involving categorical variables to get a general sense of a relationship, we should be cautious about making any strong inferences.
+
+### 6. Multivariate Correlations {#sec-multivariate-correlations}
+
+We can also correlate multiple variables at once, but `correlateC()` is designed to produce *bivariate* correlations, so we'll get a table of coefficients for each *pair* of variables in our list...
+
+```{r}
+correlateC(c(nes$ft.unions, nes$ft.congress, nes$ft.obama, partyid3_num), plot = T, jitter=F)
+```
+... and a metric ton of plots that are difficult to read. 
+
+So, I recommend using `plot = F` to turn off the plots and just focus on the clear, interpretable coefficients. 
+
+```{r}
+correlateC(c(nes$ft.unions, nes$ft.congress, nes$ft.obama, partyid3_num), plot = F, jitter=F)
+```
+
+### 7. Advanced Material {#sec-advanced-material}

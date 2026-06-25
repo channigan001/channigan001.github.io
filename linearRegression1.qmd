@@ -1,0 +1,138 @@
+---
+title: "Linear Regression: Ordinary Least Squares (OLS)"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Visualizing the Line of Best Fit](#sec-visualizing-the-line-of-best-fit)
+3.  [Producing the Actual Linear Model](#sec-producing-the-actual-linear-model)
+4.  [Linear Regression Analysis](#sec-linear-regression-analysis)
+    a.  [Linear Regression Using the `lm()` Function](#sec-linear-regression-using-the-lm-function)
+    b.  [Linear Regression Using the `regC()` Function](#sec-linear-regression-using-the-regc-function)
+5.  [Advanced Material](#sec-advanced-material)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+No new packages to install this time!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+```
+
+### 2. Visualizing the Line of Best Fit {#sec-visualizing-the-line-of-best-fit}
+
+The equation for any line comes down to a basic form:
+
+$$y = mx + b$$
+
+A "line of best fit" models a relationship and creates a line that minimizes the "errors" (distances between data points and the line).
+
+To view the line of best fit, we can start with a scatterplot between two continuous/interval variables...
+
+```{r}
+plot(y = states$covid.deaths.per1000, x = states$covid.cases.per1000)
+```
+
+Notice how, as Covid cases go up, Covid deaths kind of seem to go up, too?
+
+But at what rate exactly?
+
+We could check the correlation coefficient to see the strength of the association...
+
+```{r}
+correlateC(c(states$covid.deaths.per1000,states$covid.cases.per1000))
+```
+
+It's a moderately strong relationship (`0.643`), but we still don't know the rate at which the DV outcome changes based on the IV input.
+
+And is the relationship significant enough to help us make predictions about Covid deaths?
+
+Let's make a "line of best fit" to add to the plot...
+
+```{r}
+plot(y = states$covid.deaths.per1000, x = states$covid.cases.per1000)
+abline(lm(states$covid.deaths.per1000 ~ states$covid.cases.per1000), col="red")
+```
+
+Here's what the expression is doing:
+
+-   `abline()` adds a straight line to a plot for reference
+-   `col = "red"` makes that line red (or whatever other color we want)
+-   `lm(y ~ x)` creates a "linear model" of y (the DV) based on x (the IV)
+
+But we still don't actually know what the equation is for this line! We're especially interested in the slope...
+
+### 3. Producing the Actual Linear Model {#sec-producing-the-actual-linear-model}
+
+While making a scatterplot and plotting the `abline()` is cool for visualization, the key to a linear regression test is the linear model output. That is, we want the numbers.
+
+So, instead of including the `lm()` equation in the background of a `plot()` function, we can look at the model values directly.
+
+```{r}
+lm(states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+```
+
+-   The intercept (the $b$ in $y=mx + b$) is 0.0001036
+-   The slope (the $m$ in $y=mx + b$) is 0.0166105
+-   So, this is the line equation: $y = 0.0166105x + 0.0001036$
+
+Notice how the line keeps going, even when it doesn't cross a specific point? That's what makes it a *predictive* model. This linear model (line of best fit) is a basic regression!
+
+But is the relationship between X and Y significant?
+
+### 4. Linear Regression Analysis {#sec-linear-regression-analysis}
+
+There are several names for this type of linear model (OLS, ordinary least squares, linear regression, etc.), but the linear part matters (it's a line!).
+
+Linear regressions always use Continuous/Interval DVs.
+
+#### Linear Regression Using the `lm()` Function {#sec-linear-regression-using-the-lm-function}
+
+We can certainly use the lm() function in base R to run a regression model. In fact, it comes in handy when we want to be able to store the model as an object later. We'll run the same model, this time storing it as an object called `lm1`:
+
+```{r}
+lm1 <- lm(states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+```
+
+Then we'll view a `summary()` of the `lm1` object to see the model significance and other interpretation details.
+
+```{r}
+summary(lm1)
+```
+
+1.  First, find the p-value at the very bottom: the model as a whole is significant!
+2.  Next, notice the p-value (`Pr(\>\|t\|)`) across from our IV: the IV itself (partial effect) is significant!
+3.  We don't see a number of observations in this output...(hold that thought)
+4.  But finally, check the "Multiple R-squared" value: The model explains about 41% of the variation of the DV, which is good, but not great.
+
+Remember: we don't need to report the "Adjusted R-Squared" in this case because we only have one IV in the model. When we only have one IV, we report the "Multiple R-Squared"; when there are multiple IVs, we have to rely on the "Adjusted R-squared."
+
+The model summary output doesn't bother reporting the total number of observations, which is frustrating. But it does store that information. We just have to ask for it:
+
+```{r}
+nobs(lm1)
+```
+
+Now we can report that the number of observations used in the model is 50 (all 50 states in the dataset!), which is big enough to draw make inferences.
+
+#### Linear Regression Using the `regC()` Function {#sec-linear-regression-using-the-regc-function}
+
+Alternatively, we can just use the `regC()` function from the `RCPA3` package to run our linear regression model. The syntax is basically the same:
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+```
+
+There's definitely a trade off between the two methods: `lm()` is more versatile for advanced modeling and model storage/visualization, but the `regC` function can be more straightforward and comes prepackaged with some of the additional tests we'll be running later to test the assumptions of OLS.
+
+### 5. Advanced Material {#sec-advanced-material}

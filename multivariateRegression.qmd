@@ -1,0 +1,268 @@
+---
+title: "Multivariate Regression (Assumptions of OLS)"
+author: "Colin Hannigan"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Remember `lm()` In R](#sec-remember-lm-in-r)
+3.  [Remember `regC()` In R](#sec-remember-regc-in-r)
+4.  [Regressing Multiple IVs](#sec-regressing-multiple-ivs)
+5.  [Checking Assumptions of OLS](#sec-checking-assumptions-of-ols)
+    a.  [Linearity](#sec-linearity)
+    b.  [Representative Sampling](#sec-representative-sampling)
+    c.  [No Multicollinearity](#sec-no-multicollinearity-or-perfect-collinearity)
+    d.  [No Heteroskedasticity](#sec-no-heteroskedasticity)
+    e.  [Independence (No Autocorrelation)](#sec-independence-no-autocorrelation)
+    f.  [Normally Distributed Errors Around 0](#sec-normally-distributed-errors-around-0)
+6.  [Application: Multivariate Linear Regression](#sec-application-multivariate-linear-regression)
+    a.  [Re-scaling IVs](#sec-re-scaling-ivs)
+    b.  [Adding Control Variables](#sec-adding-control-variables)
+    c.  [Changing the Base Category (Re-leveling)](#sec-changing-the-base-category-re-leveling)
+7.  [Advanced Material](#sec-7.-advanced-material)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+No new packages to install this time!
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+```
+
+### 2. Remember `lm()` In R {#sec-remember-lm-in-r}
+
+Recall that `lm()` is one of the functions for producing a linear model (i.e., line of best fit). The `lm()` function comes with base R, and we sometimes use it for running OLS regressions because it allows us to create a model object for future evaluation and manipulation.
+
+Just like last time, we're gonna regress `states$covid.cases.per1000` against `states$covid.deaths.per1000` to see whether they are significantly related (i.e., whether Covid cases are a significant predictor of Covid deaths). We'll store it in an object called `lm1` to store that info for later and view the model summary below.
+
+```{r}
+lm1 <- lm(states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+summary(lm1)
+```
+
+### 3. Remember `regC()` in R {#sec-remember-regc-in-r}
+
+Other times, we'll use the `regC()` function from the RCPA3 package to run the same linear regression test because that function comes with simplified options for evaluating the appropriateness of our model. The basic syntax is more or less the same between these two functions.
+
+```{r}
+regC(states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+```
+
+### 4. Regressing Multiple IVs {#sec-regressing-multiple-ivs}
+
+So far, we've only looked at bivariate regressions, but regressions can handle multiple variables at once, which is crucial for accounting for interactions, additive explanations, control variables, etc. to produce stronger, more accurate models.
+
+So, let's add more covariates to our original model and try again.
+
+```{r}
+lm2 <- lm(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban)
+summary(lm2)
+```
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban)
+```
+
+**Run the models and interpret the results technically and substantively!**
+
+### 5. Checking Assumptions of OLS {#sec-checking-assumptions-of-ols}
+
+As we've discussed, Ordinary Least Squares (OLS) regression requires a lot of assumptions to be true in order for us to make strong and appropriate inferences from the output.When these assumptions are violated, we have to make adjustments to the variables we include, to the measurement of those variables, or to the model itself. Sometimes we find that OLS isn't appropriate at all.
+
+#### Linearity {#sec-linearity}
+
+To establish that the model meets the assumption of linearity, we can do a basic visual inspection of the relationship between each IV and the DV to make sure each distribution is more or less linear, but that only goes so far (and it's often tedious...).
+
+```{r}
+plot(y = states$covid.deaths.per1000, x = states$covid.cases.per1000)
+# plot(y = states$covid.deaths.per1000, x = states$obesity.percent)
+# plot(y = states$covid.deaths.per1000, x = states$gini.2016)
+# plot(y = states$covid.deaths.per1000, x = states$prcapinc)
+# plot(y = states$covid.deaths.per1000, x = states$urban)
+```
+
+Relying on only a visual inspection of the scatterplots can also be misleading. So, to be more certain, we can run a statistical test to determine whether the assumption is violated. This is where `regC()` comes in handy: we just have to add the `linear.test = T` option at the end:
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban, linear.test = T)
+```
+
+This is the **Harvey-Collier test**, for which the null hypothesis is that the model *is* linear.
+
+-   **significant p-value:** we have problems
+-   **non significant p-value:** we fail to reject the null and we're all good!
+
+#### Representative Sampling {#sec-representative-sampling}
+
+We can't really test for representative sampling statistically. Instead, the key is to read the documentation/codebook for the dataset to ensure that the creators provide a full population of cases or a random, stratified, representative sample!
+
+#### No Multicollinearity (or *Perfect* Collinearity) {#sec-no-multicollinearity-or-perfect-collinearity}
+
+A quick, low-tech way to try to prevent multicollinearity problems in a linear regression model is to check the correlations between each pair of IVs.
+
+```{r}
+correlateC(c(states$covid.cases.per1000, states$obesity.percent, states$gini.2016, states$prcapinc, states$urban))
+```
+
+While that can help us identify any glaring problems right away, this method isn't very systematic; it doesn't provide a complete picture of how *all* of the IVs are associated with one another. So, we go back to `regC()` and add the `vif = T` option:
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban, vif = T)
+```
+
+The **Variance Inflation Factor** (vif) calculates a numeric score reflecting how much the variance of each coefficient is inflated in the model. In other words, it helps us figure out how big of a multicollinearity problem we have.
+
+Usually, VIF values of over 10 indicate a problem with multicollinearity, and we can remove the offending variable(s) and re-run the model without it (always reporting in the paper that the variable was removed and why).
+
+In our example, we don't have any issues with multicollinearity, which is a good sign!
+
+#### No Heteroskedasticity {#sec-no-heteroskedasticity}
+
+With `regC()`, we have a couple of options to look for heteroskedasticity problems. We can use the `res.plots = T` option to visually inspect the Residual vs. Fitted plots (the top left plot that appears with this option).
+
+Part of the regression process involves predicting values of y (i.e., "fitted" values), so we're trying to ensure that the residuals (i.e., errors) aren't changing too much based on the predictions of y. In other words, we're hoping to see a straight line around 0.
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban, res.plots = T)
+```
+
+But data is imperfect and there's always uncertainty, so we're not very likely to see a *perfectly* straight line. Some little squiggles are fine, but understanding the difference takes practice and can totally depend on scale.
+
+So, that's where option 2 comes in: we can add the Non-Constant Variance test (`ncv.test = T` argument) to our `regC()` function to test for heteroskedasticity more systematically.
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban, ncv.test = T)
+```
+
+This is the **Breusch-Pagan test**, for which the null hypothesis is that the model residuals have constant variance (i.e., that they're homoskedastic).
+
+-   **significant p-value:** we have problems
+-   **non significant p-value:** we fail to reject the null and we're all good!
+
+#### Independence (No Autocorrelation) {#sec-independence-no-autocorrelation}
+
+The `regC()` function doesn't have a dedicated optional argument for testing the assumption of independence. But we can do a check by running a separate on our model. The `dwtest()` function comes from the `lmtest` package, but we won't need to install that package because `RCPA3` imports it already. Instead of loading the whole library, we'll just call the function and tell R where to find it: `lmtest::dwtest()`.
+
+This is a situation where it's helpful to have an `lm()` model object stored. But even if we don't have one, we can quickly create one, or just paste the model formula into the `dwtest()` function directly:
+
+```{r}
+lmtest::dwtest(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc)
+```
+
+This is the **Durbin-Watson test**, for which the null hypothesis is that there is no autocorrelation (i.e., that the observations are independent).
+
+-   **significant p-value:** we have problems.
+-   **non significant p-value:** we fail to reject the null and we're all good!
+
+#### Normally Distributed Errors Around 0 {#sec-normally-distributed-errors-around-0}
+
+Similarly to our tests for heteroskedasticity, we can test for normally distributed errors visually or statistically. The visual test once again involves including the `res.plots = T` argument in `regC()`, this time looking at the Normal Q-Q plots (the top right plot that appears with this option) to ensure a straight positive line along the diagonal.
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc, res.plots = T)
+```
+
+But because we run into similar problems of ambiguity, we can rely on the `norm.test = T` argument to our `regC()` function instead.
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc, norm.test = T)
+```
+
+This is the **Jarque-Bera test**, for which the null hypothesis is that the residuals are normally distributed.
+
+-   **significant p-value:** we have problems.
+-   **non significant p-value:** we fail to reject the null and we're all good!
+
+### 6. Application: Multivariate Linear Regression {#sec-application-multivariate-linear-regression}
+
+Now that we know that our original model doesn't violate the assumptions of OLS, let's reproduce the simplified version of it using `regC()` for comparison:
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + states$prcapinc + states$urban)
+```
+
+#### Re-scaling IVs {#sec-re-scaling-ivs}
+
+The elephant in the room is that we have a significant partial effect for `states$prcapinc` but both the coefficient estimate and standard error are 0, which doesn't make sense.
+
+But if we were to run `describeC()` on `states$prcapinc`, we'd see that even the *minimum* of per capita income by state is over \$20,000! So, when we try to interpret what the change in Covid deaths per thousand people is for every one-unit change in per capita income, we're actually looking at how much \$1 changes Covid deaths per thousand people. The effect of a single dollar is so tiny that it rounds to 0.
+
+One solution to this problem is to re-scale the variable for clearer interpretation. For example, we could measure per capita income in *thousands* of dollars. That way, a one-unit increase in the variable represents an increase of \$1,000 dollars. First we'll create a new, re-scaled variable from the original, then we'll plug it into the function and run the model again:
+
+```{r}
+prcapinc.thousands <- states$prcapinc/1000
+
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + prcapinc.thousands + states$urban)
+```
+
+Everything else looks basically the same, right? But now we can actually interpret the partial effect of per capita income: for every one-unit increase in per capita income (in thousands), there is a 0.03-unit increase in Covid deaths per 1000 in a given state.
+
+#### Adding Control Variables {#sec-adding-control-variables}
+
+Now, let's consider adding `states$region` to the model as a control variable to help explain Covid deaths per 1000 people.
+
+**Why might region be a good control variable? Consider the causal mechanisms.**
+
+First, we'll take a look at it to see what kind of variable it is:
+
+```{r}
+attributes(states$region)
+```
+
+It's a factor variable with 4 categories: Northeast, Midwest, South, and West.
+
+Let's see what R does with a factor variable when we include it in a regression:
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + prcapinc.thousands + states$urban + states$region)
+```
+
+Notice how it automatically breaks it out into dummy variables for us? That's super helpful for interpretation.
+
+**But where's our other category, "Northeast"??**
+
+It's the "reference" or "base" category! It's excluded to avoid an error of perfect collinearity. Including all of the dummy variables would lead to a math error because the sum of all of the dummies would always equal 1 (they're exhaustive and they don't overlap).
+
+But what if we're particularly interested in the behavior of the Northeast region in particular?
+
+#### Changing the Base Category (Re-leveling) {#sec-changing-the-base-category-re-leveling}
+
+The reference category defaults to the "first" one listed in the variable levels (which we can see at the top of the `freqC()` table, for example). But we can always change the reference category by re-leveling the variable, which tells `regC()` which category to exclude instead.
+
+We can do this a couple of ways using the `relevel()` function. Either by including it directly in the model formula for a quick check...
+
+```{r}
+# We can change the base category in the model using relevel()...
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + prcapinc.thousands + states$urban + relevel(states$region, "Midwest"))
+```
+
+...or by creating a new variable that we re-level in advance. Because of how `regC()` labels variable categories when dummying them out, I like to name the new variable with an underscore or something at the end to help keep the model output tidy when we re-run the model with the new variable:
+
+```{r}
+region.New_ <- relevel(states$region, "Midwest")
+
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + prcapinc.thousands + states$urban + region.New_)
+```
+
+Notice how some of our other variables are no longer significant after we change the reference category?
+
+That's normal. It just means that controlling for region is picking up some of the patterns we'd previously attributed to other variables.
+
+But if that's the case, we should probably double check to ensure there's still no issue with multicollinearity. Let's add the `vif = T` argument again:
+
+```{r}
+regC(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + states$obesity.percent + states$gini.2016 + prcapinc.thousands + states$urban + states$region, vif = T)
+```
+
+Nothing above 10, so we're good!
+
+### 7. Advanced Material {#sec-7.-advanced-material}
