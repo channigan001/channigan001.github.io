@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Colin Hannigan">
+
+<title>Subsetting and Variable Types – R Walkthroughs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Walkthroughs</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
+  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
+  <li><a href="#sec-identify-variables-by-type-using-subsetting" id="toc-sec-identify-variables-by-type-using-subsetting" class="nav-link" data-scroll-target="#sec-identify-variables-by-type-using-subsetting">2. Identify Variables by Type Using Subsetting</a></li>
+  <li><a href="#sec-advanced-material" id="toc-sec-advanced-material" class="nav-link" data-scroll-target="#sec-advanced-material">3. Advanced Material</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Subsetting and Variable Types</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin Hannigan </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="agenda" class="level3">
+<h3 class="anchored" data-anchor-id="agenda">Agenda:</h3>
+<ol type="1">
+<li><a href="#sec-packages-libraries">Install Packages and Libraries</a></li>
+<li><a href="#sec-identify-variables-by-type-using-subsetting">Identify Variables by Type Using Subsetting</a>
+<ol type="a">
+<li><a href="#sec-get-only-continuousinterval-variables">List <strong>CONTINUOUS/INTERVAL</strong> variables (numeric)</a></li>
+<li><a href="#sec-get-only-dichotomous-variables">List <strong>DICHOTOMOUS</strong> variables (factor with only 2 levels)</a></li>
+<li><a href="#sec-get-only-ordinal-variables">List <strong>ORDINAL</strong> variables (ordered factor)</a></li>
+<li><a href="#sec-get-only-nominal-variables">List <strong>NOMINAL</strong> variables (non-ordered factor with 3+ levels)</a></li>
+</ol></li>
+<li><a href="#sec-advanced-material">Advanced Material</a>
+<ol type="a">
+<li><a href="#sec-single-complex-function-for-subsetting">A Single, Complex Subsetting Function</a></li>
+<li><a href="#sec-using-dplyr-to-list-variables-by-type">Using <code>dplyr()</code> to List Variables by Type</a></li>
+</ol></li>
+</ol>
+</section>
+<section id="sec-packages-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="sec-packages-libraries">1. Install Packages and Libraries:</h3>
+<section id="new-packages-to-install" class="level4">
+<h4 class="anchored" data-anchor-id="new-packages-to-install">New packages to install:</h4>
+<p>No new packages to install this time!</p>
+</section>
+<section id="load-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="load-libraries">Load libraries!</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RCPA3)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="sec-identify-variables-by-type-using-subsetting" class="level3">
+<h3 class="anchored" data-anchor-id="sec-identify-variables-by-type-using-subsetting">2. Identify Variables by Type Using Subsetting</h3>
+<p>Many of the techniques, tools, and tests we use in R require variables of a particular level of measurement (i.e., variable type). For example, a bivariate t-test requires a continuous dependent variable. So, before the analysis, it can be useful to identify all variables of a given type in our dataset.</p>
+<p>Subsetting variables by type also provides a quick glance at the overall structure of the dataset and provides helpful practice using logical operators, indexing, <code>sapply()</code>, and <code>names()</code> to identify and extract variables that meet certain conditions.</p>
+<section id="sec-get-only-continuousinterval-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-get-only-continuousinterval-variables">Get only <strong>CONTINUOUS/INTERVAL</strong> variables (numeric)</h4>
+<p>To start, let’s identify all the continuous/interval variables in the <code>nes</code> dataset. To do this, we’ll rely on <code>is.numeric()</code> as a quick logical function that returns <code>TRUE</code> if the object is of numeric or integer class (i.e., R recoginizes it as a number) and <code>FALSE</code> if not.</p>
+<p>Because we want to check the class of all the variables, we’ll use the <code>sapply()</code> function, which is designed to provide a <em>simplified</em> result (usually a vector) after <em>applying</em> a function or operation over a whole list.</p>
+<ol type="1">
+<li>Using <code>sapply()</code>, create a subset that contains only numeric variables in <code>nes</code>,</li>
+<li>Create a new dataframe that includes only the columns we identified,</li>
+<li>Optionally, view the subset of variables as a whole dataframe,</li>
+<li>View only the relevant variable names directly in the console.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>  numeric_cols <span class="ot">&lt;-</span> <span class="fu">sapply</span>(nes, is.numeric)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  numeric_variables <span class="ot">&lt;-</span> nes[, numeric_cols]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># View(numeric_variables) #show the subset of the full data</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(numeric_variables) <span class="co">#just print the list of variables names to console</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "address.yrs"       "age"               "case.id"          
+ [4] "community.yrs"     "ft.asian.am"       "ft.asians"        
+ [7] "ft.biden.post"     "ft.biden.pre"      "ft.bigbiz"        
+[10] "ft.blacks"         "ft.blm"            "ft.capitalists"   
+[13] "ft.cdc"            "ft.christian.fund" "ft.christians"    
+[16] "ft.congress"       "ft.conservatives"  "ft.dem"           
+[19] "ft.fauci"          "ft.fbi"            "ft.feminists"     
+[22] "ft.gays.lesbians"  "ft.harris.post"    "ft.harris.pre"    
+[25] "ft.hispanics"      "ft.ice"            "ft.illegal.imm"   
+[28] "ft.jews"           "ft.journalists"    "ft.liberals"      
+[31] "ft.metoo"          "ft.muslims"        "ft.nato"          
+[34] "ft.nra"            "ft.obama"          "ft.pence.post"    
+[37] "ft.pence.pre"      "ft.police"         "ft.pp"            
+[40] "ft.rep"            "ft.rural"          "ft.scientists"    
+[43] "ft.scotus"         "ft.socialists"     "ft.transgender"   
+[46] "ft.trump.post"     "ft.trump.pre"      "ft.un"            
+[49] "ft.unions"         "ft.whites"         "ft.who"           
+[52] "guns.owned"        "hh.family.mem"     "polquiz.sen.term" 
+[55] "work.hoursweek"    "wt"                "wt.post"          </code></pre>
+</div>
+</div>
+</section>
+<section id="sec-get-only-dichotomous-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-get-only-dichotomous-variables">Get only <strong>DICHOTOMOUS</strong> variables (factor with only 2 levels)</h4>
+<p>To identify the dichotomous variables, the process involves the same steps but include a slightly more complex set of conditions. We don’t have a built-in option for identifying dichotomous variables like we do for numeric ones; R stores variables according to class, not according to how many levels they have.</p>
+<p>So, we have to check for two conditions this time: one to return <code>TRUE</code> if the variable’s class if factor (<code>is.factor()</code>) <em>AND</em> another to return <code>TRUE</code> if the number of categories is exactly equal to two (<code>nlevels()==2</code>). But <code>sapply()</code> needs a little help evaluating both conditions for every variable, we have to provide a custom function using <code>function(x)</code> that says, for each variable (<code>x</code>) in the dataset, return <code>TRUE</code> only if <em>both</em> conditions are met.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>  dichotomous_cols <span class="ot">&lt;-</span> <span class="fu">sapply</span>(nes, <span class="cf">function</span>(x) <span class="fu">is.factor</span>(x) <span class="sc">&amp;&amp;</span> <span class="fu">nlevels</span>(x) <span class="sc">==</span> <span class="dv">2</span>) </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  dichotomous_variables <span class="ot">&lt;-</span> nes[, dichotomous_cols]</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># View(dichotomous_variables)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(dichotomous_variables)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "been.arrested"         "campaign.news.carlson" "campaign.news.colbert"
+ [4] "campaign.news.hannity" "campaign.news.maddow"  "campaign.news.none"   
+ [7] "campaign.news.papers"  "campaign.news.radio"   "campaign.news.tv"     
+[10] "campaign.news.web"     "changed.names"         "civ12.argue"          
+[13] "civ12.comment"         "civ12.community"       "civ12.cong"           
+[16] "civ12.fedoff"          "civ12.fedpol"          "civ12.giveorg"        
+[19] "civ12.giverelig"       "civ12.march"           "civ12.meeting"        
+[22] "civ12.petition"        "civ12.stateoff"        "civ12.statepol"       
+[25] "civ12.vol"             "contacted.gotv"        "covid.made.lab"       
+[28] "gay.adopt"             "gender"                "govt.run.byfew"       
+[31] "harrassed.work"        "has.daughter"          "has.nokids"           
+[34] "has.son"               "have.health.ins"       "hh.covid.symp"        
+[37] "hh.covid.test"         "hh.landline"           "hh.partner.status"    
+[40] "hh.union.mem"          "hydrox.treat.covid"    "invest.stocks"        
+[43] "leader.compromise"     "lifex.buyusa"          "lifex.flyflag"        
+[46] "lifex.foodstamps"      "lifex.huntfish"        "lifex.knowimmig"      
+[49] "lifex.oweloans"        "lifex.retireacct"      "lifex.ridebus"        
+[52] "lifex.sharkbite"       "lqb.friendfam"         "medical.putoff"       
+[55] "polact.givecand"       "polact.giveoth"        "polact.giveparty"     
+[58] "polact.meetings"       "polact.onlinemeet"     "polact.othwork"       
+[61] "polact.postsign"       "polact.talkpol"        "polact.talkvote"      
+[64] "police.stop.lastyr"    "polquiz.german"        "polquiz.housemaj"     
+[67] "polquiz.russian"       "polquiz.senatemaj"     "polquiz.speaker"      
+[70] "polquiz.vp"            "primary.voter"         "relig.ever.attend"    
+[73] "russia.interfere"      "smoke.cig.life"        "trans.friendfam"      
+[76] "trump.deport.more"     "turnout2020"           "usa.on.track"         
+[79] "vaccines.autism"       "vote.pres.str"         "work.lastweek"        
+[82] "world.temp.rising"    </code></pre>
+</div>
+</div>
+</section>
+<section id="sec-get-only-ordinal-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-get-only-ordinal-variables">Get only <strong>ORDINAL</strong> variables (ordered factor)</h4>
+<p>Ordinal variables have two classes: they’re factor variables that are also ordered. But even though R has built-in functions for those classes, there are still two of them, so we still need to include a custom <code>function(x)</code> to ensure that it only returns <code>TRUE</code> if a given variable (<code>x</code>) is <em>both</em> a factor <em>AND</em> ordered. Ordered is a subclass of factor, so anything that is ordered is usually a factor, too, but we’ll be cautious and ensure both are true, in case there were any issues with importing the data or the classes were overwritten at one point.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>  ordinal_cols <span class="ot">&lt;-</span> <span class="fu">sapply</span>(nes, <span class="cf">function</span>(x) <span class="fu">is.factor</span>(x) <span class="sc">&amp;&amp;</span> <span class="fu">is.ordered</span>(x))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  ordinal_variables <span class="ot">&lt;-</span> nes[, ordinal_cols]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># View(ordinal_variables)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(ordinal_variables)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "abortion.imp"           "abortion.legal"         "abortion.scotus"       
+  [4] "active.duty.mil"        "agree.facts"            "allow.refugees"        
+  [7] "american.id.import"     "angry.about.things"     "approve.aca"           
+ [10] "approve.cong"           "approve.gov.covid"      "approve.local.covid"   
+ [13] "approve.pres.covid"     "approve.pres.econ"      "approve.pres.hc"       
+ [16] "approve.pres.imm"       "approve.pres.ir"        "approve.pres.job"      
+ [19] "ban.assault.rif"        "bible.god.man"          "biden.cares"           
+ [22] "biden.honest"           "biden.knowledge"        "biden.libcon7"         
+ [25] "biden.strlead"          "birthright.citizens"    "blacks.gotless"        
+ [28] "blacks.pastdiff"        "blacks.tryharder"       "blacks.workforit"      
+ [31] "border.wall"            "buy.back.rifles"        "campaigns.interest"    
+ [34] "cant.get.ahead"         "care.who.wins"          "censor.self"           
+ [37] "citizenship.path"       "climate.ch.weather"     "climate.import"        
+ [40] "consumer.politics"      "covid.election"         "covid.fed"             
+ [43] "covid.reopening"        "covid.restrictions"     "covid.science.help"    
+ [46] "death.penalty"          "def.spend.7pt"          "deficit.reduce"        
+ [49] "dem.libcon7"            "deport.children"        "deport.unauth"         
+ [52] "discrim.vs.asians"      "discrim.vs.blacks"      "discrim.vs.christians" 
+ [55] "discrim.vs.glb"         "discrim.vs.hispanics"   "discrim.vs.men"        
+ [58] "discrim.vs.muslims"     "discrim.vs.trans"       "discrim.vs.whites"     
+ [61] "discrim.vs.women"       "diversity.good.usa"     "divided.govt"          
+ [64] "donations.change.votes" "econ.current"           "econ.lastyear"         
+ [67] "econ.mobility.now"      "econ.nextyear"          "econ.worry"            
+ [70] "educ.5cat"              "education"              "elect.asians"          
+ [73] "elect.blacks"           "elect.hispanics"        "elect.lgbt"            
+ [76] "elect.women"            "elections.govt.attn"    "envir.or.biz"          
+ [79] "equal.opp"              "facebook.polpost"       "facebook.use"          
+ [82] "faced.gender.discrim"   "faced.race.discrim"     "fed.bw.better"         
+ [85] "fedspend.aidpoor"       "fedspend.border"        "fedspend.crime"        
+ [88] "fedspend.environ"       "fedspend.highways"      "fedspend.schools"      
+ [91] "fedspend.socsec"        "fedspend.welfare"       "feminist.import"       
+ [94] "finance.lastyear"       "finance.nextyear"       "financial.worried"     
+ [97] "gay.job.discrim"        "gay.marriage"           "gay.req.service"       
+[100] "gov.asst.blacks"        "govt.act.ineq"          "govt.act.warm.str"     
+[103] "govt.act.warming"       "govt.corrupt"           "govt.guar.job"         
+[106] "govt.hc.7pt"            "govt.help.hc"           "govt.services.7pt"     
+[109] "govt.under.media"       "govt.wastes.money"      "govtreg.moreless"      
+[112] "grand.born.usa"         "gun.bg.checks"          "gun.buying"            
+[115] "gun.issue.imp"          "happy.about.things"     "hardvote2020"          
+[118] "harrassed.work.oft"     "hc.pay.bills"           "health"                
+[121] "health.lose.ins"        "health.pay.costs"       "help.with.science"     
+[124] "hh.income"              "hh.income.pre"          "hh.num.child"          
+[127] "housing.payments"       "immig.crime"            "immig.levels"          
+[130] "immig.policy"           "immig.take.jobs"        "imp.govt.checks"       
+[133] "imp.media.crit"         "imp.off.conseq"         "imports.limit"         
+[136] "income.gap.change"      "ineq.worryless"         "intl.force"            
+[139] "laws.contrib.indiv"     "laws.contrib.org"       "libcon3"               
+[142] "libcon7"                "life.sat"               "metoo.toofar"          
+[145] "middle.class.ext"       "min.wage.change"        "morals.adjust"         
+[148] "morechance.okay"        "moreless.govt"          "opioid.addiction"      
+[151] "oth.race.concern"       "oth.race.feel"          "oth.race.persp"        
+[154] "oth.race.protect"       "paid.parent.leave"      "parents.born.usa"      
+[157] "partyid3"               "partyid7"               "partyid.importance"    
+[160] "people.fed.lies"        "people.too.sens"        "person.get.ahead"      
+[163] "pol.asian.infl"         "pol.black.infl"         "pol.dontcare"          
+[166] "pol.for.insiders"       "pol.hispanic.infl"      "pol.hurt.fam"          
+[169] "pol.nosay"              "pol.oligarchy"          "pol.toocomplex"        
+[172] "pol.understand"         "pol.white.infl"         "police.bw.better"      
+[175] "police.useforce"        "political.violence"     "politics.attention"    
+[178] "polquiz.scotus"         "pref.hiring.blacks"     "pres.ask.foreign"      
+[181] "pres.nochecks"          "protestors.conduct"     "reddit.polpost"        
+[184] "reddit.use"             "reg.greenhouse"         "relig.how.often"       
+[187] "religion.imp"           "rep.libcon7"            "restrict.journalists"  
+[190] "rural.getmore"          "rural.influence"        "rural.respect"         
+[193] "rural.urban"            "rural.urban.id"         "russia.int.election"   
+[196] "separate.children"      "smoke.cig.now"          "social.class"          
+[199] "speak.english"          "survey.serious"         "talkpol.week"          
+[202] "tax.rich"               "terrorism.worry"        "threat.from.china"     
+[205] "threat.from.germany"    "threat.from.iran"       "threat.from.japan"     
+[208] "threat.from.mexico"     "threat.from.russia"     "trad.fam.values"       
+[211] "trade.agreements"       "trade.good.ir"          "trade.jobs.abroad"     
+[214] "trade.jobs.usa"         "trans.military"         "trans.policy"          
+[217] "treat.people.fair"      "trump.acquittal"        "trump.cares"           
+[220] "trump.corruption"       "trump.honest"           "trump.impeachment"     
+[223] "trump.knowledge"        "trump.libcon7"          "trump.strlead"         
+[226] "trust.dc"               "trust.election.off"     "trust.experts"         
+[229] "trust.media"            "trust.people"           "twitter.polpost"       
+[232] "twitter.use"            "unemploy.lastyear"      "unemploy.nextyear"     
+[235] "unemploy.rate.now"      "univ.basic.income"      "urban.unrest"          
+[238] "usa.better"             "usa.stay.home"          "usa.stronger"          
+[241] "vaccine.schools"        "vaccines.risk"          "violence.justified"    
+[244] "votes.accurate"         "votes.faircount"        "voting.duty.choice"    
+[247] "voting.felons"          "voting.id"              "voting.mail"           
+[250] "voting.rts.denied"      "waitvote2020"           "whenvote2020"          
+[253] "whites.revdiscrim"      "wom.complain.prob"      "wom.control.men"       
+[256] "wom.equal.spfav"        "wom.interp.sexist"      "women.stay.honme"      
+[259] "work.mom.bond"         </code></pre>
+</div>
+</div>
+</section>
+<section id="sec-get-only-nominal-variables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-get-only-nominal-variables">Get only <strong>NOMINAL</strong> variables (non-ordered factor with 3+ levels)</h4>
+<p>To find nominal variables, we have to test for three conditions using our custom <code>function(x)</code>. It’s sort of like a process of elimination, though; we have to ensure that a given variable (<code>x</code>) is a factor, but that it’s also <em>NOT</em> ordered <em>AND</em> it contains more than 2 categories/levels.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>  nominal_cols <span class="ot">&lt;-</span> <span class="fu">sapply</span>(nes, <span class="cf">function</span>(x) <span class="fu">is.factor</span>(x) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.ordered</span>(x) <span class="sc">&amp;&amp;</span> <span class="fu">nlevels</span>(x) <span class="sc">&gt;</span> <span class="dv">2</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  nominal_variables <span class="ot">&lt;-</span> nes[, nominal_cols]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># View(nominal_variables)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(nominal_variables)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "born.in.usa"       "campaign.spendlim" "child.behave"     
+ [4] "child.manners"     "child.obey"        "child.respect"    
+ [7] "feminist"          "grew.up.where"     "income.gap.today" 
+[10] "marital"           "party.register"    "polquiz.fedspend" 
+[13] "postmat.1a"        "postmat.1b"        "postmat.2a"       
+[16] "postmat.2b"        "presvote2020"      "race.ethnicity"   
+[19] "region"            "religion"          "religion.group"   
+[22] "religious.id"      "sexual.orient"     "split.ticket"     
+[25] "state"             "trump.ukraine"     "vote.when.decide" 
+[28] "work.employer"     "work.status"       "world.like.usa"   </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="sec-advanced-material" class="level3">
+<h3 class="anchored" data-anchor-id="sec-advanced-material">3. Advanced Material</h3>
+<section id="sec-single-complex-function-for-subsetting" class="level4">
+<h4 class="anchored" data-anchor-id="sec-single-complex-function-for-subsetting">Skip all the intervening steps with a single, complex function</h4>
+<p>Instead of treating each piece as a separate step, we could just skip directly to viewing the names of the relevant variables in the console using nested functions in a single expression. Basically, we’re telling R to list the <code>names()</code> of the <code>nes</code> dataset when it’s subsetted to only the results of the <code>sapply()</code> function checking for the conditions we specify across all the columns of the dataset.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(nes)[<span class="fu">sapply</span>(nes, is.numeric)] <span class="co"># CONTINUOUS/INTERVAL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "address.yrs"       "age"               "case.id"          
+ [4] "community.yrs"     "ft.asian.am"       "ft.asians"        
+ [7] "ft.biden.post"     "ft.biden.pre"      "ft.bigbiz"        
+[10] "ft.blacks"         "ft.blm"            "ft.capitalists"   
+[13] "ft.cdc"            "ft.christian.fund" "ft.christians"    
+[16] "ft.congress"       "ft.conservatives"  "ft.dem"           
+[19] "ft.fauci"          "ft.fbi"            "ft.feminists"     
+[22] "ft.gays.lesbians"  "ft.harris.post"    "ft.harris.pre"    
+[25] "ft.hispanics"      "ft.ice"            "ft.illegal.imm"   
+[28] "ft.jews"           "ft.journalists"    "ft.liberals"      
+[31] "ft.metoo"          "ft.muslims"        "ft.nato"          
+[34] "ft.nra"            "ft.obama"          "ft.pence.post"    
+[37] "ft.pence.pre"      "ft.police"         "ft.pp"            
+[40] "ft.rep"            "ft.rural"          "ft.scientists"    
+[43] "ft.scotus"         "ft.socialists"     "ft.transgender"   
+[46] "ft.trump.post"     "ft.trump.pre"      "ft.un"            
+[49] "ft.unions"         "ft.whites"         "ft.who"           
+[52] "guns.owned"        "hh.family.mem"     "polquiz.sen.term" 
+[55] "work.hoursweek"    "wt"                "wt.post"          </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(nes)[<span class="fu">sapply</span>(nes, <span class="cf">function</span>(x) <span class="fu">is.factor</span>(x) <span class="sc">&amp;&amp;</span> <span class="fu">nlevels</span>(x) <span class="sc">==</span> <span class="dv">2</span>)] <span class="co"># DICHOTOMOUS</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "been.arrested"         "campaign.news.carlson" "campaign.news.colbert"
+ [4] "campaign.news.hannity" "campaign.news.maddow"  "campaign.news.none"   
+ [7] "campaign.news.papers"  "campaign.news.radio"   "campaign.news.tv"     
+[10] "campaign.news.web"     "changed.names"         "civ12.argue"          
+[13] "civ12.comment"         "civ12.community"       "civ12.cong"           
+[16] "civ12.fedoff"          "civ12.fedpol"          "civ12.giveorg"        
+[19] "civ12.giverelig"       "civ12.march"           "civ12.meeting"        
+[22] "civ12.petition"        "civ12.stateoff"        "civ12.statepol"       
+[25] "civ12.vol"             "contacted.gotv"        "covid.made.lab"       
+[28] "gay.adopt"             "gender"                "govt.run.byfew"       
+[31] "harrassed.work"        "has.daughter"          "has.nokids"           
+[34] "has.son"               "have.health.ins"       "hh.covid.symp"        
+[37] "hh.covid.test"         "hh.landline"           "hh.partner.status"    
+[40] "hh.union.mem"          "hydrox.treat.covid"    "invest.stocks"        
+[43] "leader.compromise"     "lifex.buyusa"          "lifex.flyflag"        
+[46] "lifex.foodstamps"      "lifex.huntfish"        "lifex.knowimmig"      
+[49] "lifex.oweloans"        "lifex.retireacct"      "lifex.ridebus"        
+[52] "lifex.sharkbite"       "lqb.friendfam"         "medical.putoff"       
+[55] "polact.givecand"       "polact.giveoth"        "polact.giveparty"     
+[58] "polact.meetings"       "polact.onlinemeet"     "polact.othwork"       
+[61] "polact.postsign"       "polact.talkpol"        "polact.talkvote"      
+[64] "police.stop.lastyr"    "polquiz.german"        "polquiz.housemaj"     
+[67] "polquiz.russian"       "polquiz.senatemaj"     "polquiz.speaker"      
+[70] "polquiz.vp"            "primary.voter"         "relig.ever.attend"    
+[73] "russia.interfere"      "smoke.cig.life"        "trans.friendfam"      
+[76] "trump.deport.more"     "turnout2020"           "usa.on.track"         
+[79] "vaccines.autism"       "vote.pres.str"         "work.lastweek"        
+[82] "world.temp.rising"    </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(nes)[<span class="fu">sapply</span>(nes, <span class="cf">function</span>(x) <span class="fu">is.factor</span>(x) <span class="sc">&amp;&amp;</span> <span class="fu">is.ordered</span>(x))] <span class="co"># ORDINAL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "abortion.imp"           "abortion.legal"         "abortion.scotus"       
+  [4] "active.duty.mil"        "agree.facts"            "allow.refugees"        
+  [7] "american.id.import"     "angry.about.things"     "approve.aca"           
+ [10] "approve.cong"           "approve.gov.covid"      "approve.local.covid"   
+ [13] "approve.pres.covid"     "approve.pres.econ"      "approve.pres.hc"       
+ [16] "approve.pres.imm"       "approve.pres.ir"        "approve.pres.job"      
+ [19] "ban.assault.rif"        "bible.god.man"          "biden.cares"           
+ [22] "biden.honest"           "biden.knowledge"        "biden.libcon7"         
+ [25] "biden.strlead"          "birthright.citizens"    "blacks.gotless"        
+ [28] "blacks.pastdiff"        "blacks.tryharder"       "blacks.workforit"      
+ [31] "border.wall"            "buy.back.rifles"        "campaigns.interest"    
+ [34] "cant.get.ahead"         "care.who.wins"          "censor.self"           
+ [37] "citizenship.path"       "climate.ch.weather"     "climate.import"        
+ [40] "consumer.politics"      "covid.election"         "covid.fed"             
+ [43] "covid.reopening"        "covid.restrictions"     "covid.science.help"    
+ [46] "death.penalty"          "def.spend.7pt"          "deficit.reduce"        
+ [49] "dem.libcon7"            "deport.children"        "deport.unauth"         
+ [52] "discrim.vs.asians"      "discrim.vs.blacks"      "discrim.vs.christians" 
+ [55] "discrim.vs.glb"         "discrim.vs.hispanics"   "discrim.vs.men"        
+ [58] "discrim.vs.muslims"     "discrim.vs.trans"       "discrim.vs.whites"     
+ [61] "discrim.vs.women"       "diversity.good.usa"     "divided.govt"          
+ [64] "donations.change.votes" "econ.current"           "econ.lastyear"         
+ [67] "econ.mobility.now"      "econ.nextyear"          "econ.worry"            
+ [70] "educ.5cat"              "education"              "elect.asians"          
+ [73] "elect.blacks"           "elect.hispanics"        "elect.lgbt"            
+ [76] "elect.women"            "elections.govt.attn"    "envir.or.biz"          
+ [79] "equal.opp"              "facebook.polpost"       "facebook.use"          
+ [82] "faced.gender.discrim"   "faced.race.discrim"     "fed.bw.better"         
+ [85] "fedspend.aidpoor"       "fedspend.border"        "fedspend.crime"        
+ [88] "fedspend.environ"       "fedspend.highways"      "fedspend.schools"      
+ [91] "fedspend.socsec"        "fedspend.welfare"       "feminist.import"       
+ [94] "finance.lastyear"       "finance.nextyear"       "financial.worried"     
+ [97] "gay.job.discrim"        "gay.marriage"           "gay.req.service"       
+[100] "gov.asst.blacks"        "govt.act.ineq"          "govt.act.warm.str"     
+[103] "govt.act.warming"       "govt.corrupt"           "govt.guar.job"         
+[106] "govt.hc.7pt"            "govt.help.hc"           "govt.services.7pt"     
+[109] "govt.under.media"       "govt.wastes.money"      "govtreg.moreless"      
+[112] "grand.born.usa"         "gun.bg.checks"          "gun.buying"            
+[115] "gun.issue.imp"          "happy.about.things"     "hardvote2020"          
+[118] "harrassed.work.oft"     "hc.pay.bills"           "health"                
+[121] "health.lose.ins"        "health.pay.costs"       "help.with.science"     
+[124] "hh.income"              "hh.income.pre"          "hh.num.child"          
+[127] "housing.payments"       "immig.crime"            "immig.levels"          
+[130] "immig.policy"           "immig.take.jobs"        "imp.govt.checks"       
+[133] "imp.media.crit"         "imp.off.conseq"         "imports.limit"         
+[136] "income.gap.change"      "ineq.worryless"         "intl.force"            
+[139] "laws.contrib.indiv"     "laws.contrib.org"       "libcon3"               
+[142] "libcon7"                "life.sat"               "metoo.toofar"          
+[145] "middle.class.ext"       "min.wage.change"        "morals.adjust"         
+[148] "morechance.okay"        "moreless.govt"          "opioid.addiction"      
+[151] "oth.race.concern"       "oth.race.feel"          "oth.race.persp"        
+[154] "oth.race.protect"       "paid.parent.leave"      "parents.born.usa"      
+[157] "partyid3"               "partyid7"               "partyid.importance"    
+[160] "people.fed.lies"        "people.too.sens"        "person.get.ahead"      
+[163] "pol.asian.infl"         "pol.black.infl"         "pol.dontcare"          
+[166] "pol.for.insiders"       "pol.hispanic.infl"      "pol.hurt.fam"          
+[169] "pol.nosay"              "pol.oligarchy"          "pol.toocomplex"        
+[172] "pol.understand"         "pol.white.infl"         "police.bw.better"      
+[175] "police.useforce"        "political.violence"     "politics.attention"    
+[178] "polquiz.scotus"         "pref.hiring.blacks"     "pres.ask.foreign"      
+[181] "pres.nochecks"          "protestors.conduct"     "reddit.polpost"        
+[184] "reddit.use"             "reg.greenhouse"         "relig.how.often"       
+[187] "religion.imp"           "rep.libcon7"            "restrict.journalists"  
+[190] "rural.getmore"          "rural.influence"        "rural.respect"         
+[193] "rural.urban"            "rural.urban.id"         "russia.int.election"   
+[196] "separate.children"      "smoke.cig.now"          "social.class"          
+[199] "speak.english"          "survey.serious"         "talkpol.week"          
+[202] "tax.rich"               "terrorism.worry"        "threat.from.china"     
+[205] "threat.from.germany"    "threat.from.iran"       "threat.from.japan"     
+[208] "threat.from.mexico"     "threat.from.russia"     "trad.fam.values"       
+[211] "trade.agreements"       "trade.good.ir"          "trade.jobs.abroad"     
+[214] "trade.jobs.usa"         "trans.military"         "trans.policy"          
+[217] "treat.people.fair"      "trump.acquittal"        "trump.cares"           
+[220] "trump.corruption"       "trump.honest"           "trump.impeachment"     
+[223] "trump.knowledge"        "trump.libcon7"          "trump.strlead"         
+[226] "trust.dc"               "trust.election.off"     "trust.experts"         
+[229] "trust.media"            "trust.people"           "twitter.polpost"       
+[232] "twitter.use"            "unemploy.lastyear"      "unemploy.nextyear"     
+[235] "unemploy.rate.now"      "univ.basic.income"      "urban.unrest"          
+[238] "usa.better"             "usa.stay.home"          "usa.stronger"          
+[241] "vaccine.schools"        "vaccines.risk"          "violence.justified"    
+[244] "votes.accurate"         "votes.faircount"        "voting.duty.choice"    
+[247] "voting.felons"          "voting.id"              "voting.mail"           
+[250] "voting.rts.denied"      "waitvote2020"           "whenvote2020"          
+[253] "whites.revdiscrim"      "wom.complain.prob"      "wom.control.men"       
+[256] "wom.equal.spfav"        "wom.interp.sexist"      "women.stay.honme"      
+[259] "work.mom.bond"         </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(nes)[<span class="fu">sapply</span>(nes, <span class="cf">function</span>(x) <span class="fu">is.factor</span>(x) <span class="sc">&amp;&amp;</span> <span class="sc">!</span><span class="fu">is.ordered</span>(x) <span class="sc">&amp;&amp;</span> <span class="fu">nlevels</span>(x) <span class="sc">&gt;</span> <span class="dv">2</span>)] <span class="co"># NOMINAL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "born.in.usa"       "campaign.spendlim" "child.behave"     
+ [4] "child.manners"     "child.obey"        "child.respect"    
+ [7] "feminist"          "grew.up.where"     "income.gap.today" 
+[10] "marital"           "party.register"    "polquiz.fedspend" 
+[13] "postmat.1a"        "postmat.1b"        "postmat.2a"       
+[16] "postmat.2b"        "presvote2020"      "race.ethnicity"   
+[19] "region"            "religion"          "religion.group"   
+[22] "religious.id"      "sexual.orient"     "split.ticket"     
+[25] "state"             "trump.ukraine"     "vote.when.decide" 
+[28] "work.employer"     "work.status"       "world.like.usa"   </code></pre>
+</div>
+</div>
+</section>
+<section id="sec-using-dplyr-to-list-variables-by-type" class="level4">
+<h4 class="anchored" data-anchor-id="sec-using-dplyr-to-list-variables-by-type">Using <code>dplyr()</code> to List Variables by Type</h4>
+<p>Instead of using indexing, we could also rely on the <code>select()</code> and <code>where()</code> functions from the <code>dplyr</code> package to do the same thing. The <code>dplyr</code> approach provides a couple of clear advantages: it’s much more efficient than indexing and it’s a more common approach among researchers in the discipline. But the major disadvantage for us is that it involves a whole new syntax and set of functions that we don’t explicitly learn about in POLS 222.</p>
+<p>So, as a starting point for those who are interested in exploring the <code>dplyr</code> package on their own, here’s what the code would look like for listing the variables by type:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuous/Interval</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.numeric)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "address.yrs"       "age"               "case.id"          
+ [4] "community.yrs"     "ft.asian.am"       "ft.asians"        
+ [7] "ft.biden.post"     "ft.biden.pre"      "ft.bigbiz"        
+[10] "ft.blacks"         "ft.blm"            "ft.capitalists"   
+[13] "ft.cdc"            "ft.christian.fund" "ft.christians"    
+[16] "ft.congress"       "ft.conservatives"  "ft.dem"           
+[19] "ft.fauci"          "ft.fbi"            "ft.feminists"     
+[22] "ft.gays.lesbians"  "ft.harris.post"    "ft.harris.pre"    
+[25] "ft.hispanics"      "ft.ice"            "ft.illegal.imm"   
+[28] "ft.jews"           "ft.journalists"    "ft.liberals"      
+[31] "ft.metoo"          "ft.muslims"        "ft.nato"          
+[34] "ft.nra"            "ft.obama"          "ft.pence.post"    
+[37] "ft.pence.pre"      "ft.police"         "ft.pp"            
+[40] "ft.rep"            "ft.rural"          "ft.scientists"    
+[43] "ft.scotus"         "ft.socialists"     "ft.transgender"   
+[46] "ft.trump.post"     "ft.trump.pre"      "ft.un"            
+[49] "ft.unions"         "ft.whites"         "ft.who"           
+[52] "guns.owned"        "hh.family.mem"     "polquiz.sen.term" 
+[55] "work.hoursweek"    "wt"                "wt.post"          </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dichotomous</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">is.factor</span>(.) <span class="sc">&amp;&amp;</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">nlevels</span>(.) <span class="sc">==</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "been.arrested"         "campaign.news.carlson" "campaign.news.colbert"
+ [4] "campaign.news.hannity" "campaign.news.maddow"  "campaign.news.none"   
+ [7] "campaign.news.papers"  "campaign.news.radio"   "campaign.news.tv"     
+[10] "campaign.news.web"     "changed.names"         "civ12.argue"          
+[13] "civ12.comment"         "civ12.community"       "civ12.cong"           
+[16] "civ12.fedoff"          "civ12.fedpol"          "civ12.giveorg"        
+[19] "civ12.giverelig"       "civ12.march"           "civ12.meeting"        
+[22] "civ12.petition"        "civ12.stateoff"        "civ12.statepol"       
+[25] "civ12.vol"             "contacted.gotv"        "covid.made.lab"       
+[28] "gay.adopt"             "gender"                "govt.run.byfew"       
+[31] "harrassed.work"        "has.daughter"          "has.nokids"           
+[34] "has.son"               "have.health.ins"       "hh.covid.symp"        
+[37] "hh.covid.test"         "hh.landline"           "hh.partner.status"    
+[40] "hh.union.mem"          "hydrox.treat.covid"    "invest.stocks"        
+[43] "leader.compromise"     "lifex.buyusa"          "lifex.flyflag"        
+[46] "lifex.foodstamps"      "lifex.huntfish"        "lifex.knowimmig"      
+[49] "lifex.oweloans"        "lifex.retireacct"      "lifex.ridebus"        
+[52] "lifex.sharkbite"       "lqb.friendfam"         "medical.putoff"       
+[55] "polact.givecand"       "polact.giveoth"        "polact.giveparty"     
+[58] "polact.meetings"       "polact.onlinemeet"     "polact.othwork"       
+[61] "polact.postsign"       "polact.talkpol"        "polact.talkvote"      
+[64] "police.stop.lastyr"    "polquiz.german"        "polquiz.housemaj"     
+[67] "polquiz.russian"       "polquiz.senatemaj"     "polquiz.speaker"      
+[70] "polquiz.vp"            "primary.voter"         "relig.ever.attend"    
+[73] "russia.interfere"      "smoke.cig.life"        "trans.friendfam"      
+[76] "trump.deport.more"     "turnout2020"           "usa.on.track"         
+[79] "vaccines.autism"       "vote.pres.str"         "work.lastweek"        
+[82] "world.temp.rising"    </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ordinal</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">is.factor</span>(.) <span class="sc">&amp;&amp;</span> </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">is.ordered</span>(.))) <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "abortion.imp"           "abortion.legal"         "abortion.scotus"       
+  [4] "active.duty.mil"        "agree.facts"            "allow.refugees"        
+  [7] "american.id.import"     "angry.about.things"     "approve.aca"           
+ [10] "approve.cong"           "approve.gov.covid"      "approve.local.covid"   
+ [13] "approve.pres.covid"     "approve.pres.econ"      "approve.pres.hc"       
+ [16] "approve.pres.imm"       "approve.pres.ir"        "approve.pres.job"      
+ [19] "ban.assault.rif"        "bible.god.man"          "biden.cares"           
+ [22] "biden.honest"           "biden.knowledge"        "biden.libcon7"         
+ [25] "biden.strlead"          "birthright.citizens"    "blacks.gotless"        
+ [28] "blacks.pastdiff"        "blacks.tryharder"       "blacks.workforit"      
+ [31] "border.wall"            "buy.back.rifles"        "campaigns.interest"    
+ [34] "cant.get.ahead"         "care.who.wins"          "censor.self"           
+ [37] "citizenship.path"       "climate.ch.weather"     "climate.import"        
+ [40] "consumer.politics"      "covid.election"         "covid.fed"             
+ [43] "covid.reopening"        "covid.restrictions"     "covid.science.help"    
+ [46] "death.penalty"          "def.spend.7pt"          "deficit.reduce"        
+ [49] "dem.libcon7"            "deport.children"        "deport.unauth"         
+ [52] "discrim.vs.asians"      "discrim.vs.blacks"      "discrim.vs.christians" 
+ [55] "discrim.vs.glb"         "discrim.vs.hispanics"   "discrim.vs.men"        
+ [58] "discrim.vs.muslims"     "discrim.vs.trans"       "discrim.vs.whites"     
+ [61] "discrim.vs.women"       "diversity.good.usa"     "divided.govt"          
+ [64] "donations.change.votes" "econ.current"           "econ.lastyear"         
+ [67] "econ.mobility.now"      "econ.nextyear"          "econ.worry"            
+ [70] "educ.5cat"              "education"              "elect.asians"          
+ [73] "elect.blacks"           "elect.hispanics"        "elect.lgbt"            
+ [76] "elect.women"            "elections.govt.attn"    "envir.or.biz"          
+ [79] "equal.opp"              "facebook.polpost"       "facebook.use"          
+ [82] "faced.gender.discrim"   "faced.race.discrim"     "fed.bw.better"         
+ [85] "fedspend.aidpoor"       "fedspend.border"        "fedspend.crime"        
+ [88] "fedspend.environ"       "fedspend.highways"      "fedspend.schools"      
+ [91] "fedspend.socsec"        "fedspend.welfare"       "feminist.import"       
+ [94] "finance.lastyear"       "finance.nextyear"       "financial.worried"     
+ [97] "gay.job.discrim"        "gay.marriage"           "gay.req.service"       
+[100] "gov.asst.blacks"        "govt.act.ineq"          "govt.act.warm.str"     
+[103] "govt.act.warming"       "govt.corrupt"           "govt.guar.job"         
+[106] "govt.hc.7pt"            "govt.help.hc"           "govt.services.7pt"     
+[109] "govt.under.media"       "govt.wastes.money"      "govtreg.moreless"      
+[112] "grand.born.usa"         "gun.bg.checks"          "gun.buying"            
+[115] "gun.issue.imp"          "happy.about.things"     "hardvote2020"          
+[118] "harrassed.work.oft"     "hc.pay.bills"           "health"                
+[121] "health.lose.ins"        "health.pay.costs"       "help.with.science"     
+[124] "hh.income"              "hh.income.pre"          "hh.num.child"          
+[127] "housing.payments"       "immig.crime"            "immig.levels"          
+[130] "immig.policy"           "immig.take.jobs"        "imp.govt.checks"       
+[133] "imp.media.crit"         "imp.off.conseq"         "imports.limit"         
+[136] "income.gap.change"      "ineq.worryless"         "intl.force"            
+[139] "laws.contrib.indiv"     "laws.contrib.org"       "libcon3"               
+[142] "libcon7"                "life.sat"               "metoo.toofar"          
+[145] "middle.class.ext"       "min.wage.change"        "morals.adjust"         
+[148] "morechance.okay"        "moreless.govt"          "opioid.addiction"      
+[151] "oth.race.concern"       "oth.race.feel"          "oth.race.persp"        
+[154] "oth.race.protect"       "paid.parent.leave"      "parents.born.usa"      
+[157] "partyid3"               "partyid7"               "partyid.importance"    
+[160] "people.fed.lies"        "people.too.sens"        "person.get.ahead"      
+[163] "pol.asian.infl"         "pol.black.infl"         "pol.dontcare"          
+[166] "pol.for.insiders"       "pol.hispanic.infl"      "pol.hurt.fam"          
+[169] "pol.nosay"              "pol.oligarchy"          "pol.toocomplex"        
+[172] "pol.understand"         "pol.white.infl"         "police.bw.better"      
+[175] "police.useforce"        "political.violence"     "politics.attention"    
+[178] "polquiz.scotus"         "pref.hiring.blacks"     "pres.ask.foreign"      
+[181] "pres.nochecks"          "protestors.conduct"     "reddit.polpost"        
+[184] "reddit.use"             "reg.greenhouse"         "relig.how.often"       
+[187] "religion.imp"           "rep.libcon7"            "restrict.journalists"  
+[190] "rural.getmore"          "rural.influence"        "rural.respect"         
+[193] "rural.urban"            "rural.urban.id"         "russia.int.election"   
+[196] "separate.children"      "smoke.cig.now"          "social.class"          
+[199] "speak.english"          "survey.serious"         "talkpol.week"          
+[202] "tax.rich"               "terrorism.worry"        "threat.from.china"     
+[205] "threat.from.germany"    "threat.from.iran"       "threat.from.japan"     
+[208] "threat.from.mexico"     "threat.from.russia"     "trad.fam.values"       
+[211] "trade.agreements"       "trade.good.ir"          "trade.jobs.abroad"     
+[214] "trade.jobs.usa"         "trans.military"         "trans.policy"          
+[217] "treat.people.fair"      "trump.acquittal"        "trump.cares"           
+[220] "trump.corruption"       "trump.honest"           "trump.impeachment"     
+[223] "trump.knowledge"        "trump.libcon7"          "trump.strlead"         
+[226] "trust.dc"               "trust.election.off"     "trust.experts"         
+[229] "trust.media"            "trust.people"           "twitter.polpost"       
+[232] "twitter.use"            "unemploy.lastyear"      "unemploy.nextyear"     
+[235] "unemploy.rate.now"      "univ.basic.income"      "urban.unrest"          
+[238] "usa.better"             "usa.stay.home"          "usa.stronger"          
+[241] "vaccine.schools"        "vaccines.risk"          "violence.justified"    
+[244] "votes.accurate"         "votes.faircount"        "voting.duty.choice"    
+[247] "voting.felons"          "voting.id"              "voting.mail"           
+[250] "voting.rts.denied"      "waitvote2020"           "whenvote2020"          
+[253] "whites.revdiscrim"      "wom.complain.prob"      "wom.control.men"       
+[256] "wom.equal.spfav"        "wom.interp.sexist"      "women.stay.honme"      
+[259] "work.mom.bond"         </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nominal</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">is.factor</span>(.) <span class="sc">&amp;&amp;</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                 <span class="sc">!</span><span class="fu">is.ordered</span>(.) <span class="sc">&amp;&amp;</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">nlevels</span>(.) <span class="sc">&gt;</span> <span class="dv">2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "born.in.usa"       "campaign.spendlim" "child.behave"     
+ [4] "child.manners"     "child.obey"        "child.respect"    
+ [7] "feminist"          "grew.up.where"     "income.gap.today" 
+[10] "marital"           "party.register"    "polquiz.fedspend" 
+[13] "postmat.1a"        "postmat.1b"        "postmat.2a"       
+[16] "postmat.2b"        "presvote2020"      "race.ethnicity"   
+[19] "region"            "religion"          "religion.group"   
+[22] "religious.id"      "sexual.orient"     "split.ticket"     
+[25] "state"             "trump.ukraine"     "vote.when.decide" 
+[28] "work.employer"     "work.status"       "world.like.usa"   </code></pre>
+</div>
+</div>
+<p><strong>Note:</strong> because <code>select()</code> can be a function in other packages outside of <code>dplyr</code> (e.g., in <code>MASS</code>), you may sometimes get an “Error in select(….” message that prevents the function from running. In that case, the simplest solution is to replace <code>select</code> within <code>dplyr::select</code> to tell R that you’re using <code>select()</code> from the <code>dplyr</code> package specifically.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

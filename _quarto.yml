@@ -5,9 +5,48 @@ website:
   title: "R Walkthroughs"
 
   navbar:
+    logo: images/RStudio.svg
+
     left:
-      - href: index.qmd
-        text: Home
+      - text: Home
+        href: index.qmd
+
+      - text: Tutorials
+        menu:
+          - text: Transforming Variables
+            href: transformingVariables.html
+          - text: Making Comparisons
+            href: makingComparisons.qmd
+          - text: t-tests and ANOVAs
+            href: t-tests_ANOVAs.qmd
+          - text: Chi-Square
+            href: chi-square_measuresOfAssociation.html
+          - text: Subsetting Data: Variable Types
+            href: subsettingVariableTypes.qmd
+          - text: Correlations
+            href: correlation.qmd
+          - text: OLS: Linear Regressions
+            href: linearRegression1.qmd
+          - text: Logit: Logistic Regressions
+            href: logit_logisticRegression.qmd
+          - text: Multivariate Regressions
+            href: multivariateRegression.qmd
+          - text: Ordinal and Multinomial Logit
+            href: ologit_mlogit.html
+          - text: Publication Quality Data
+            href: prettyData.qmd
+
+      - text: Datasets
+        menu:
+          - text: Spain Replication data
+            href: Datasets/spain.RData
+          - text: Test Scores data
+            href: Datasets/testScoresData.RData
+
 format:
   html:
-    toc: true
+    theme: cosmo
+    css: styles.css
+
+project:
+  type: website

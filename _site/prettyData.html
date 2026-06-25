@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Colin Hannigan">
+
+<title>Making Publication-Ready Tables – R Walkthroughs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Walkthroughs</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
+  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
+  <li><a href="#sec-the-printc-option" id="toc-sec-the-printc-option" class="nav-link" data-scroll-target="#sec-the-printc-option">2. The <strong><code>printC</code></strong> Option</a></li>
+  <li><a href="#sec-publication-ready-tables" id="toc-sec-publication-ready-tables" class="nav-link" data-scroll-target="#sec-publication-ready-tables">3. Publication-Ready Tables for Each Test</a></li>
+  <li><a href="#sec-advanced-material" id="toc-sec-advanced-material" class="nav-link" data-scroll-target="#sec-advanced-material">4. Advanced Material:</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Making Publication-Ready Tables</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin Hannigan </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="agenda" class="level3">
+<h3 class="anchored" data-anchor-id="agenda">Agenda:</h3>
+<ol type="1">
+<li><a href="#sec-packages-libraries">Install Packages and Libraries</a></li>
+<li><a href="#sec-the-printc-option">The <code>printC</code> Option</a></li>
+<li><a href="#sec-publication-ready-tables">Publication-Ready Tables</a>
+<ol type="a">
+<li><a href="#sec-t-tests">T-Tests</a></li>
+<li><a href="#sec-anovas">ANOVAs</a></li>
+<li><a href="#sec-chi-square-crosstabs">Chi-square</a></li>
+<li><a href="#sec-ols-linear-regressions">Linear Regression (OLS)</a></li>
+<li><a href="#sec-logistic-regressions-logit">Logistic Regression (Logit)</a></li>
+</ol></li>
+<li><a href="#sec-advanced-material">Advanced Material</a>
+<ol type="a">
+<li><a href="#sec-output-stargazer-html">Output <code>stargazer()</code> to .html file instead of text</a></li>
+<li><a href="#sec-correct-ses-and-p-values-for-odds-ratios-in-stargazer">Correct SEs and p-values for Odds Ratios in <code>stargazer()</code></a></li>
+</ol></li>
+</ol>
+</section>
+<section id="sec-packages-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="sec-packages-libraries">1. Install Packages and Libraries:</h3>
+<section id="new-packages-to-install" class="level4">
+<h4 class="anchored" data-anchor-id="new-packages-to-install">New packages to install:</h4>
+<p>If you do not already have these packages, paste them manually into the console and install them.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("stargazer")</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("oii")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ul>
+<li><p><a href="https://cran.r-project.org/web/packages/stargazer/index.html" target="_blank">stargazer</a> allows us to produce clean, formatted regression tables.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/oii/index.html" target="_blank">oii</a> provides additional measures of association for analyzing chi-square tests.</p></li>
+</ul>
+</section>
+<section id="load-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="load-libraries">Load libraries!</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RCPA3)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(oii)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="sec-the-printc-option" class="level3">
+<h3 class="anchored" data-anchor-id="sec-the-printc-option">2. The <strong><code>printC</code></strong> Option</h3>
+<p>In <code>RCPA3</code>, <code>printC()</code> is its own standalone function that allows us to save information and output it in a html file, which means it’s formatted like a webpage. But many of the <code>RCPA3</code> functions we already use also have a <code>printC</code> optional argument that we can use to ensure we have all the necessary components of the test.</p>
+<p>You’ll notice that, whenever you use <code>printC</code>, you’ll get a message in the output that looks something like this: “…appended to Table.Output.Jun0326.html in C:/Users/CHANNIGAN001/Path/To/File.” The file name includes the <strong>current date</strong>, and the file will be updated (i.e., appended) to include the output from each <code>printC</code> statement you use in the same day. The message also includes the <strong>location of the file</strong> on your computer, so you can find it, open it in a browser and see the formatted text/visualizations.</p>
+</section>
+<section id="sec-publication-ready-tables" class="level3">
+<h3 class="anchored" data-anchor-id="sec-publication-ready-tables">3. Publication-Ready Tables for Each Test</h3>
+<section id="sec-t-tests" class="level4">
+<h4 class="anchored" data-anchor-id="sec-t-tests">T-tests</h4>
+<p>For a t-test, we can just add the <code>printC = T</code> optional argument at the end of the <code>testmeansC()</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testmeansC</span>(states<span class="sc">$</span>vep20.turnout, states<span class="sc">$</span>vep16.turnout, <span class="at">paired =</span> T, <span class="at">printC =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                         Difference of Means Test
+===========================================================================
+Test Framework and Assumptions
+
+Null Hypothesis: states$vep20.turnout - states$vep16.turnout = 0
+Alt. Hypothesis: states$vep20.turnout - states$vep16.turnout != 0
+Population standard deviation is unknown.
+Observations are paired.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Statement appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Descriptive Statistics
+
+                         Mean       N   St. Dev.
+---------------------  ------  ------  ---------
+states$vep20.turnout    67.95   50.00       5.97
+states$vep16.turnout    61.66   50.00       6.38</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+
+Table: t-Test Statistics
+
+ Diff. of Means   SE of Diff.   t-Statistic      DF   P-value (2-tailed)
+---------------  ------------  ------------  ------  -------------------
+           6.29          0.36         17.31   49.00              1.6e-22</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+
+Table: 95% Confidence Interval of Difference of Means
+
+ Lower Bound   Point Estimate   Upper Bound
+------------  ---------------  ------------
+        5.56             6.29          7.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Image file added to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="prettyData_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="sec-anovas" class="level4">
+<h4 class="anchored" data-anchor-id="sec-anovas">ANOVAs</h4>
+<p>We could use the same <code>printC = T</code> argument do something similar for an ANOVA if we take the <code>compmeansC()</code> route with the <code>anova = T</code> option to produce it. But because we need to do the additional Tukey HSD test to get all the necessary information for interpretation, we’ll use <code>printC()</code> as a standalone function instead.</p>
+<ol type="1">
+<li>First, we’ll run the ANOVA using the <code>aov()</code> function and store the model as an object called <code>anova.model1</code>:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>anova.model1 <span class="ot">&lt;-</span> <span class="fu">aov</span>(world<span class="sc">$</span>gdp.percap<span class="sc">~</span>world<span class="sc">$</span>vdem<span class="fl">.4</span>cat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="1">
+<li>Next, we can use <code>printC()</code> to send the summary output of the model to the output document:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">printC</span>(<span class="fu">summary</span>(anova.model1))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Output appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+</div>
+<ol start="3" type="1">
+<li>Then, we do the same thing with the Tukey HSD test output for the model:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">printC</span>(<span class="fu">TukeyHSD</span>(anova.model1))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Output appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-chi-square-crosstabs" class="level4">
+<h4 class="anchored" data-anchor-id="sec-chi-square-crosstabs">Chi-square Crosstabs</h4>
+<p>The <code>printC</code> option is also helpful for crosstabs and chi-square tests:</p>
+<ol type="1">
+<li>First, we run the model and store the output as an object (<code>chitest1</code>). Because we’re focused on getting the formatted output, we’ll be sure to include all the optional arguments in addition to the <code>printC = T</code> argument at the end:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>chitest1<span class="ot">&lt;-</span><span class="fu">crosstabC</span>(<span class="at">dv=</span>nes<span class="sc">$</span>gun.buying, <span class="at">iv=</span>nes<span class="sc">$</span>libcon3, <span class="at">dvlabs =</span> <span class="fu">c</span>(<span class="st">"Harder"</span>, <span class="st">"Easier"</span>, <span class="st">"About the same"</span>), <span class="at">compact=</span>T, <span class="at">chisq =</span> T, <span class="at">plot =</span> F, <span class="at">printC =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                         Cross-Tabulation Analysis
+===========================================================================
+
+
+Table: Cross-Tabulation of nes$gun.buying and nes$libcon3
+
+                    1. Liberal   2. Moderate   3. Conservative    Totals
+-----------------  -----------  ------------  ----------------  --------
+% Harder                 85.98         55.92             16.95     52.34
+% Easier                  1.17          5.25             13.24      6.46
+% About the same         12.85         38.83             69.81     41.20
+Count                  1448.00       3183.00           1699.00   6330.00</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>---------------------------------------------------------------------------
+                     Chi-Squared Test of Independence
+---------------------------------------------------------------------------
+Null hypothesis: nes$gun.buying and nes$libcon3 are independent. 
+
+
+    Pearson's Chi-squared test
+
+data:  crosstab.observed.frequencies
+X-squared = 1542.6, df = 4, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Statement appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>Then, we can use the standalone <code>printC()</code> function to append the output of the <code>association.measures()</code> function on our stored model object to the file, too:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">printC</span>(<span class="fu">association.measures</span>(chitest1))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Output appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+</div>
+</section>
+<section id="sec-ols-linear-regressions" class="level4">
+<h4 class="anchored" data-anchor-id="sec-ols-linear-regressions">OLS Linear Regressions</h4>
+<p>For regression output, we can still use the <code>printC = T</code> argument as part of the <code>regC()</code> function, but it is always preferable to use <code>stargazer()</code> instead because it is more aligned with the formatting in the discipline and customizable.</p>
+<p>But this is where things get a little tricky.</p>
+<p>We could start by running the test using <code>regC()</code>, including the <code>printC = T</code> argument, and storing the model object as something like <code>ols1</code>. In the console, we’ll see that the model was appended to the output file as intended.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>ols1 <span class="ot">&lt;-</span> <span class="fu">regC</span>(<span class="at">formula =</span> states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000 <span class="sc">+</span> states<span class="sc">$</span>obesity.percent <span class="sc">+</span> states<span class="sc">$</span>gini<span class="fl">.2016</span> <span class="sc">+</span> states<span class="sc">$</span>prcapinc <span class="sc">+</span> states<span class="sc">$</span>urban, <span class="at">printC =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                        Linear Regression Analysis
+===========================================================================
+
+
+Table: Linear Regression Coefficients
+
+                              Estimate   Std. Error   t value   Pr(&gt;|t|)
+---------------------------  ---------  -----------  --------  ---------
+(Intercept)                     -9.433        1.241      -7.6      &lt;.001
+states$covid.cases.per1000       0.014        0.002     6.473      &lt;.001
+states$obesity.percent           0.027        0.017     1.575      0.122
+states$gini.2016                17.041        2.711     6.286      &lt;.001
+states$prcapinc                      0            0     2.274      0.028
+states$urban                     0.001        0.004     0.231      0.818</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Regression Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -0.633    -0.222   -0.040     0.230   0.596</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Additional Information:
+
+Residual standard error: 0.3199 on 44 degrees of freedom
+N: 50 (0 observations deleted due to missingness)
+Multiple R-squared:  0.7538,    Adjusted R-squared:  0.7258 
+F-statistic: 26.94 on 5 and 44 DF,  p-value: 2.295e-12
+Dependent variable: states$covid.deaths.per1000</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Statement appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+</div>
+<p>But when we try using stargazer to print the model object to the console as text…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(ols1, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+% Error: Unrecognized object type.</code></pre>
+</div>
+</div>
+<p>…<strong>it doesn’t work</strong>!</p>
+<p>That’s because <code>regC()</code> is a special function that is unique to the <code>RCPA3</code> package.</p>
+<p>So, we’ll create a new model object (<code>ols2</code>), copying the model equation into a new <code>lm()</code> function instead:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>ols2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000 <span class="sc">+</span> states<span class="sc">$</span>obesity.percent <span class="sc">+</span> states<span class="sc">$</span>gini<span class="fl">.2016</span> <span class="sc">+</span> states<span class="sc">$</span>prcapinc <span class="sc">+</span> states<span class="sc">$</span>urban)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>As always, we can print the basic model summary to the console to have a look.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ols2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000 + 
+    states$obesity.percent + states$gini.2016 + states$prcapinc + 
+    states$urban)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.63263 -0.22202 -0.04042  0.22996  0.59644 
+
+Coefficients:
+                             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                -9.433e+00  1.241e+00  -7.600 1.53e-09 ***
+states$covid.cases.per1000  1.365e-02  2.109e-03   6.473 6.80e-08 ***
+states$obesity.percent      2.660e-02  1.689e-02   1.575   0.1225    
+states$gini.2016            1.704e+01  2.711e+00   6.286 1.28e-07 ***
+states$prcapinc             3.017e-05  1.327e-05   2.274   0.0279 *  
+states$urban                9.547e-04  4.132e-03   0.231   0.8183    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.3199 on 44 degrees of freedom
+Multiple R-squared:  0.7538,    Adjusted R-squared:  0.7258 
+F-statistic: 26.94 on 5 and 44 DF,  p-value: 2.295e-12</code></pre>
+</div>
+</div>
+<p>But we can also level up by using the <code>stargazer()</code> function to format the information in a table that we can copy/paste into a Word document.</p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> In Word, R output is best formatted using Lucida Console font (10pt size). If you don’t have that font option, though, you could try the Courier New font.</p>
+</blockquote>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(ols2, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                       covid.deaths.per1000    
+-----------------------------------------------
+covid.cases.per1000          0.014***          
+                              (0.002)          
+                                               
+obesity.percent                0.027           
+                              (0.017)          
+                                               
+gini.2016                    17.041***         
+                              (2.711)          
+                                               
+prcapinc                     0.00003**         
+                             (0.00001)         
+                                               
+urban                          0.001           
+                              (0.004)          
+                                               
+Constant                     -9.433***         
+                              (1.241)          
+                                               
+-----------------------------------------------
+Observations                    50             
+R2                             0.754           
+Adjusted R2                    0.726           
+Residual Std. Error       0.320 (df = 44)      
+F Statistic           26.938*** (df = 5; 44)   
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Next, let’s make a new model (<code>ols3</code>) that makes a slight adjustment to our original model. Like we’ve discussed before, we can compare related models to account for additional control variables, check for robustness across different measures of the same concept, include transformations, etc.</p>
+<p>In this case, we’ll remove the <code>states$obesity.percent</code> independent variable from the model to see if the results change:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ols3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="at">formula =</span> states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000 <span class="sc">+</span> states<span class="sc">$</span>gini<span class="fl">.2016</span> <span class="sc">+</span> states<span class="sc">$</span>prcapinc <span class="sc">+</span> states<span class="sc">$</span>urban)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Using <code>stargazer()</code>, we don’t have to look at two separate outputs to compare models; we can look at them side-by-side in the same output by just include both (or all) of them in the function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(ols2, ols3, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=================================================================
+                                 Dependent variable:             
+                    ---------------------------------------------
+                                covid.deaths.per1000             
+                             (1)                    (2)          
+-----------------------------------------------------------------
+covid.cases.per1000        0.014***               0.014***       
+                           (0.002)                (0.002)        
+                                                                 
+obesity.percent             0.027                                
+                           (0.017)                               
+                                                                 
+gini.2016                 17.041***              18.273***       
+                           (2.711)                (2.638)        
+                                                                 
+prcapinc                  0.00003**               0.00002*       
+                          (0.00001)              (0.00001)       
+                                                                 
+urban                       0.001                  -0.002        
+                           (0.004)                (0.004)        
+                                                                 
+Constant                  -9.433***              -8.849***       
+                           (1.241)                (1.204)        
+                                                                 
+-----------------------------------------------------------------
+Observations                  50                     50          
+R2                          0.754                  0.740         
+Adjusted R2                 0.726                  0.717         
+Residual Std. Error    0.320 (df = 44)        0.325 (df = 45)    
+F Statistic         26.938*** (df = 5; 44) 32.000*** (df = 4; 45)
+=================================================================
+Note:                                 *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>We can also, customize the stargazer output using <code>stargazer</code>’s optional arguments. To find these, you can either look at the documentation (linked at the top of this document) or take the easy route and look at the help information in the RStudio environment:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>?stargazer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>starting httpd help server ... done</code></pre>
+</div>
+</div>
+<p>For example, we might want to include the <code>df = F</code> argument to remove the degrees of freedom and save some horizontal spacing between columns:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(ols2, ols3, <span class="at">type =</span> <span class="st">"text"</span>, <span class="at">df =</span> F)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+================================================
+                        Dependent variable:     
+                    ----------------------------
+                        covid.deaths.per1000    
+                          (1)           (2)     
+------------------------------------------------
+covid.cases.per1000    0.014***       0.014***  
+                        (0.002)       (0.002)   
+                                                
+obesity.percent          0.027                  
+                        (0.017)                 
+                                                
+gini.2016              17.041***     18.273***  
+                        (2.711)       (2.638)   
+                                                
+prcapinc               0.00003**      0.00002*  
+                       (0.00001)     (0.00001)  
+                                                
+urban                    0.001         -0.002   
+                        (0.004)       (0.004)   
+                                                
+Constant               -9.433***     -8.849***  
+                        (1.241)       (1.204)   
+                                                
+------------------------------------------------
+Observations              50             50     
+R2                       0.754         0.740    
+Adjusted R2              0.726         0.717    
+Residual Std. Error      0.320         0.325    
+F Statistic            26.938***     32.000***  
+================================================
+Note:                *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+</section>
+<section id="try-some-of-these-other-options" class="level4">
+<h4 class="anchored" data-anchor-id="try-some-of-these-other-options">Try some of these other options:</h4>
+<ul>
+<li>changing significance levels using <code>star.cutoffs = c()</code></li>
+</ul>
+<ul>
+<li>clarifying IV labels using <code>covariate.labels = C()</code></li>
+</ul>
+<ul>
+<li>making a DV label using <code>dep.var.labels</code></li>
+</ul>
+</section>
+<section id="sec-logistic-regressions-logit" class="level4">
+<h4 class="anchored" data-anchor-id="sec-logistic-regressions-logit">Logistic Regressions (Logit)</h4>
+<p>The same logit applies to logistic regression output: <code>printC()</code> is possible, but <code>stargazer()</code> is preferable:</p>
+<p>Just like before, we could start by running the test using <code>logregC()</code>, including the <code>printC = T</code> argument, and storing the model object as something like <code>logit1</code>. Even without the model object, the <code>printC = T</code> optional argument will append the tables to the output file.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>logit1 <span class="ot">&lt;-</span> <span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">fit.stats=</span>T, <span class="at">printC =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                           Estimate   Std. Error   z stat   Pr(&gt;|z|)
+------------------------  ---------  -----------  -------  ---------
+(Intercept)                   0.433        0.788     0.55      0.583
+world$gdp.percap.5cat.L        2.13         0.75    2.841      0.004
+world$gdp.percap.5cat.Q      -0.059        0.434   -0.137      0.891
+world$gdp.percap.5cat.C       -0.75         0.44   -1.704      0.088
+world$gdp.percap.5cat^4       0.342        0.381    0.897       0.37
+world$frac.eth               -0.188        0.824   -0.228       0.82
+world$pop.urban              -0.003        0.012   -0.266       0.79</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Statement appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   29.526
+     DF (for Chi2)        6
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.142
+ Cox &amp; Snell Index    0.179
+  Nagelkerke Index    0.239</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Table appended to Table.Output.Jun2526.html in C:/Users/CHANNIGAN001/OneDrive - CSBSJU/POLS 222 Course Materials/Walkthroughs</code></pre>
+</div>
+</div>
+<p>Print the basic model summary to the console to have a look…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+stats::glm(formula = formula, family = "binomial", data = data, 
+    na.action = "na.omit")
+
+Coefficients:
+                         Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)              0.433164   0.788153   0.550  0.58260   
+world$gdp.percap.5cat.L  2.130299   0.749737   2.841  0.00449 **
+world$gdp.percap.5cat.Q -0.059252   0.433590  -0.137  0.89130   
+world$gdp.percap.5cat.C -0.749643   0.439910  -1.704  0.08837 . 
+world$gdp.percap.5cat^4  0.341534   0.380796   0.897  0.36977   
+world$frac.eth          -0.187602   0.823607  -0.228  0.81982   
+world$pop.urban         -0.003229   0.012148  -0.266  0.79038   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+  (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>…but once again, stargazer won’t work with an object created using the <code>logregC()</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(logit1, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+% Error: Unrecognized object type.</code></pre>
+</div>
+</div>
+<p>So, we’ll recreate the same model using the base R <code>glm()</code> function. This time we’ll assign it to an object called <code>logit2</code>. Remember: we always have to specify the <code>family = "binomial"</code> optional argument to skip over the default linear model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>logit2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">family =</span> <span class="st">"binomial"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>View the basic model summary in the console if you want…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logit2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = world$vdem.2cat ~ world$gdp.percap.5cat + world$frac.eth + 
+    world$pop.urban, family = "binomial")
+
+Coefficients:
+                         Estimate Std. Error z value Pr(&gt;|z|)   
+(Intercept)              0.433164   0.788153   0.550  0.58260   
+world$gdp.percap.5cat.L  2.130299   0.749737   2.841  0.00449 **
+world$gdp.percap.5cat.Q -0.059252   0.433590  -0.137  0.89130   
+world$gdp.percap.5cat.C -0.749643   0.439910  -1.704  0.08837 . 
+world$gdp.percap.5cat^4  0.341534   0.380796   0.897  0.36977   
+world$frac.eth          -0.187602   0.823607  -0.228  0.81982   
+world$pop.urban         -0.003229   0.012148  -0.266  0.79038   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+  (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+</div>
+<p>…then put it into a <code>stargazer()</code> function. The function below is basic, but you can add any useful modifications, just like we did above with the OLS linear regression models.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(logit2, <span class="at">type =</span> <span class="st">"text"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=============================================
+                      Dependent variable:    
+                  ---------------------------
+                           vdem.2cat         
+---------------------------------------------
+gdp.percap.5cat.L          2.130***          
+                            (0.750)          
+                                             
+gdp.percap.5cat.Q           -0.059           
+                            (0.434)          
+                                             
+gdp.percap.5cat.C           -0.750*          
+                            (0.440)          
+                                             
+gdp.percap.5cat4             0.342           
+                            (0.381)          
+                                             
+frac.eth                    -0.188           
+                            (0.824)          
+                                             
+pop.urban                   -0.003           
+                            (0.012)          
+                                             
+Constant                     0.433           
+                            (0.788)          
+                                             
+---------------------------------------------
+Observations                  150            
+Log Likelihood              -89.089          
+Akaike Inf. Crit.           192.178          
+=============================================
+Note:             *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Notice that stargazer reports the raw log-odds rather than the odds ratios. While we might be tempted to try <code>apply.coef = exp</code> to exponentiate the coefficients and present odds ratios, that’s a dangerous change because it also biases the standard errors, test statistics, and p-values.</p>
+<p>So, to report odds ratios and classification tables, it’s reasonable to pull those from the <code>printC = T</code> output of the <code>logregC()</code> version of the model(s), including the <code>fit.stats = T</code>, <code>orci = T</code>, and <code>pre = T</code> options. Then just screenshot and copy/paste those tables separately.</p>
+</section>
+</section>
+<section id="sec-advanced-material" class="level3">
+<h3 class="anchored" data-anchor-id="sec-advanced-material">4. Advanced Material:</h3>
+<section id="sec-output-stargazer-html" class="level4">
+<h4 class="anchored" data-anchor-id="sec-output-stargazer-html">Output <code>stargazer()</code> to .html file instead of text</h4>
+<p>Formatting the <code>stargazer()</code> table as an html document makes it look even better, but it can be sort of complicated. The key here is to change the <code>type =</code> from <code>"text"</code> to <code>"html"</code> and provide a memorable file name in the <code>out =</code> argument for where the output is saved.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(logit2, <span class="at">type =</span> <span class="st">"html"</span>, <span class="at">out =</span> <span class="st">"logit2ResultsTable.html"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+&lt;table style="text-align:center"&gt;&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;em&gt;Dependent variable:&lt;/em&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan="1" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;vdem.2cat&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;gdp.percap.5cat.L&lt;/td&gt;&lt;td&gt;2.130&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.750)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;gdp.percap.5cat.Q&lt;/td&gt;&lt;td&gt;-0.059&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.434)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;gdp.percap.5cat.C&lt;/td&gt;&lt;td&gt;-0.750&lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.440)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;gdp.percap.5cat4&lt;/td&gt;&lt;td&gt;0.342&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.381)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;frac.eth&lt;/td&gt;&lt;td&gt;-0.188&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.824)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;pop.urban&lt;/td&gt;&lt;td&gt;-0.003&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.012)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Constant&lt;/td&gt;&lt;td&gt;0.433&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;(0.788)&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;Observations&lt;/td&gt;&lt;td&gt;150&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Log Likelihood&lt;/td&gt;&lt;td&gt;-89.089&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="text-align:left"&gt;Akaike Inf. Crit.&lt;/td&gt;&lt;td&gt;192.178&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2" style="border-bottom: 1px solid black"&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style="text-align:left"&gt;&lt;em&gt;Note:&lt;/em&gt;&lt;/td&gt;&lt;td style="text-align:right"&gt;&lt;sup&gt;*&lt;/sup&gt;p&lt;0.1; &lt;sup&gt;**&lt;/sup&gt;p&lt;0.05; &lt;sup&gt;***&lt;/sup&gt;p&lt;0.01&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+</div>
+</div>
+<p>You’ll see the html code printed to the console, too, but you can find the html file that you produced and open it in a browser, then select all and copy/paste it into your Word document. Remember: you can always add in other optional arguments, just like before, to maximize the look/clarity of your table.</p>
+</section>
+<section id="sec-correct-ses-and-p-values-for-odds-ratios-in-stargazer" class="level4">
+<h4 class="anchored" data-anchor-id="sec-correct-ses-and-p-values-for-odds-ratios-in-stargazer">Correct SEs and p-values for Odds Ratios in <code>stargazer()</code></h4>
+<ol type="1">
+<li>First, we need to calculate the odds ratios and store them in a separate object:</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>OddsRatios <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(logit2))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="1">
+<li><p>Then, we correct the standard errors and store those in a separate object, too.</p>
+<p>Because odds ratios are transformed versions of the original coefficients (log-odds), the standard errors change, too. So, we go back to the original model (specifically, something called a variance-covariance matrix, which is a table of the uncertainty of the estimates) to recalculate the standard errors in light of the odds ratio transformations. To do this we multiply the odds ratios my the square root of the diagonal (the Maximum Likelihood Estimates) from the variance-covariance matrix of the original model:</p></li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>SE_Odds <span class="ot">&lt;-</span> OddsRatios <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcov</span>(logit2)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="3" type="1">
+<li>Then, we can pass arguments to stargazer to use our new <code>OddsRatios</code> object in place of the coefficients, and our new <code>SE_Odds</code> object in place of the original standard errors. Then we turn off the automatic t-statistics and p-values that <code>stargazer()</code> defaults to because the original ones were wrong. Basically: “just use my inputs rather than ignoring them in favor of the original model.”</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(logit2, <span class="at">type =</span> <span class="st">"text"</span>,</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">coef =</span> <span class="fu">list</span>(OddsRatios), </span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">se =</span> <span class="fu">list</span>(SE_Odds), </span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">t.auto =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">p.auto =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=============================================
+                      Dependent variable:    
+                  ---------------------------
+                           vdem.2cat         
+---------------------------------------------
+gdp.percap.5cat.L          8.417***          
+                            (6.311)          
+                                             
+gdp.percap.5cat.Q            0.942           
+                            (0.409)          
+                                             
+gdp.percap.5cat.C           0.473*           
+                            (0.208)          
+                                             
+gdp.percap.5cat4             1.407           
+                            (0.536)          
+                                             
+frac.eth                     0.829           
+                            (0.683)          
+                                             
+pop.urban                    0.997           
+                            (0.012)          
+                                             
+Constant                     1.542           
+                            (1.215)          
+                                             
+---------------------------------------------
+Observations                  150            
+Log Likelihood              -89.089          
+Akaike Inf. Crit.           192.178          
+=============================================
+Note:             *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

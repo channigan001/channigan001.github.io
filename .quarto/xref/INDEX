@@ -16,5 +16,29 @@
   },
   "t-tests_ANOVAs.qmd": {
     "t-tests_ANOVAs.html": "e4bb5f0e"
+  },
+  "correlation.qmd": {
+    "correlation.html": "1aadfcd4"
+  },
+  "linearRegression1.qmd": {
+    "linearRegression1.html": "fd71883c"
+  },
+  "logit_logisticRegression.qmd": {
+    "logit_logisticRegression.html": "03a909d5"
+  },
+  "makingComparisons.qmd": {
+    "makingComparisons.html": "0ce9c209"
+  },
+  "multivariateRegression.qmd": {
+    "multivariateRegression.html": "591cd1bd"
+  },
+  "prettyData.qmd": {
+    "prettyData.html": "c723f7d1"
+  },
+  "subsettingVariableTypes.qmd": {
+    "subsettingVariableTypes.html": "e1c63867"
+  },
+  "transformingVariables.qmd": {
+    "transformingVariables.html": "d2983201"
   }
 }
