@@ -76,7 +76,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -106,9 +106,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -116,6 +117,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    <img src="./images/RStudio.svg" alt="" class="navbar-logo light-content">
+    <img src="./images/RStudio.svg" alt="" class="navbar-logo dark-content">
     </a>
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">R Walkthroughs</span>
@@ -131,6 +134,72 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Tutorials</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
+        <li>
+    <a class="dropdown-item" href="./transformingVariables.html">
+ <span class="dropdown-text">Transforming Variables</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./MakingComparisons.html">
+ <span class="dropdown-text">Making Comparisons</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./t-tests_ANOVAs.html">
+ <span class="dropdown-text">t-tests and ANOVAs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./chi-square_measuresOfAssociation.html">
+ <span class="dropdown-text">Chi-Square</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./subsettingVariableTypes.html">
+ <span class="dropdown-text">Subsetting Data: Variable Types</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./correlation.html">
+ <span class="dropdown-text">Correlations</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./linearRegression1.html">
+ <span class="dropdown-text">OLS: Linear Regressions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./logit_logisticRegression.html">
+ <span class="dropdown-text">Logit: Logistic Regressions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./multivariateRegression.html">
+ <span class="dropdown-text">Multivariate Regressions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./ologit_mlogit.html">
+ <span class="dropdown-text">Ordinal and Multinomial Logit</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./prettyData.html">
+ <span class="dropdown-text">Publication Quality Data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-datasets" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Datasets</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-datasets">    
+        <li>
+    <a class="dropdown-item" href="./Datasets/spain.RData">
+ <span class="dropdown-text">Spain Replication data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./Datasets/testScoresData.RData">
+ <span class="dropdown-text">Test Scores data</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -142,20 +211,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
-  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
-  <li><a href="#sec-systematic-transformations" id="toc-sec-systematic-transformations" class="nav-link" data-scroll-target="#sec-systematic-transformations">2. Systematic Transformations</a></li>
-  <li><a href="#sec-changing-variable-types" id="toc-sec-changing-variable-types" class="nav-link" data-scroll-target="#sec-changing-variable-types">3. Changing Variable Types</a></li>
-  <li><a href="#sec-sorting-cases-using-sortc" id="toc-sec-sorting-cases-using-sortc" class="nav-link" data-scroll-target="#sec-sorting-cases-using-sortc">4. Sorting Cases Using <code>sortC()</code></a></li>
-  <li><a href="#sec-advanced-material" id="toc-sec-advanced-material" class="nav-link" data-scroll-target="#sec-advanced-material">5. Advanced Material:</a></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
