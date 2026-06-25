@@ -2,10 +2,10 @@ project:
   type: website
 
 website:
-  title: "R Walkthroughs"
+  favicon: images/RStudio.png
 
   navbar:
-    logo: images/RStudio.svg
+    logo: images/RStudio.png
 
     left:
       - text: Home
@@ -15,38 +15,55 @@ website:
         menu:
           - text: Transforming Variables
             href: transformingVariables.html
+
           - text: Making Comparisons
             href: makingComparisons.qmd
+
           - text: t-tests and ANOVAs
             href: t-tests_ANOVAs.qmd
+
           - text: Chi-Square
             href: chi-square_measuresOfAssociation.html
-          - text: Subsetting Data: Variable Types
+
+          - text: "Subsetting Data: Variable Types"
             href: subsettingVariableTypes.qmd
+
           - text: Correlations
             href: correlation.qmd
-          - text: OLS: Linear Regressions
+
+          - text: "OLS: Linear Regressions"
             href: linearRegression1.qmd
-          - text: Logit: Logistic Regressions
+
+          - text: "Logit: Logistic Regressions"
             href: logit_logisticRegression.qmd
+
           - text: Multivariate Regressions
             href: multivariateRegression.qmd
+
           - text: Ordinal and Multinomial Logit
             href: ologit_mlogit.html
-          - text: Publication Quality Data
+
+          - text: Publication-Ready Tables
             href: prettyData.qmd
 
       - text: Datasets
         menu:
           - text: Spain Replication data
             href: Datasets/spain.RData
+
           - text: Test Scores data
             href: Datasets/testScoresData.RData
+
+      - text: Scripts
+        menu:
+          - text: Capstone Script
+            href: scripts/CapstoneScriptTemplate.R
+
+      - text: Choosing the Appropriate Tests
+        href: choosingTheAppropriateTests.qmd
+
 
 format:
   html:
     theme: cosmo
     css: styles.css
-
-project:
-  type: website

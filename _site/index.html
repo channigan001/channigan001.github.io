@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Home – R Walkthroughs</title>
+<title>POLS 222 R Walkthroughs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,6 +30,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<link href="./images/RStudio.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
@@ -40,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,9 +71,10 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed fullcontent quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -80,9 +82,8 @@ ul.task-list li input[type="checkbox"] {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a href="./index.html" class="navbar-brand navbar-brand-logo">
-    </a>
-    <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">R Walkthroughs</span>
+    <img src="./images/RStudio.png" alt="" class="navbar-logo light-content">
+    <img src="./images/RStudio.png" alt="" class="navbar-logo dark-content">
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -95,6 +96,87 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link active" href="./index.html" aria-current="page"> 
 <span class="menu-text">Home</span></a>
   </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Tutorials</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
+        <li>
+    <a class="dropdown-item" href="./transformingVariables.html">
+ <span class="dropdown-text">Transforming Variables</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./makingComparisons.html">
+ <span class="dropdown-text">Making Comparisons</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./t-tests_ANOVAs.html">
+ <span class="dropdown-text">t-tests and ANOVAs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./chi-square_measuresOfAssociation.html">
+ <span class="dropdown-text">Chi-Square</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./subsettingVariableTypes.html">
+ <span class="dropdown-text">Subsetting Data: Variable Types</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./correlation.html">
+ <span class="dropdown-text">Correlations</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./linearRegression1.html">
+ <span class="dropdown-text">OLS: Linear Regressions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./logit_logisticRegression.html">
+ <span class="dropdown-text">Logit: Logistic Regressions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./multivariateRegression.html">
+ <span class="dropdown-text">Multivariate Regressions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./ologit_mlogit.html">
+ <span class="dropdown-text">Ordinal and Multinomial Logit</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./prettyData.html">
+ <span class="dropdown-text">Publication-Ready Tables</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-datasets" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Datasets</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-datasets">    
+        <li>
+    <a class="dropdown-item" href="./Datasets/spain.RData">
+ <span class="dropdown-text">Spain Replication data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./Datasets/testScoresData.RData">
+ <span class="dropdown-text">Test Scores data</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-scripts" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Scripts</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-scripts">    
+        <li>
+    <a class="dropdown-item" href="./scripts/CapstoneScriptTemplate.R">
+ <span class="dropdown-text">Capstone Script</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./choosingTheAppropriateTests.html"> 
+<span class="menu-text">Choosing the Appropriate Tests</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -106,24 +188,13 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#pols-222-r-walkthroughs" id="toc-pols-222-r-walkthroughs" class="nav-link active" data-scroll-target="#pols-222-r-walkthroughs">POLS 222: R Walkthroughs</a>
-  <ul class="collapse">
-  <li><a href="#tutorials" id="toc-tutorials" class="nav-link" data-scroll-target="#tutorials">Tutorials</a></li>
-  </ul></li>
-  </ul>
-</nav>
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Home</h1>
+<h1 class="title">POLS 222 R Walkthroughs</h1>
 </div>
 
 
@@ -140,27 +211,24 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="pols-222-r-walkthroughs" class="level1">
-<h1>POLS 222: R Walkthroughs</h1>
 <p>This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects.</p>
 <section id="tutorials" class="level2">
 <h2 class="anchored" data-anchor-id="tutorials">Tutorials</h2>
 <ul>
 <li><a href="transformingVariables.html">Transforming Variables</a></li>
-<li><a href="./MakingComparisons.html">Making Comparisons</a></li>
-<li><a href="./t-tests_ANOVAs.html">t-tests and ANOVAs</a></li>
+<li><a href="makingComparisons.html">Making Comparisons</a></li>
+<li><a href="t-tests_ANOVAs.html">t-tests and ANOVAs</a></li>
 <li><a href="chi-square_measuresOfAssociation.html">Chi-Square and Measures of Association</a></li>
-<li><a href="./subsettingVariableTypes.html">Subsetting Data: Variable Types</a></li>
-<li><a href="./correlation.html">Correlations</a></li>
-<li><a href="./linearRegression1.html">OLS: Linear Regressions</a></li>
-<li><a href="./logit_logisticRegression.html">Logit: Logistic Regressions</a></li>
-<li><a href="./multivariateRegression.html">Multivariate Regressions</a></li>
+<li><a href="subsettingVariableTypes.html">Subsetting Data: Variable Types</a></li>
+<li><a href="correlation.html">Correlations</a></li>
+<li><a href="linearRegression1.html">OLS: Linear Regressions</a></li>
+<li><a href="logit_logisticRegression.html">Logit: Logistic Regressions</a></li>
+<li><a href="multivariateRegression.html">Multivariate Regressions</a></li>
 <li><a href="ologit_mlogit.html">Ordinal and Multinomial Logit</a></li>
-<li><a href="./prettyData.html">Publication Quality Data</a></li>
+<li><a href="prettyData.html">Publication-Ready Tables</a></li>
 </ul>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -237,7 +305,7 @@ ul.task-list li input[type="checkbox"] {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

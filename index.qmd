@@ -1,21 +1,19 @@
 ---
-title: Home
+title: POLS 222 R Walkthroughs
 ---
-
-# POLS 222: R Walkthroughs
 
 This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects. 
 
 ## Tutorials
 
 - [Transforming Variables](transformingVariables.html)
-- [Making Comparisons](makingComparisons.qmd)
-- [t-tests and ANOVAs](t-tests_ANOVAs.qmd)
+- [Making Comparisons](makingComparisons.html)
+- [t-tests and ANOVAs](t-tests_ANOVAs.html)
 - [Chi-Square and Measures of Association](chi-square_measuresOfAssociation.html)
-- [Subsetting Data: Variable Types](subsettingVariableTypes.qmd)
-- [Correlations](correlation.qmd)
-- [OLS: Linear Regressions](linearRegression1.qmd)
-- [Logit: Logistic Regressions](logit_logisticRegression.qmd)
-- [Multivariate Regressions](multivariateRegression.qmd)
+- [Subsetting Data: Variable Types](subsettingVariableTypes.html)
+- [Correlations](correlation.html)
+- [OLS: Linear Regressions](linearRegression1.html)
+- [Logit: Logistic Regressions](logit_logisticRegression.html)
+- [Multivariate Regressions](multivariateRegression.html)
 - [Ordinal and Multinomial Logit](ologit_mlogit.html)
-- [Publication Quality Data](prettyData.qmd)
+- [Publication-Ready Tables](prettyData.html)

@@ -1,0 +1,58 @@
+---
+title: "Choosing the Appropriate Tests"
+editor: visual
+---
+
+```{=html}
+<table class="table table-bordered text-center">
+  <thead>
+    <tr>
+      <td colspan="2" style="border:none;"></td>
+      <th colspan="4">Independent Variable</th>
+    </tr>
+    <tr>
+      <td colspan="2" style="border:none;"></td>
+      <th>Dichotomous</th>
+      <th>Nominal</th>
+      <th>Ordinal</th>
+      <th>Continuous</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="4" style="vertical-align: middle;">
+        Dependent Variable
+      </th>
+      <th>Dichotomous</th>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a>]<br>[<a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a>]</td>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>[<a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a>]</td>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">d</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a>]<br>[<a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a>]</td>
+      <td><a href="logit_logisticRegression.html#sec-logistic-regression-with-logregc">Logit</a></td>
+    </tr>
+
+    <tr>
+      <th>Nominal</th>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>[<a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a>]</td>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">V</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a><br>[<a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a>]</td>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>[<a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a>]</td>
+      <td><a href="ologit_mlogit.html#sec-4.-multinomial-logistic-regression-with-multinom">Mlogit</a></td>
+    </tr>
+
+    <tr>
+      <th>Ordinal</th>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">d</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a>]<br>[<a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a>]</td>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> [<a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">λ</a>]<br>[<a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a>]</td>
+      <td><a href="chi-square_measuresOfAssociation.html#sec-remember-crosstabc-with-the-chisq-argument">χ²</a> <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">γ</a>, <a href="chi-square_measuresOfAssociation.html#sec-adding-measures-of-association-tests">d</a>, <a href="chi-square_measuresOfAssociation.html#sec-using-the-oii-package">τ<sub>b</sub></a><br>[<a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a>]</td>
+      <td><a href="ologit_mlogit.html#sec-2.-ordinal-logistic-regression-with-clm">Ologit</a></td>
+    </tr>
+
+    <tr>
+      <th>Continuous</th>
+      <td><a href="t-tests_ANOVAs.html#sec-4.-testing-differences-in-means">t-test</a><br>[<a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a>]</td>
+      <td><a href="t-tests_ANOVAs.html#sec-5.-analysis-of-variance-tests-anovas">ANOVA</a>, <a href="t-tests_ANOVAs.html#sec-tukey-test-post-hoc-tests-with-anovas">Tukey</a><br>[<a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a>]</td>
+      <td><a href="t-tests_ANOVAs.html#sec-5.-analysis-of-variance-tests-anovas">ANOVA</a>, <a href="t-tests_ANOVAs.html#sec-tukey-test-post-hoc-tests-with-anovas">Tukey</a><br>[<a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a>]</td>
+      <td><a href="linearRegression1.html#sec-linear-regression-analysis">OLS</a><br>[<a href="correlation.html#sec-pearson-correlations">Corr</a>]</td>
+    </tr>
+  </tbody>
+</table>
+```
