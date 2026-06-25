@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Colin Hannigan">
+
+<title>Logistic Regression (Logit) – R Walkthroughs</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-1d4f84655f446305ac42a8f1abcf7405.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="./index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">R Walkthroughs</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
+  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
+  <li><a href="#sec-logistic-regression-with-logregc" id="toc-sec-logistic-regression-with-logregc" class="nav-link" data-scroll-target="#sec-logistic-regression-with-logregc">2. Logistic Regression with <code>logregC()</code></a></li>
+  <li><a href="#sec-dealing-with-ordinal-ivs-in-logit-models" id="toc-sec-dealing-with-ordinal-ivs-in-logit-models" class="nav-link" data-scroll-target="#sec-dealing-with-ordinal-ivs-in-logit-models">3. Dealing with Ordinal IVs in Logit Models</a></li>
+  <li><a href="#sec-interpreting-partial-effects-in-logit" id="toc-sec-interpreting-partial-effects-in-logit" class="nav-link" data-scroll-target="#sec-interpreting-partial-effects-in-logit">4. Interpreting Partial Effects in Logit</a></li>
+  <li><a href="#logistic-regression-with-glm" id="toc-logistic-regression-with-glm" class="nav-link" data-scroll-target="#logistic-regression-with-glm">5. Logistic Regression with <code id="sec-logistic-regression-with-glm">glm()</code></a></li>
+  <li><a href="#sec-readying-glm-for-interpretation" id="toc-sec-readying-glm-for-interpretation" class="nav-link" data-scroll-target="#sec-readying-glm-for-interpretation">6. Readying <code>glm()</code> for Interpretation</a></li>
+  <li><a href="#advanced-material" id="toc-advanced-material" class="nav-link" data-scroll-target="#advanced-material">7. Advanced Material</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Logistic Regression (Logit)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin Hannigan </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="agenda" class="level3">
+<h3 class="anchored" data-anchor-id="agenda">Agenda:</h3>
+<ol type="1">
+<li><a href="#sec-packages-libraries">Install Packages and Libraries</a></li>
+<li><a href="#sec-logistic-regression-with-logregc">Logistic Regression with <code>logregC()</code></a>
+<ol type="a">
+<li><a href="#sec-getting-model-statistics">Getting Model Statistics</a></li>
+<li><a href="#sec-classification-tables">Classification Tables</a></li>
+</ol></li>
+<li><a href="#sec-dealing-with-ordinal-ivs-in-logit-models">Dealing with Ordinal IVs in Logit Models</a></li>
+<li><a href="#sec-interpreting-partial-effects-in-logit">Interpreting Partial Effects in Logit</a>
+<ol type="a">
+<li><a href="#sec-odds-ratios">Odds Ratios</a></li>
+</ol></li>
+<li><a href="#sec-logistic-regression-with-glm">Logistic Regression with <code>glm()</code></a></li>
+<li><a href="#sec-readying-glm-for-interpretation">Readying <code>glm()</code> for Interpretation</a></li>
+<li><a href="#sec-advanced-material">Advanced Material</a>
+<ol type="a">
+<li><a href="#sec-manually-calculating-model-stats-for-glm-models">Manually Calculating Model Stats for <code>glm()</code> Models</a></li>
+</ol></li>
+</ol>
+</section>
+<section id="sec-packages-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="sec-packages-libraries">1. Install Packages and Libraries:</h3>
+<section id="new-packages-to-install" class="level4">
+<h4 class="anchored" data-anchor-id="new-packages-to-install">New packages to install:</h4>
+<p>No new packages to install this time!</p>
+</section>
+<section id="load-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="load-libraries">Load libraries!</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RCPA3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="sec-logistic-regression-with-logregc" class="level3">
+<h3 class="anchored" data-anchor-id="sec-logistic-regression-with-logregc">2. Logistic Regression with <code>logregC()</code></h3>
+<p>Requirements:</p>
+<ul>
+<li>DV: Dichotomous</li>
+<li>IV: Continuous/Interval (bivariate); any (multivariate)</li>
+</ul>
+<p>Just like <code>regC()</code> for OLS linear regression, <code>RCPA3</code> gives us <code>logregC()</code> for logistic regression:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                           Estimate   Std. Error   z stat   Pr(&gt;|z|)
+------------------------  ---------  -----------  -------  ---------
+(Intercept)                   0.433        0.788     0.55      0.583
+world$gdp.percap.5cat.L        2.13         0.75    2.841      0.004
+world$gdp.percap.5cat.Q      -0.059        0.434   -0.137      0.891
+world$gdp.percap.5cat.C       -0.75         0.44   -1.704      0.088
+world$gdp.percap.5cat^4       0.342        0.381    0.897       0.37
+world$frac.eth               -0.188        0.824   -0.228       0.82
+world$pop.urban              -0.003        0.012   -0.266       0.79
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat</code></pre>
+</div>
+</div>
+<p>See how we get p-values for the partial effects (the coefficients/estimates for each individual IV), but not for the model as a whole?</p>
+<section id="sec-getting-model-statistics" class="level4">
+<h4 class="anchored" data-anchor-id="sec-getting-model-statistics">Getting Model Statistics</h4>
+<p>To get model statistics, we have to add an optional argument: <code>fit.stats = T</code> gives us the model test statistic, which is a special (but different) kind of Chi-square test that runs in the background, and the p-value.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">fit.stats=</span>T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                           Estimate   Std. Error   z stat   Pr(&gt;|z|)
+------------------------  ---------  -----------  -------  ---------
+(Intercept)                   0.433        0.788     0.55      0.583
+world$gdp.percap.5cat.L        2.13         0.75    2.841      0.004
+world$gdp.percap.5cat.Q      -0.059        0.434   -0.137      0.891
+world$gdp.percap.5cat.C       -0.75         0.44   -1.704      0.088
+world$gdp.percap.5cat^4       0.342        0.381    0.897       0.37
+world$frac.eth               -0.188        0.824   -0.228       0.82
+world$pop.urban              -0.003        0.012   -0.266       0.79
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat
+
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   29.526
+     DF (for Chi2)        6
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.142
+ Cox &amp; Snell Index    0.179
+  Nagelkerke Index    0.239</code></pre>
+</div>
+</div>
+<p>There are also some other stats that aim to evaluate the “goodness of fit” of the logit model: McFadden’s R2, Cox &amp; Snell Index, and Nagelkerke Index are all “Pseudo” R-Squared measures.</p>
+<p>Choosing the appropriate Pseudo R-Square measure can be confusing because there are several, but the norm among most social scientists is to rely on <strong>McFadden’s R2</strong>.</p>
+<p>What makes it a “<em>Pseudo</em>” R-Squared is that it attempts to replicate a regular R-Squared (from OLS linear regression) but in a non-linear model. In other words, all of them are kind of imperfect approximations. Even though McFadden’s R2 gives us a better general sense of the explanatory power of our model compared to a model without any IVs, it’s not a direct analog to a percentage of the variation in the DV explained by the model.</p>
+</section>
+<section id="sec-classification-tables" class="level4">
+<h4 class="anchored" data-anchor-id="sec-classification-tables">Classification Tables</h4>
+<p>That’s where a classification table (or a “confusion matrix”) comes in. We can also include the <code>pre = T</code> argument in the <code>logregC()</code> function to get that table and a measure of the Proportional Reduction in Error (PRE), just like we learned about with some of the Chi-square measures of association.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">fit.stats=</span>T, <span class="at">pre =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                           Estimate   Std. Error   z stat   Pr(&gt;|z|)
+------------------------  ---------  -----------  -------  ---------
+(Intercept)                   0.433        0.788     0.55      0.583
+world$gdp.percap.5cat.L        2.13         0.75    2.841      0.004
+world$gdp.percap.5cat.Q      -0.059        0.434   -0.137      0.891
+world$gdp.percap.5cat.C       -0.75         0.44   -1.704      0.088
+world$gdp.percap.5cat^4       0.342        0.381    0.897       0.37
+world$frac.eth               -0.188        0.824   -0.228       0.82
+world$pop.urban              -0.003        0.012   -0.266       0.79
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat
+
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   29.526
+     DF (for Chi2)        6
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.142
+ Cox &amp; Snell Index    0.179
+  Nagelkerke Index    0.239
+
+---------------------------------------------------------------------------
+         Classification Table and Proportional Reduction in Error
+---------------------------------------------------------------------------
+
+Classification Table
+
+======================================
+                     Predicted Outcomes
+Observed Outcomes      0     1   Total
+--------------------------------------
+0                     44    28      72
+--------------------------------------
+1                     16    62      78
+--------------------------------------
+Total                 60    90     150
+======================================
+
+
+Table: Lambda Measure of Association
+
+ Naive Errors   Prediction Errors   Lambda
+-------------  ------------------  -------
+           72                  44    0.389</code></pre>
+</div>
+</div>
+<p>See how there are 44 cases in the upper left box, representing observations that are both <em>observed</em> 0’s (Autocracy) AND <em>predicted</em> 0’s? In the middle box, there 62 cases of <em>observed</em> 1’s (Democracy) that are also <em>predicted</em> 1’s. These are the cases that our model predicted correctly.</p>
+<p>If we add up those two numbers on the diagonal (44 + 62) and divide by the total number of cases (150, from the bottom right box), we get a proportion of correct predictions of the DV.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(<span class="dv">44</span><span class="sc">+</span><span class="dv">62</span>)<span class="sc">/</span><span class="dv">150</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7066667</code></pre>
+</div>
+</div>
+<p>When we do some mental math to convert to a percentage, we’re explaining like 70.66667% of the variation in the DV with our model. Could be better, but not bad!</p>
+</section>
+</section>
+<section id="sec-dealing-with-ordinal-ivs-in-logit-models" class="level3">
+<h3 class="anchored" data-anchor-id="sec-dealing-with-ordinal-ivs-in-logit-models">3. Dealing with Ordinal IVs in Logit Models</h3>
+<p>Notice how the <code>gdp.percap.5cat</code> variable is repeated and has weird suffixes? R is trying to fit the ordered factor variable to different polynomial functions to see which one makes the most sense.</p>
+<ul>
+<li><strong>.L =</strong> Linear model (treats the effect of the IV as usual, like slope * X…)</li>
+<li><strong>.Q =</strong> Quadratic model (models the IV as slope * X^2)</li>
+<li><strong>.C =</strong> Cubic model (models the IV as slope * X^3)</li>
+<li><strong>^4 =</strong> Quartic model (models the IV as slope * x^4)</li>
+<li>…and so on for as many categories as there are in the variable, minus 1…</li>
+</ul>
+<p>This happens because categorical variables (even ordinal ones) don’t necessarily have a linear or consistent effect on the DV at different levels. R tries to find the best “shape” of the IV-DV relationship</p>
+<p>In our case, because <code>world$gdp.percap.5cat.L</code> is the only significant one of the 4 options, it’s likely that the effect of GDP per capita on the probability of being a democracy is fairly linear and consistent.</p>
+<p>But there’s a less math-y way to understand the relationship: When we treat it like it’s unordered (i.e., a nominal variable), R just converts it to a set of dummies, which we can interpret as usual.</p>
+<p>We can do that using the <code>factor()</code> function with the <code>unordered = T</code> option directly in the model…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> <span class="fu">factor</span>(world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat, <span class="at">ordered =</span> F) <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">fit.stats=</span>T, <span class="at">pre =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                                                             Estimate   Std. Error   z stat   Pr(&gt;|z|)
+----------------------------------------------------------  ---------  -----------  -------  ---------
+(Intercept)                                                    -0.668        0.765   -0.873      0.383
+factor(world$gdp.percap.5cat, ordered = F)2. $3k to $10k       -0.194        0.623   -0.312      0.755
+factor(world$gdp.percap.5cat, ordered = F)3. $10k to $25k       1.378        0.698    1.973      0.049
+factor(world$gdp.percap.5cat, ordered = F)4. $25k to $45k       2.101        0.862    2.438      0.015
+factor(world$gdp.percap.5cat, ordered = F)5. $45k or more       2.221        1.002    2.217      0.027
+world$frac.eth                                                 -0.188        0.824   -0.228       0.82
+world$pop.urban                                                -0.003        0.012   -0.266       0.79
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat
+
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   29.526
+     DF (for Chi2)        6
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.142
+ Cox &amp; Snell Index    0.179
+  Nagelkerke Index    0.239
+
+---------------------------------------------------------------------------
+         Classification Table and Proportional Reduction in Error
+---------------------------------------------------------------------------
+
+Classification Table
+
+======================================
+                     Predicted Outcomes
+Observed Outcomes      0     1   Total
+--------------------------------------
+0                     44    28      72
+--------------------------------------
+1                     16    62      78
+--------------------------------------
+Total                 60    90     150
+======================================
+
+
+Table: Lambda Measure of Association
+
+ Naive Errors   Prediction Errors   Lambda
+-------------  ------------------  -------
+           72                  44    0.389</code></pre>
+</div>
+</div>
+<p>…or we can create a new variable to include in the model instead, which can lead to a cleaner model to interpret:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>gdppc<span class="fl">.5</span>cat.nom_ <span class="ot">&lt;-</span> <span class="fu">factor</span>(world<span class="sc">$</span>gdp.percap<span class="fl">.5</span>cat, <span class="at">ordered =</span> F)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> gdppc<span class="fl">.5</span>cat.nom_ <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">fit.stats=</span>T, <span class="at">pre =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                                  Estimate   Std. Error   z stat   Pr(&gt;|z|)
+-------------------------------  ---------  -----------  -------  ---------
+(Intercept)                         -0.668        0.765   -0.873      0.383
+gdppc.5cat.nom_2. $3k to $10k       -0.194        0.623   -0.312      0.755
+gdppc.5cat.nom_3. $10k to $25k       1.378        0.698    1.973      0.049
+gdppc.5cat.nom_4. $25k to $45k       2.101        0.862    2.438      0.015
+gdppc.5cat.nom_5. $45k or more       2.221        1.002    2.217      0.027
+world$frac.eth                      -0.188        0.824   -0.228       0.82
+world$pop.urban                     -0.003        0.012   -0.266       0.79
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat
+
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   29.526
+     DF (for Chi2)        6
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.142
+ Cox &amp; Snell Index    0.179
+  Nagelkerke Index    0.239
+
+---------------------------------------------------------------------------
+         Classification Table and Proportional Reduction in Error
+---------------------------------------------------------------------------
+
+Classification Table
+
+======================================
+                     Predicted Outcomes
+Observed Outcomes      0     1   Total
+--------------------------------------
+0                     44    28      72
+--------------------------------------
+1                     16    62      78
+--------------------------------------
+Total                 60    90     150
+======================================
+
+
+Table: Lambda Measure of Association
+
+ Naive Errors   Prediction Errors   Lambda
+-------------  ------------------  -------
+           72                  44    0.389</code></pre>
+</div>
+</div>
+<p>But remember that we’ll have to consider the excluded base category, too! We can always change that using the <code>relevel()</code> function, too.</p>
+</section>
+<section id="sec-interpreting-partial-effects-in-logit" class="level3">
+<h3 class="anchored" data-anchor-id="sec-interpreting-partial-effects-in-logit">4. Interpreting Partial Effects in Logit</h3>
+<p>Because logistic regression is not a linear model, we can’t use the same simple vocabulary to interpret the coefficients as we can with linear regression. In fact, apart from direction, the logit coefficients are <strong>not directly interpretable</strong>!</p>
+<section id="sec-odds-ratios" class="level4">
+<h4 class="anchored" data-anchor-id="sec-odds-ratios">Odds Ratios</h4>
+<p>We can get a little closer to direct interpretation by focusing on the odds ratios instead of the log odds that are produced by default.</p>
+<p>To do this, we just add the <code>orci = T</code> option to the <code>logregC()</code> function:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(<span class="at">formula =</span> world<span class="sc">$</span>vdem<span class="fl">.2</span>cat <span class="sc">~</span> gdppc<span class="fl">.5</span>cat.nom_ <span class="sc">+</span> world<span class="sc">$</span>frac.eth <span class="sc">+</span> world<span class="sc">$</span>pop.urban, <span class="at">fit.stats=</span>T, <span class="at">pre =</span> T, <span class="at">orci =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                                  Estimate   Std. Error   z stat   Pr(&gt;|z|)
+-------------------------------  ---------  -----------  -------  ---------
+(Intercept)                         -0.668        0.765   -0.873      0.383
+gdppc.5cat.nom_2. $3k to $10k       -0.194        0.623   -0.312      0.755
+gdppc.5cat.nom_3. $10k to $25k       1.378        0.698    1.973      0.049
+gdppc.5cat.nom_4. $25k to $45k       2.101        0.862    2.438      0.015
+gdppc.5cat.nom_5. $45k or more       2.221        1.002    2.217      0.027
+world$frac.eth                      -0.188        0.824   -0.228       0.82
+world$pop.urban                     -0.003        0.012   -0.266       0.79
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.735    -0.827    0.699     0.979   1.703
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 207.70  on 149  degrees of freedom
+Residual deviance: 178.18  on 143  degrees of freedom
+N: 150   (19 observations deleted due to missingness)
+AIC: 192.18
+
+Number of Fisher Scoring iterations: 4
+Dependent variable: world$vdem.2cat
+
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   29.526
+     DF (for Chi2)        6
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.142
+ Cox &amp; Snell Index    0.179
+  Nagelkerke Index    0.239
+
+---------------------------------------------------------------------------
+             Odds Ratios for Logistic Regression Coefficients
+---------------------------------------------------------------------------</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Waiting for profiling to be done...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Odds Ratios for Logistic Regression Coefficients
+
+                                  Odds Ratio   OR CI 2.5%   OR CI 97.5%   % Change in Odds
+-------------------------------  -----------  -----------  ------------  -----------------
+gdppc.5cat.nom_2. $3k to $10k          0.824        0.242         2.856            -17.643
+gdppc.5cat.nom_3. $10k to $25k         3.966        1.043        16.503            296.581
+gdppc.5cat.nom_4. $25k to $45k         8.178        1.583        47.509            717.793
+gdppc.5cat.nom_5. $45k or more         9.212        1.356        70.680            821.215
+world$frac.eth                         0.829        0.166         4.259            -17.106
+world$pop.urban                        0.997        0.973         1.021             -0.322
+
+---------------------------------------------------------------------------
+         Classification Table and Proportional Reduction in Error
+---------------------------------------------------------------------------
+
+Classification Table
+
+======================================
+                     Predicted Outcomes
+Observed Outcomes      0     1   Total
+--------------------------------------
+0                     44    28      72
+--------------------------------------
+1                     16    62      78
+--------------------------------------
+Total                 60    90     150
+======================================
+
+
+Table: Lambda Measure of Association
+
+ Naive Errors   Prediction Errors   Lambda
+-------------  ------------------  -------
+           72                  44    0.389</code></pre>
+</div>
+</div>
+<p>When we interpret odds ratios, anything above 1 is an <em>increase</em> in the odds of being in the higher category (Democracy) and anything below 1 is a <em>decrease</em> in the odds of being in the higher category (Democracy). Then we interpret the the</p>
+<p>For example, in our model:</p>
+<ul>
+<li>If pop.urban were significant, a one-unit increase in a country’s urban population rate would decrease the odds of a country being a democracy by a factor of 0.997 (a 0.3% decrease in odds).</li>
+<li>When a state has a GDP per capita of <code>$45k or more</code>, its odds of being a democracy significantly increase by a factor of 9.212 (a 821.2% increase in odds).</li>
+</ul>
+</section>
+</section>
+<section id="logistic-regression-with-glm" class="level3">
+<h3 class="anchored" data-anchor-id="logistic-regression-with-glm">5. Logistic Regression with <code id="sec-logistic-regression-with-glm">glm()</code></h3>
+<p>Because <code>logregC()</code> is specific to <code>RCPA3</code>, it’s sometimes helpful to have a base R function to perform a logistic regression. That’s where <code>glm()</code> comes in. But there are a few common pitfalls to sort through…</p>
+<p>Let’s start with a basic <code>glm()</code> model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(states<span class="sc">$</span>deathpen.status <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Ops.factor(y, mu): '-' not meaningful for factors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Ops.factor(eta, offset): '-' not meaningful for factors</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Ops.factor(y, mu): '-' not meaningful for factors</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in glm.fit(x = structure(c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, : NA/NaN/Inf in 'y'</code></pre>
+</div>
+</div>
+<p><strong>Error Number 1: DV Problems?</strong></p>
+<p>See how we get an error message? <code>NA/NaN/Inf in 'y'</code> is telling us about missing and infinite (i.e., impossible to compute) values in the DV. In other words, there’s a problem with our DV and how it’s measured.</p>
+<p>So, let’s check the the DV.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attributes</span>(states<span class="sc">$</span>deathpen.status)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$levels
+[1] "No"  "Yes"
+
+$class
+[1] "factor"
+
+$label
+[1] "Does state retain death penalty?"</code></pre>
+</div>
+</div>
+<p>It’s a factor and there are only two categories, so it’s dichotomous, which is what we need. But maybe the model is better equipped to deal with numbers instead of categories?</p>
+<p>We could try converting the dichotomous factor to numeric: either 1 or 2.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>states<span class="sc">$</span>deathpen.status_num <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(states<span class="sc">$</span>deathpen.status)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(deathpen.status_num <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in eval(predvars, data, env): object 'deathpen.status_num' not found</code></pre>
+</div>
+</div>
+<p><strong>Error Number 2: Variable Specification Problems?</strong></p>
+<p>Not found?? We definitely created the variable, so this error is confusing. But notice that it doesn’t show up in our Environment, either. Carefully re-reading the code, it’s clear that we added it to the states dataset, but we didn’t specify that dataset in our <code>glm()</code> function.</p>
+<p>Let’s specify the states dataset and try again.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(states<span class="sc">$</span>deathpen.status_num <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:  glm(formula = states$deathpen.status_num ~ states$south + states$attend.pct + 
+    states$public.conservative + states$gun.dealers)
+
+Coefficients:
+               (Intercept)           states$southSouth  
+                 -0.382021                   -0.103684  
+         states$attend.pct  states$public.conservative  
+                  0.015298                    0.039815  
+        states$gun.dealers  
+                 -0.001186  
+
+Degrees of Freedom: 49 Total (i.e. Null);  45 Residual
+Null Deviance:      12.42 
+Residual Deviance: 7.022    AIC: 55.74</code></pre>
+</div>
+</div>
+<p>It runs this time! But even without throwing an error, <strong>the model is still incorrect</strong>…</p>
+<p><strong>Error Number 3: Logical Problems.</strong></p>
+<p>The default <code>glm()</code> method assumes a “Gaussian” distribution, which tries to fit a linear model, assuming normality. In other words, the default is OLS. But we have a dichotomous DV, so a <em>linear</em> model doesn’t make sense.</p>
+<p>Instead, we have to tell <code>glm()</code> what type of link/distribution to use when running our model. So, we can go back to the same dichotomous factor DV, but we specify that we want a <code>binomial</code> link (i.e., the model has <em>two</em> outcomes).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(states<span class="sc">$</span>deathpen.status <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers, <span class="at">family =</span> binomial)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:  glm(formula = states$deathpen.status ~ states$south + states$attend.pct + 
+    states$public.conservative + states$gun.dealers, family = binomial)
+
+Coefficients:
+               (Intercept)           states$southSouth  
+                 -12.94185                    -0.66095  
+         states$attend.pct  states$public.conservative  
+                   0.07731                     0.32135  
+        states$gun.dealers  
+                  -0.01859  
+
+Degrees of Freedom: 49 Total (i.e. Null);  45 Residual
+Null Deviance:      68.99 
+Residual Deviance: 41.2     AIC: 51.2</code></pre>
+</div>
+</div>
+<p>Adding the <code>family = binomial</code> argument is exactly what we were missing.</p>
+</section>
+<section id="sec-readying-glm-for-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="sec-readying-glm-for-interpretation">6. Readying <code>glm()</code> for Interpretation</h3>
+<p>We’ll store the working <code>glm()</code> model in an object (<code>logit1</code>) so we can view the model summary and reference than object later.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>logit1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(states<span class="sc">$</span>deathpen.status <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers, <span class="at">family =</span> binomial)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logit1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = states$deathpen.status ~ states$south + states$attend.pct + 
+    states$public.conservative + states$gun.dealers, family = binomial)
+
+Coefficients:
+                            Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)                -12.94185    3.68218  -3.515  0.00044 ***
+states$southSouth           -0.66095    1.09533  -0.603  0.54623    
+states$attend.pct            0.07731    0.07126   1.085  0.27797    
+states$public.conservative   0.32135    0.13909   2.310  0.02087 *  
+states$gun.dealers          -0.01859    0.01909  -0.973  0.33032    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 68.994  on 49  degrees of freedom
+Residual deviance: 41.198  on 45  degrees of freedom
+AIC: 51.198
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<p>While this model will come in handy a little bit later when we present the model results, we don’t have model fit statistics, which presents a hurdle with a more involved solution.</p>
+<p>But for now, one option is to run both a <code>glm()</code> to store and report the model and run a <code>logregC()</code> to estimate the model stats and report those separately.</p>
+</section>
+<section id="advanced-material" class="level3">
+<h3 class="anchored" data-anchor-id="advanced-material">7. Advanced Material</h3>
+<section id="sec-manually-calculating-model-stats-for-glm-models" class="level4">
+<h4 class="anchored" data-anchor-id="sec-manually-calculating-model-stats-for-glm-models">Manually Calculating Model Stats for <code>glm()</code> Models</h4>
+<p>We’ll start by running our fully specified model (<code>logit1</code> just like before), but then we’ll run another model: the <em>null model</em> (<code>logit0</code> in this case), which is the same DV but without any of the IVs to help predict it. The null model acts as a baseline for comparison to our model.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>logit1 <span class="ot">&lt;-</span> <span class="fu">glm</span>(states<span class="sc">$</span>deathpen.status <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers, <span class="at">family =</span> binomial)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>logit0 <span class="ot">&lt;-</span> <span class="fu">glm</span>(states<span class="sc">$</span>deathpen.status <span class="sc">~</span> <span class="dv">1</span>, <span class="at">family =</span> binomial)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Then, to get the p-value of the model as whole, we have to compare the log likelihood of our model to the log likelihood of the null model using a <strong>likelihood ratio test</strong>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>pvalue <span class="ot">&lt;-</span> <span class="fu">anova</span>(logit0, logit1, <span class="at">test =</span> <span class="st">"Chisq"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Wait. ANOVA? Chi-square? Again??</p>
+<p>Yep.</p>
+<p>Earlier on, when we looked at bivariate tests, ANOVA helped us compare means and Chi-square helped us analyze crosstabs with categorical variables. With logistic regression, we’re asking different questions:</p>
+<ul>
+<li>Does a model <em>with</em> IVs fit the data significantly better than a model <em>without</em> IVs?</li>
+</ul>
+<p>So, R is just using the <code>anova()</code> function to compare the log likelihoods of both those models to produce a likelihood ratio test statistic, then using a Chi-square test to determine whether the improvement in model fit is large enough to be significant.</p>
+<p>Next, we can calculate McFadden’s pseudo R-squared to see how much the full model improves the log-likelihood compare to the null model. So, we specify the <code>logLik()</code> parameters stored in each model:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pseudoR2 <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="dv">1</span> <span class="sc">-</span> (<span class="fu">logLik</span>(logit1) <span class="sc">/</span> <span class="fu">logLik</span>(logit0)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Similarly, we can extract the coefficient parameters from the stored model, so we can exponentiate them into Odds Ratios:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>oddsRatios <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(logit1))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finally, we just call each of the objects to print them to the console and see those values. The <code>pvalue</code> line will print the results of the ANOVA we ran above, which includes “Pr(&gt;Chi)” that we can report. Then, <code>pseudoR2</code> will report a number for our McFadden’s pseudo R-squared, and the <code>oddsRatios</code> will produce a table of each of the IVs and their Odds Ratios which we can report after comparing to the original table and seeing whether the partial effects there are significant.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pvalue</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Deviance Table
+
+Model 1: states$deathpen.status ~ 1
+Model 2: states$deathpen.status ~ states$south + states$attend.pct + states$public.conservative + 
+    states$gun.dealers
+  Resid. Df Resid. Dev Df Deviance  Pr(&gt;Chi)    
+1        49     68.994                          
+2        45     41.198  4   27.797 1.371e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>pseudoR2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4028858</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>oddsRatios</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>               (Intercept)          states$southSouth 
+              2.395668e-06               5.163622e-01 
+         states$attend.pct states$public.conservative 
+              1.080381e+00               1.378989e+00 
+        states$gun.dealers 
+              9.815842e-01 </code></pre>
+</div>
+</div>
+<p>Now, we can run a <code>logregC()</code> and see that the values we just calculated are the same (or close enough, given rounding decisions)!</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">logregC</span>(states<span class="sc">$</span>deathpen.status <span class="sc">~</span> states<span class="sc">$</span>south <span class="sc">+</span> states<span class="sc">$</span>attend.pct <span class="sc">+</span> states<span class="sc">$</span>public.conservative <span class="sc">+</span> states<span class="sc">$</span>gun.dealers, <span class="at">fit.stats =</span> T, <span class="at">pre=</span>T, <span class="at">orci =</span> T)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                       Logistic Regression Analysis
+===========================================================================
+
+
+Table: Logistic Regression Coefficients
+
+                              Estimate   Std. Error   z stat   Pr(&gt;|z|)
+---------------------------  ---------  -----------  -------  ---------
+(Intercept)                    -12.942        3.682   -3.515      &lt;.001
+states$southSouth               -0.661        1.095   -0.603      0.546
+states$attend.pct                0.077        0.071    1.085      0.278
+states$public.conservative       0.321        0.139     2.31      0.021
+states$gun.dealers              -0.019        0.019   -0.973       0.33
+
+
+Table: Deviance Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -2.373    -0.678    0.183     0.581   1.833
+
+
+Additional Information:
+
+(Dispersion parameter for binomial family taken to be 1)
+
+Null deviance: 68.994  on 49  degrees of freedom
+Residual deviance: 41.198  on 45  degrees of freedom
+AIC: 51.198
+N: 50 (0 observations deleted due to missingness)
+Number of Fisher Scoring iterations: 5
+Dependent variable: states$deathpen.status
+
+---------------------------------------------------------------------------
+                           Model Fit Statistics
+---------------------------------------------------------------------------
+
+
+Table: Model Fit Statistics
+
+         Statistic    Value
+------------------  -------
+              Chi2   27.797
+     DF (for Chi2)        4
+   p-Value of Chi2    &lt;.001
+     McFadden's R2    0.403
+ Cox &amp; Snell Index    0.426
+  Nagelkerke Index    0.569
+
+---------------------------------------------------------------------------
+             Odds Ratios for Logistic Regression Coefficients
+---------------------------------------------------------------------------</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Waiting for profiling to be done...</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+
+Table: Odds Ratios for Logistic Regression Coefficients
+
+                              Odds Ratio   OR CI 2.5%   OR CI 97.5%   % Change in Odds
+---------------------------  -----------  -----------  ------------  -----------------
+states$southSouth                  0.516        0.050         4.130            -48.364
+states$attend.pct                  1.080        0.944         1.256              8.038
+states$public.conservative         1.379        1.079         1.884             37.899
+states$gun.dealers                 0.982        0.942         1.018             -1.842
+
+---------------------------------------------------------------------------
+         Classification Table and Proportional Reduction in Error
+---------------------------------------------------------------------------
+
+Classification Table
+
+====================================
+                     Predicted Outcomes
+Observed Outcomes     0    1   Total
+------------------------------------
+0                    19    4      23
+------------------------------------
+1                     5   22      27
+------------------------------------
+Total                24   26      50
+====================================
+
+
+Table: Lambda Measure of Association
+
+ Naive Errors   Prediction Errors   Lambda
+-------------  ------------------  -------
+           23                   9    0.609</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

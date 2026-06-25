@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Colin Hannigan">
 
-<title>Home – R Walkthroughs</title>
+<title>Linear Regression: Ordinary Least Squares (OLS) – R Walkthroughs</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -69,6 +105,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -92,7 +157,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="./index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
@@ -111,10 +176,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#pols-222-r-walkthroughs" id="toc-pols-222-r-walkthroughs" class="nav-link active" data-scroll-target="#pols-222-r-walkthroughs">POLS 222: R Walkthroughs</a>
-  <ul class="collapse">
-  <li><a href="#tutorials" id="toc-tutorials" class="nav-link" data-scroll-target="#tutorials">Tutorials</a></li>
-  </ul></li>
+  <li><a href="#agenda" id="toc-agenda" class="nav-link active" data-scroll-target="#agenda">Agenda:</a></li>
+  <li><a href="#sec-packages-libraries" id="toc-sec-packages-libraries" class="nav-link" data-scroll-target="#sec-packages-libraries">1. Install Packages and Libraries:</a></li>
+  <li><a href="#sec-visualizing-the-line-of-best-fit" id="toc-sec-visualizing-the-line-of-best-fit" class="nav-link" data-scroll-target="#sec-visualizing-the-line-of-best-fit">2. Visualizing the Line of Best Fit</a></li>
+  <li><a href="#sec-producing-the-actual-linear-model" id="toc-sec-producing-the-actual-linear-model" class="nav-link" data-scroll-target="#sec-producing-the-actual-linear-model">3. Producing the Actual Linear Model</a></li>
+  <li><a href="#sec-linear-regression-analysis" id="toc-sec-linear-regression-analysis" class="nav-link" data-scroll-target="#sec-linear-regression-analysis">4. Linear Regression Analysis</a></li>
+  <li><a href="#sec-advanced-material" id="toc-sec-advanced-material" class="nav-link" data-scroll-target="#sec-advanced-material">5. Advanced Material</a></li>
   </ul>
 </nav>
     </div>
@@ -123,13 +190,19 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Home</h1>
+<h1 class="title">Linear Regression: Ordinary Least Squares (OLS)</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Colin Hannigan </p>
+          </div>
+  </div>
     
   
     
@@ -140,27 +213,201 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="pols-222-r-walkthroughs" class="level1">
-<h1>POLS 222: R Walkthroughs</h1>
-<p>This site provides access to some reminders of how to use R, based on what POLS students learned in the POLS 222 course. It also provides a few primers for additional utilities in R that go beyond the POLS 222 coursework, which will might be helpful for students completing their capstone projects.</p>
-<section id="tutorials" class="level2">
-<h2 class="anchored" data-anchor-id="tutorials">Tutorials</h2>
-<ul>
-<li><a href="transformingVariables.html">Transforming Variables</a></li>
-<li><a href="./MakingComparisons.html">Making Comparisons</a></li>
-<li><a href="./t-tests_ANOVAs.html">t-tests and ANOVAs</a></li>
-<li><a href="chi-square_measuresOfAssociation.html">Chi-Square and Measures of Association</a></li>
-<li><a href="./subsettingVariableTypes.html">Subsetting Data: Variable Types</a></li>
-<li><a href="./correlation.html">Correlations</a></li>
-<li><a href="./linearRegression1.html">OLS: Linear Regressions</a></li>
-<li><a href="./logit_logisticRegression.html">Logit: Logistic Regressions</a></li>
-<li><a href="./multivariateRegression.html">Multivariate Regressions</a></li>
-<li><a href="ologit_mlogit.html">Ordinal and Multinomial Logit</a></li>
-<li><a href="./prettyData.html">Publication Quality Data</a></li>
-</ul>
-
-
+<section id="agenda" class="level3">
+<h3 class="anchored" data-anchor-id="agenda">Agenda:</h3>
+<ol type="1">
+<li><a href="#sec-packages-libraries">Install Packages and Libraries</a></li>
+<li><a href="#sec-visualizing-the-line-of-best-fit">Visualizing the Line of Best Fit</a></li>
+<li><a href="#sec-producing-the-actual-linear-model">Producing the Actual Linear Model</a></li>
+<li><a href="#sec-linear-regression-analysis">Linear Regression Analysis</a>
+<ol type="a">
+<li><a href="#sec-linear-regression-using-the-lm-function">Linear Regression Using the <code>lm()</code> Function</a></li>
+<li><a href="#sec-linear-regression-using-the-regc-function">Linear Regression Using the <code>regC()</code> Function</a></li>
+</ol></li>
+<li><a href="#sec-advanced-material">Advanced Material</a></li>
+</ol>
 </section>
+<section id="sec-packages-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="sec-packages-libraries">1. Install Packages and Libraries:</h3>
+<section id="new-packages-to-install" class="level4">
+<h4 class="anchored" data-anchor-id="new-packages-to-install">New packages to install:</h4>
+<p>No new packages to install this time!</p>
+</section>
+<section id="load-libraries" class="level4">
+<h4 class="anchored" data-anchor-id="load-libraries">Load libraries!</h4>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RCPA3)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="sec-visualizing-the-line-of-best-fit" class="level3">
+<h3 class="anchored" data-anchor-id="sec-visualizing-the-line-of-best-fit">2. Visualizing the Line of Best Fit</h3>
+<p>The equation for any line comes down to a basic form:</p>
+<p><span class="math display">\[y = mx + b\]</span></p>
+<p>A “line of best fit” models a relationship and creates a line that minimizes the “errors” (distances between data points and the line).</p>
+<p>To view the line of best fit, we can start with a scatterplot between two continuous/interval variables…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">y =</span> states<span class="sc">$</span>covid.deaths.per1000, <span class="at">x =</span> states<span class="sc">$</span>covid.cases.per1000)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linearRegression1_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Notice how, as Covid cases go up, Covid deaths kind of seem to go up, too?</p>
+<p>But at what rate exactly?</p>
+<p>We could check the correlation coefficient to see the strength of the association…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">correlateC</span>(<span class="fu">c</span>(states<span class="sc">$</span>covid.deaths.per1000,states<span class="sc">$</span>covid.cases.per1000))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                           Correlation Analysis
+===========================================================================
+
+Correlation Coefficient: 
+                   0.643 </code></pre>
+</div>
+</div>
+<p>It’s a moderately strong relationship (<code>0.643</code>), but we still don’t know the rate at which the DV outcome changes based on the IV input.</p>
+<p>And is the relationship significant enough to help us make predictions about Covid deaths?</p>
+<p>Let’s make a “line of best fit” to add to the plot…</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">y =</span> states<span class="sc">$</span>covid.deaths.per1000, <span class="at">x =</span> states<span class="sc">$</span>covid.cases.per1000)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000), <span class="at">col=</span><span class="st">"red"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="linearRegression1_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Here’s what the expression is doing:</p>
+<ul>
+<li><code>abline()</code> adds a straight line to a plot for reference</li>
+<li><code>col = "red"</code> makes that line red (or whatever other color we want)</li>
+<li><code>lm(y ~ x)</code> creates a “linear model” of y (the DV) based on x (the IV)</li>
+</ul>
+<p>But we still don’t actually know what the equation is for this line! We’re especially interested in the slope…</p>
+</section>
+<section id="sec-producing-the-actual-linear-model" class="level3">
+<h3 class="anchored" data-anchor-id="sec-producing-the-actual-linear-model">3. Producing the Actual Linear Model</h3>
+<p>While making a scatterplot and plotting the <code>abline()</code> is cool for visualization, the key to a linear regression test is the linear model output. That is, we want the numbers.</p>
+<p>So, instead of including the <code>lm()</code> equation in the background of a <code>plot()</code> function, we can look at the model values directly.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+
+Coefficients:
+               (Intercept)  states$covid.cases.per1000  
+                 0.0001036                   0.0166105  </code></pre>
+</div>
+</div>
+<ul>
+<li>The intercept (the <span class="math inline">\(b\)</span> in <span class="math inline">\(y=mx + b\)</span>) is 0.0001036</li>
+<li>The slope (the <span class="math inline">\(m\)</span> in <span class="math inline">\(y=mx + b\)</span>) is 0.0166105</li>
+<li>So, this is the line equation: <span class="math inline">\(y = 0.0166105x + 0.0001036\)</span></li>
+</ul>
+<p>Notice how the line keeps going, even when it doesn’t cross a specific point? That’s what makes it a <em>predictive</em> model. This linear model (line of best fit) is a basic regression!</p>
+<p>But is the relationship between X and Y significant?</p>
+</section>
+<section id="sec-linear-regression-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="sec-linear-regression-analysis">4. Linear Regression Analysis</h3>
+<p>There are several names for this type of linear model (OLS, ordinary least squares, linear regression, etc.), but the linear part matters (it’s a line!).</p>
+<p>Linear regressions always use Continuous/Interval DVs.</p>
+<section id="sec-linear-regression-using-the-lm-function" class="level4">
+<h4 class="anchored" data-anchor-id="sec-linear-regression-using-the-lm-function">Linear Regression Using the <code>lm()</code> Function</h4>
+<p>We can certainly use the lm() function in base R to run a regression model. In fact, it comes in handy when we want to be able to store the model as an object later. We’ll run the same model, this time storing it as an object called <code>lm1</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Then we’ll view a <code>summary()</code> of the <code>lm1</code> object to see the model significance and other interpretation details.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = states$covid.deaths.per1000 ~ states$covid.cases.per1000)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.36143 -0.21312 -0.03666  0.20825  1.00972 
+
+Coefficients:
+                            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)                0.0001036  0.2924364   0.000        1    
+states$covid.cases.per1000 0.0166105  0.0028538   5.821 4.71e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.4726 on 48 degrees of freedom
+Multiple R-squared:  0.4138,    Adjusted R-squared:  0.4016 
+F-statistic: 33.88 on 1 and 48 DF,  p-value: 4.707e-07</code></pre>
+</div>
+</div>
+<ol type="1">
+<li>First, find the p-value at the very bottom: the model as a whole is significant!</li>
+<li>Next, notice the p-value (<code>Pr(\&gt;\|t\|)</code>) across from our IV: the IV itself (partial effect) is significant!</li>
+<li>We don’t see a number of observations in this output…(hold that thought)</li>
+<li>But finally, check the “Multiple R-squared” value: The model explains about 41% of the variation of the DV, which is good, but not great.</li>
+</ol>
+<p>Remember: we don’t need to report the “Adjusted R-Squared” in this case because we only have one IV in the model. When we only have one IV, we report the “Multiple R-Squared”; when there are multiple IVs, we have to rely on the “Adjusted R-squared.”</p>
+<p>The model summary output doesn’t bother reporting the total number of observations, which is frustrating. But it does store that information. We just have to ask for it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nobs</span>(lm1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 50</code></pre>
+</div>
+</div>
+<p>Now we can report that the number of observations used in the model is 50 (all 50 states in the dataset!), which is big enough to draw make inferences.</p>
+</section>
+<section id="sec-linear-regression-using-the-regc-function" class="level4">
+<h4 class="anchored" data-anchor-id="sec-linear-regression-using-the-regc-function">Linear Regression Using the <code>regC()</code> Function</h4>
+<p>Alternatively, we can just use the <code>regC()</code> function from the <code>RCPA3</code> package to run our linear regression model. The syntax is basically the same:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">regC</span>(<span class="at">formula =</span> states<span class="sc">$</span>covid.deaths.per1000 <span class="sc">~</span> states<span class="sc">$</span>covid.cases.per1000)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>===========================================================================
+                        Linear Regression Analysis
+===========================================================================
+
+
+Table: Linear Regression Coefficients
+
+                              Estimate   Std. Error   t value   Pr(&gt;|t|)
+---------------------------  ---------  -----------  --------  ---------
+(Intercept)                          0        0.292         0          1
+states$covid.cases.per1000       0.017        0.003     5.821      &lt;.001
+
+
+Table: Regression Residuals
+
+   Min.   1st Qu.   Median   3rd Qu.    Max.
+-------  --------  -------  --------  ------
+ -1.361    -0.213   -0.037     0.208   1.010
+
+
+Additional Information:
+
+Residual standard error: 0.4726 on 48 degrees of freedom
+N: 50 (0 observations deleted due to missingness)
+Multiple R-squared:  0.4138,    Adjusted R-squared:  0.4016 
+F-statistic: 33.88 on 1 and 48 DF,  p-value: 4.707e-07
+Dependent variable: states$covid.deaths.per1000</code></pre>
+</div>
+</div>
+<p>There’s definitely a trade off between the two methods: <code>lm()</code> is more versatile for advanced modeling and model storage/visualization, but the <code>regC</code> function can be more straightforward and comes prepackaged with some of the additional tests we’ll be running later to test the assumptions of OLS.</p>
+</section>
+</section>
+<section id="sec-advanced-material" class="level3">
+<h3 class="anchored" data-anchor-id="sec-advanced-material">5. Advanced Material</h3>
+
+
 </section>
 
 </main> <!-- /main -->
