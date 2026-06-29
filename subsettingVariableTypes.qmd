@@ -40,14 +40,14 @@ Subsetting variables by type also provides a quick glance at the overall structu
 
 #### Get only **CONTINUOUS/INTERVAL** variables (numeric) {#sec-get-only-continuousinterval-variables}
 
-To start, let's identify all the continuous/interval variables in the `nes` dataset. To do this, we'll rely on `is.numeric()` as a quick logical function that returns `TRUE` if the object is of numeric or integer class (i.e., R recoginizes it as a number) and `FALSE` if not. 
+To start, let's identify all the continuous/interval variables in the `nes` dataset. To do this, we'll rely on `is.numeric()` as a quick logical function that returns `TRUE` if the object is of numeric or integer class (i.e., R recoginizes it as a number) and `FALSE` if not.
 
-Because we want to check the class of all the variables, we'll use the `sapply()` function, which is designed to provide a *simplified* result (usually a vector) after *applying* a function or operation over a whole list. 
+Because we want to check the class of all the variables, we'll use the `sapply()` function, which is designed to provide a *simplified* result (usually a vector) after *applying* a function or operation over a whole list.
 
-  1. Using `sapply()`, create a subset that contains only numeric variables in `nes`,
-  2. Create a new dataframe that includes only the columns we identified,
-  3. Optionally, view the subset of variables as a whole dataframe,
-  4. View only the relevant variable names directly in the console.
+1.  Using `sapply()`, create a subset that contains only numeric variables in `nes`,
+2.  Create a new dataframe that includes only the columns we identified,
+3.  Optionally, view the subset of variables as a whole dataframe,
+4.  View only the relevant variable names directly in the console.
 
 ```{r}
   numeric_cols <- sapply(nes, is.numeric)
@@ -60,7 +60,7 @@ Because we want to check the class of all the variables, we'll use the `sapply()
 
 To identify the dichotomous variables, the process involves the same steps but include a slightly more complex set of conditions. We don't have a built-in option for identifying dichotomous variables like we do for numeric ones; R stores variables according to class, not according to how many levels they have.
 
-So, we have to check for two conditions this time: one to return `TRUE` if the variable's class if factor (`is.factor()`) *AND* another to return `TRUE` if the number of categories is exactly equal to two (`nlevels()==2`). But `sapply()` needs a little help evaluating both conditions for every variable, we have to provide a custom function using `function(x)` that says, for each variable (`x`) in the dataset, return `TRUE` only if *both* conditions are met. 
+So, we have to check for two conditions this time: one to return `TRUE` if the variable's class if factor (`is.factor()`) *AND* another to return `TRUE` if the number of categories is exactly equal to two (`nlevels()==2`). But `sapply()` needs a little help evaluating both conditions for every variable, we have to provide a custom function using `function(x)` that says, for each variable (`x`) in the dataset, return `TRUE` only if *both* conditions are met.
 
 ```{r}
   dichotomous_cols <- sapply(nes, function(x) is.factor(x) && nlevels(x) == 2) 
@@ -82,7 +82,7 @@ Ordinal variables have two classes: they're factor variables that are also order
 
 #### Get only **NOMINAL** variables (non-ordered factor with 3+ levels) {#sec-get-only-nominal-variables}
 
-To find nominal variables, we have to test for three conditions using our custom `function(x)`. It's sort of like a process of elimination, though; we have to ensure that a given variable (`x`) is a factor, but that it's also *NOT* ordered *AND* it contains more than 2 categories/levels. 
+To find nominal variables, we have to test for three conditions using our custom `function(x)`. It's sort of like a process of elimination, though; we have to ensure that a given variable (`x`) is a factor, but that it's also *NOT* ordered *AND* it contains more than 2 categories/levels.
 
 ```{r}
   nominal_cols <- sapply(nes, function(x) is.factor(x) && !is.ordered(x) && nlevels(x) > 2)
@@ -95,7 +95,7 @@ To find nominal variables, we have to test for three conditions using our custom
 
 #### Skip all the intervening steps with a single, complex function {#sec-single-complex-function-for-subsetting}
 
-Instead of treating each piece as a separate step, we could just skip directly to viewing the names of the relevant variables in the console using nested functions in a single expression. Basically, we're telling R to list the `names()` of the `nes` dataset when it's subsetted to only the results of the `sapply()` function checking for the conditions we specify across all the columns of the dataset. 
+Instead of treating each piece as a separate step, we could just skip directly to viewing the names of the relevant variables in the console using nested functions in a single expression. Basically, we're telling R to list the `names()` of the `nes` dataset when it's subsetted to only the results of the `sapply()` function checking for the conditions we specify across all the columns of the dataset.
 
 ```{r}
   names(nes)[sapply(nes, is.numeric)] # CONTINUOUS/INTERVAL
@@ -106,9 +106,9 @@ Instead of treating each piece as a separate step, we could just skip directly t
 
 #### Using `dplyr()` to List Variables by Type {#sec-using-dplyr-to-list-variables-by-type}
 
-Instead of using indexing, we could also rely on the `select()` and `where()` functions from the `dplyr` package to do the same thing. The `dplyr` approach provides a couple of clear advantages: it's much more efficient than indexing and it's a more common approach among researchers in the discipline. But the major disadvantage for us is that it involves a whole new syntax and set of functions that we don't explicitly learn about in POLS 222.
+Instead of using indexing, we could also rely on the `select()` and `where()` functions from the `dplyr` package to do the same thing. The `dplyr` approach provides a couple of clear advantages: it's much more efficient than indexing and it's a more common approach among researchers in the discipline. But the major disadvantage for us is that it involves a whole new syntax and set of functions that we don't explicitly learn about in POLS 222. For a brief primer on using `dplyr`, [click here!](dplyrPrimer.html)
 
-So, as a starting point for those who are interested in exploring the `dplyr` package on their own, here's what the code would look like for listing the variables by type:
+For now, as a starting point for those who are interested in exploring the `dplyr` package on their own, here's what the code would look like for listing the variables by type:
 
 ```{r}
 # Continuous/Interval

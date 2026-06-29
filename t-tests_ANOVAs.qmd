@@ -50,7 +50,7 @@ testpropsC(world$vdem.4cat, .25, response = "1. Liberal democracy")
 
 Is the proportion of Liberal Democracies significantly different from the actual proportion of Liberal Democracies in the world?
 
-### [4. Testing Differences in Means](slides\ttestsAnova.pdf#page=7) {#sec-4.-testing-differences-in-means}
+### [4. Testing Differences in Means](slides/ttestsAnova.pdf#page=7) {#sec-4.-testing-differences-in-means}
 
 We use what's called a "t-test" to test when means are significantly different
 
@@ -126,7 +126,7 @@ Was mean pre-test score significantly different from mean post-test score for th
 
 But what if we have **multiple categories in the IV**??
 
-### 5. Analysis of Variance Tests (ANOVAs) {#sec-5.-analysis-of-variance-tests-anovas}
+### [5. Analysis of Variance Tests (ANOVAs)](slides/ttestsAnova.pdf#page=17) {#sec-5.-analysis-of-variance-tests-anovas}
 
 T-tests require an explicit or implicit *dichotomous* IV. So, when we have multiple categories we need a different test:
 

@@ -1,0 +1,322 @@
+---
+title: "A `dplyr` Primer"
+format: html
+editor: visual
+---
+
+### Agenda:
+
+1.  [Install Packages and Libraries](#sec-packages-libraries)
+2.  [Manipulating Data with `dplyr`](#sec-2.-manipulating-data-with-dplyr)
+    a.  [Selecting Columns with `select()`](#sec-choosing-specific-columns-using-select)
+    b.  [Filtering Rows with `filter()`](#sec-choosing-specific-rows-using-filter)
+    c.  [Renaming Existing Variables Using `rename()`](#sec-renaming-existing-variables-using-rename)
+    d.  [Creating Variables with `mutate()`](#sec-creating-new-variables-using-mutate)
+    e.  [Calculating Summary Statistics with `summarize()`](#sec-computing-statistics-using-summarize)
+    f.  [The Pipe Operator: `%>%`](#sec-the-pipe)
+    g.  [Grouping Observations with `group_by()`](#sec-comparing-summary-stats-using-group_by)
+    h.  [Sorting Data with `arrange()`](#sec-sorting-data-using-arrange)
+3.  [Putting It All Together](#sec-3.-putting-it-all-together)
+
+### 1. Install Packages and Libraries: {#sec-packages-libraries}
+
+#### New packages to install:
+
+If you do not already have these packages, paste them manually into the console and install them.
+
+```{r}
+# install.packages("dplyr")
+# install.packages("tidyverse")
+```
+
+-   You could install [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html){target="_blank"} directly. The package makes cleaning and manipulating dataframes more efficient.
+-   Or you could install the whole [tidyverse](https://tidyverse.org/) at once. The tidyverse is collection of similarly structured R packages designed for data analysis. It includes packages like [dplyr](https://dplyr.tidyverse.org/), [ggplot2](https://ggplot2.tidyverse.org/), [tidyr](https://tidyr.tidyverse.org/), [readr](https://readr.tidyverse.org/), and [tibble](https://tibble.tidyverse.org/).
+
+#### Load libraries!
+
+```{r}
+#| message: false
+#| warning: false
+library(RCPA3)
+library(dplyr)
+```
+
+### 2. Manipulating Data with `dplyr()` {#sec-2.-manipulating-data-with-dplyr}
+
+The `dplyr` package provides a set of functions for cleaning, organizing, and manipulating datasets. Instead of writing complicated indexing commands, we can describe what we want to do using a handful of simple `dplyr` **"verbs"** to `select()` variables, `filter()` observations, creating new variables, `summarize()` data, and `sort()` cases, for example.
+
+#### Choosing Specific Columns Using `select()` {#sec-choosing-specific-columns-using-select}
+
+Sometimes we want to limit our dataset to a specific set of relevant variables (i.e., columns) temporarily for a specific task. That's where `dplyr()` can come in very handy: using the `select()` function, we can **include** the specific variables we'd like to see by listing them in the function...
+
+```{r}
+#| eval: false
+nes %>%
+  select(region, gender, libcon3, age, educ.5cat, race.ethnicity, health)
+```
+
+```{r}
+#| echo: false
+nes %>%
+  select(region, gender, libcon3, age, educ.5cat, race.ethnicity, health)%>%
+  head() %>%
+  tibble::as_tibble()
+```
+
+... or **exclude** the variables that are not currently relevant by just including a minus sign in front of them.
+
+```{r}
+#| eval: false
+nes %>%
+  select(-abortion.imp)
+```
+
+```{r}
+#| echo: false
+nes %>%
+  select(-abortion.imp)%>%
+  head() %>%
+  tibble::as_tibble()
+```
+
+If we want to keep the limited dataset, though, we can create an object that stores our selections in a new dataset rather than just printing them to the console. But be careful: if we assign the results of the `select()` function to the same dataset, the original data will be overwritten. That's why it's always a good idea to create a new object instead.
+
+```{r}
+nes.Subset <- nes %>%
+  select(region, gender, libcon3, age, educ.5cat, race.ethnicity, health)
+```
+
+#### Choosing Specific Rows Using `filter()` {#sec-choosing-specific-rows-using-filter}
+
+We can also specify which observations (i.e., rows) we want to include/exclude by specifying conditions in a `filter()` function. Let's say we only want to look at respondents who are less that 25 years old:
+
+```{r}
+nes.Subset <- nes.Subset %>%
+  filter(age < 25)
+```
+
+Here, we're telling R to take our dataset (`nes.Subset`) and limit it to only those observations where age is less than 25 and store it in the same object (i.e., overwrite the existing object).
+
+But we can also use other logical operators to filter on multiple conditions at the same time. For example, maybe we want observations where respondents are less than 25 years old *AND* have earned a Bachelor's degree, *AND* who do *NOT* identify as "White, non-Hispanic":
+
+```{r}
+nes.Subset <- nes.Subset %>%
+  filter(age < 25 & educ.5cat == "4. Bachelor's degree" & race.ethnicity != "1. White, non-Hispanic")
+```
+
+Now, we can run additional functions on our new dataset of filtered observations along selected columns. Maybe we want to run a `freqC()` on `nes.Select$gender` or something to see the distribution of men and women who meet these criteria, for example.
+
+#### Renaming Existing Variables Using `rename()` {#sec-renaming-existing-variables-using-rename}
+
+The `rename()` function has a pretty intuitive application: we use it for renaming variables more efficiently. As stated before, it's generally a good idea to create a new dataset object when manipulating data to avoid overwriting the original by mistake. But we can usually be comfortable overwriting our new dataset (since we can simply recreate it from the original later using our previous code).
+
+For example, if we wanted to do something as simple as clarifying the name of a variable like `health` to remind us how it's measured, we could rename it to `health.5cat` and overwrite the current dataset. The syntax puts the new name first, though: `newVarName = oldVarName`.
+
+```{r}
+nes.Subset <- nes.Subset %>%
+  rename(health.5cat = health)
+```
+
+#### Creating New Variables Using `mutate()` {#sec-creating-new-variables-using-mutate}
+
+Or we could simply create a copy of the new variable instead. The `mutate()` function helps create new variables based on existing variables.
+
+Instead of using complex `ifelse()` statements and indexing, we can create a new dummy variable much more efficiently. For example, we could to create a new variable reflecting whether a respondent identifies as Black or not to include as a control in a model:
+
+```{r}
+#| eval: false
+nes.Subset %>%
+  mutate(black = race.ethnicity == "2. Black, non-Hispanic")
+```
+
+```{r}
+#| echo: false
+nes.Subset %>%
+  mutate(black = race.ethnicity == "2. Black, non-Hispanic") %>%
+  head() %>%
+  tibble::as_tibble()
+```
+
+That time, we didn't assign the new variable to a dataset object with the `<-` operation, but let's try doing so with multiple new variables at once: our same dummy variable for Black or not, another one for female or not, and a final one that interacts both of those new variables to create a dummy for Black woman or not. This time we've stored them in our current `nes.Subset` dataset.
+
+```{r}
+# Create multiple new variables
+nes.Subset <- nes.Subset %>%
+  mutate(
+    black = race.ethnicity == "2. Black, non-Hispanic",
+    female = gender == "2. Female",
+    black.woman = black & female
+  )
+```
+
+But we can also make the function a little more complex to save us some steps later on. Here we'll create the same variables again, but this time we'll tell R to designate them as factor variables and add labels to remind us which is which in the future.
+
+Note: it's always a good idea to run `freqC()` on the original variables first and then on the new ones to ensure that we're labeling each category correctly.
+
+```{r}
+nes.Subset <- nes.Subset %>%
+  mutate(
+    black = factor(
+      race.ethnicity == "2. Black, non-Hispanic",
+      labels = c("Not Black", "Black")
+    ),
+    female = factor(
+      gender == "2. Female",
+      labels = c("Not Female", "Female")
+    ),
+    black.woman = factor(
+      black=="Black" & female=="Female",
+      labels = c("Not Black Woman", "Black Woman")
+    )
+  )
+```
+
+But `mutate()` can do much more than create simple dummy variables. One of its most useful companions is the `case_when()` function, which allows us to create a new variable by assigning different values depending on multiple conditions.
+
+Think of `case_when()` as a cleaner, more readable version of a long series of `ifelse()` statements. We write one condition per line, followed by the value we want to assign whenever that condition is true.
+
+The `%in%` operation is also a lifesaver for collapsing lots of conditions into a single category. Instead of including a long list of *OR* conditions (`|`), we just say, "if it's in this list (`c()`), do the thing to it."
+
+In the example below, we'll create a new dummy variable called `conservative`. Respondents who identify as Slightly Conservative, Conservative, or Extremely Conservative will receive a value of `1`. Every other category (as long as they're not missing!) will receive a `0`. Finally, respondents with missing values on the original variable will remain missing (`NA`) in the new variable. Also, notice that we're making a new variable to store in our `nes.Subset` using the original data from `nes`, too.
+
+```{r}
+nes.Subset <- nes %>%
+  mutate(
+    conservative = case_when(
+      libcon7 %in% c(
+        "5. Slightly conservative", 
+        "6. Conservative", 
+        "7. Extremely conservative"
+        ) ~ 1,
+      !is.na(libcon7) ~ 0,
+      TRUE ~ NA_real_
+    )
+  )
+```
+
+Notice the syntax of `case_when()`. Each line has two parts: - The condition(s) to the left of the `~` symbol - The value to assign the condition(s) to the right of the the `~` symbol.
+
+#### Computing Statistics Using `summarize()` {#sec-computing-statistics-using-summarize}
+
+We can use the `summarize()` verb in `dplyr` to get some basic summary statistics, too. For example, we could generate an average (i.e., `mean()`) of the number of years respondents have lived in their communities.
+
+```{r}
+nes %>%
+  summarize(avg.community.yrs = mean(community.yrs, na.rm = TRUE))
+```
+
+If you're thinking that using `dplyr` for this is unnecessary when we could just type `mean(community.yrs, na.rm = TRUE)` directly into the console to get that stat, they you'd be right.
+
+But `dplyr::summarize()` shines with bulk calculations or in more complex applications that require efficiency. Calculating multiple summary stats at once is is certainly made simpler with `summarize()`, and it gives us a bit more control over presentation of those stats (like naming them clearly for ease of interpretation).
+
+```{r}
+# Multiple summary statistics
+nes %>%
+  summarize(
+    avg.community.yrs = mean(community.yrs, na.rm = TRUE),
+    max.guns.owned = max(guns.owned, na.rm = TRUE),
+    median.age = median(age, na.rm = TRUE)
+  )
+```
+
+Even then, if we really wanted to, we could just use three (or however many) lines of code in the console.
+
+But the `summarize()` function is much more powerful when paired with other functions that help us manipulate the data in other ways. For example, we'll make the most of the `summarize()` function when we want to calculate descriptive statistics for only observations that meet certain conditions (`filter()`) or across groups of another variable (`group_by()`) further below. But first, the pipe...
+
+#### The Pipe Operator: `%>%` {#sec-the-pipe}
+
+By now, you've probably noticed the `%>%` symbols after the dataset name each time we run a `dplyr` function. That's called a "**pipe**", and it's a key part of the syntax here: it passes the result from one step to the next. Like, start with this dataset (`nes`) and, once you've done that (`%>%`), complete the following function.
+
+But we can have multiple pipes in the same expression, too, for more complex analysis. The same logic simply continues until we end the function: do this, then this, then that, and so on....
+
+So, let's use that logic to figure out the maximum number of guns owned by respondents under 25 years old. First, we `filter()` by age, then we `summarize()` to find the maximum among those filtered observations:
+
+```{r}
+nes %>%
+  filter(age < 25) %>%
+  summarize(max.guns.owned = max(guns.owned, na.rm = TRUE))
+```
+
+#### Comparing Summary Stats Using `group_by()` {#sec-comparing-summary-stats-using-group_by}
+
+We can also use `summarize()` more complex situations, like producing statistics for different groups within our data for comparison. For this, first we `group_by()` some set of categories, then we `summarize()` a variable to produce some statistic.
+
+For example, we could compare average (e.g., mean) age of respondents within different ideological groups (i.e., liberal, moderate, or conservative):
+
+```{r}
+nes %>%
+  group_by(libcon3) %>%
+  summarize(avg_age = mean(age, na.rm = TRUE))
+```
+
+But we're not limited to the `mean()`, either. We could incorporate any sort of descriptive statistic that we're interested in. Here's an example comparing the median feeling thermometer score toward Obama across different education levels:
+
+```{r}
+nes %>%
+  group_by(educ.5cat) %>%
+  summarize(median.ft.obama = median(ft.obama, na.rm = TRUE))
+```
+
+#### Sorting Data Using `arrange()` {#sec-sorting-data-using-arrange}
+
+The `arrange()` function is helpful for sorting a variable or some output. The default sorting method is ascending (lowest to highest).
+
+```{r}
+#| eval: false
+nes %>%
+  arrange(age)
+```
+
+```{r}
+#| echo: false
+nes.Subset %>%
+  arrange(age) %>%
+  head() %>%
+  tibble::as_tibble()
+```
+
+We can also reverse the order by adding `desc()` as a helper function to sort the variable in descending order (highest to lowest).
+
+```{r}
+#| eval: false
+nes %>%
+  arrange(desc(age))
+```
+
+```{r}
+#| echo: false
+nes.Subset %>%
+  arrange(desc(age)) %>%
+  head() %>%
+  tibble::as_tibble()
+```
+
+### 3. Putting it all together {#sec-3.-putting-it-all-together}
+
+Combining multiple `dplyr` functions as steps in a single expression is a great way to produce quick descriptive statistics to reference in or compute new variables to include in your curated dataset.
+
+Here are a couple of examples of combining many of the features and procedures from above into a larger function to produce a more finely-tuned analysis that help an audience understand important aspects of the data.
+
+**Example 1:** Compare average feelings toward Trump by region among Republicans.
+
+```{r}
+nes %>%
+  filter(partyid3 == "3. Republican") %>%
+  group_by(region) %>%
+  summarize(
+    avg.ft.trump.post = mean(ft.trump.post, na.rm = TRUE)
+  ) %>%
+  arrange(desc(avg.ft.trump.post))
+```
+
+**Example 2:** Compare average feelings toward Trump by region among Democrats.
+
+```{r}
+nes %>%
+  filter(partyid3 == "1. Democrat") %>%
+  group_by(region) %>%
+  summarize(
+    avg.ft.trump.post = mean(ft.trump.post, na.rm = TRUE)
+  ) %>%
+  arrange(desc(avg.ft.trump.post))
+```

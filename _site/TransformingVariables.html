@@ -189,12 +189,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-datasets">    
         <li>
-    <a class="dropdown-item" href="./Datasets/spain.RData">
- <span class="dropdown-text">Spain Replication data</span></a>
+    <a class="dropdown-item" href="./datasets/spain.RData">
+ <span class="dropdown-text">Spain Replication R data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Datasets/testScoresData.RData">
- <span class="dropdown-text">Test Scores data</span></a>
+    <a class="dropdown-item" href="./datasets/testScoresData.RData">
+ <span class="dropdown-text">Test Scores R data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/13VKbgVXqIpFhkHK0VcgBzB-0o_CLGFugntq34WwaWp4/edit?usp=sharing" target="_blank">
+ <span class="dropdown-text">Pollock R data descriptions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1-ftZTPojKyaPGTIlqkV1Q1a8TvJXqtqQ81YA0k4AtiA/edit?usp=sharing" target="_blank">
+ <span class="dropdown-text">Some IR/Comparative datasets</span></a>
   </li>  
     </ul>
   </li>
@@ -1329,7 +1337,7 @@ Total          166    100.00</code></pre>
 </div>
 </div>
 </div>
-<p>The <code>dplyr</code> package is a great tool to explore on your own, especially before or during a Political Science Capstone project!</p>
+<p>The <code>dplyr</code> package is a great tool to explore on your own, especially before or during a Political Science Capstone project! For a brief primer on some of the basic <code>dplyr</code> functions, <a href="dplyrPrimer.html">click here!</a></p>
 
 
 </section>
@@ -1409,7 +1417,7 @@ Total          166    100.00</code></pre>
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

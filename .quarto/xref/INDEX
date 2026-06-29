@@ -43,5 +43,11 @@
   },
   "choosingTheAppropriateTests.qmd": {
     "choosingTheAppropriateTests.html": "0393edfb"
+  },
+  "dplyrPrimer.qmd": {
+    "dplyrPrimer.html": "7e4e4500"
+  },
+  "dplyrPrimer.knit.md": {
+    "dplyrPrimer.knit.html": "9a85cac0"
   }
 }

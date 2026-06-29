@@ -1,5 +1,10 @@
 project:
   type: website
+  resources:
+    - slides/**
+    - scripts/**
+    - datasets/**
+    - images/**
 
 website:
   favicon: images/RStudio.png
@@ -48,11 +53,20 @@ website:
 
       - text: Datasets
         menu:
-          - text: Spain Replication data
-            href: Datasets/spain.RData
+          - text: Spain Replication R data
+            href: datasets/spain.RData
 
-          - text: Test Scores data
-            href: Datasets/testScoresData.RData
+          - text: Test Scores R data
+            href: datasets/testScoresData.RData
+
+          - text: Pollock R data descriptions
+            href: https://docs.google.com/spreadsheets/d/13VKbgVXqIpFhkHK0VcgBzB-0o_CLGFugntq34WwaWp4/edit?usp=sharing
+            target: _blank
+
+          - text: Some IR/Comparative datasets
+            href: https://docs.google.com/spreadsheets/d/1-ftZTPojKyaPGTIlqkV1Q1a8TvJXqtqQ81YA0k4AtiA/edit?usp=sharing
+            target: _blank
+
 
       - text: Scripts
         menu:

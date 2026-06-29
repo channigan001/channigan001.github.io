@@ -397,4 +397,4 @@ So, now we can take a look at the distribution of each variable to make sure the
 freqC(world$rich.dem)
 ```
 
-The `dplyr` package is a great tool to explore on your own, especially before or during a Political Science Capstone project!
+The `dplyr` package is a great tool to explore on your own, especially before or during a Political Science Capstone project! For a brief primer on some of the basic `dplyr` functions, [click here!](dplyrPrimer.html)

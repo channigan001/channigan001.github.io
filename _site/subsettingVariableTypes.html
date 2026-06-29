@@ -189,12 +189,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-datasets">    
         <li>
-    <a class="dropdown-item" href="./Datasets/spain.RData">
- <span class="dropdown-text">Spain Replication data</span></a>
+    <a class="dropdown-item" href="./datasets/spain.RData">
+ <span class="dropdown-text">Spain Replication R data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./Datasets/testScoresData.RData">
- <span class="dropdown-text">Test Scores data</span></a>
+    <a class="dropdown-item" href="./datasets/testScoresData.RData">
+ <span class="dropdown-text">Test Scores R data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/13VKbgVXqIpFhkHK0VcgBzB-0o_CLGFugntq34WwaWp4/edit?usp=sharing" target="_blank">
+ <span class="dropdown-text">Pollock R data descriptions</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://docs.google.com/spreadsheets/d/1-ftZTPojKyaPGTIlqkV1Q1a8TvJXqtqQ81YA0k4AtiA/edit?usp=sharing" target="_blank">
+ <span class="dropdown-text">Some IR/Comparative datasets</span></a>
   </li>  
     </ul>
   </li>
@@ -656,8 +664,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sec-using-dplyr-to-list-variables-by-type" class="level4">
 <h4 class="anchored" data-anchor-id="sec-using-dplyr-to-list-variables-by-type">Using <code>dplyr()</code> to List Variables by Type</h4>
-<p>Instead of using indexing, we could also rely on the <code>select()</code> and <code>where()</code> functions from the <code>dplyr</code> package to do the same thing. The <code>dplyr</code> approach provides a couple of clear advantages: it’s much more efficient than indexing and it’s a more common approach among researchers in the discipline. But the major disadvantage for us is that it involves a whole new syntax and set of functions that we don’t explicitly learn about in POLS 222.</p>
-<p>So, as a starting point for those who are interested in exploring the <code>dplyr</code> package on their own, here’s what the code would look like for listing the variables by type:</p>
+<p>Instead of using indexing, we could also rely on the <code>select()</code> and <code>where()</code> functions from the <code>dplyr</code> package to do the same thing. The <code>dplyr</code> approach provides a couple of clear advantages: it’s much more efficient than indexing and it’s a more common approach among researchers in the discipline. But the major disadvantage for us is that it involves a whole new syntax and set of functions that we don’t explicitly learn about in POLS 222. For a brief primer on using <code>dplyr</code>, <a href="dplyrPrimer.html">click here!</a></p>
+<p>For now, as a starting point for those who are interested in exploring the <code>dplyr</code> package on their own, here’s what the code would look like for listing the variables by type:</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Continuous/Interval</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>nes <span class="sc">%&gt;%</span></span>
@@ -918,7 +926,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/channigan001\.github\.io\/");
+        var filterRegex = new RegExp('/' + window.location.host + '/');
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
